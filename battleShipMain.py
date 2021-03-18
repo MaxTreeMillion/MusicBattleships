@@ -25,7 +25,7 @@ clock = pygame.time.Clock()
 vec = pygame.math.Vector2
 
 # Debugging
-DEBUG = True
+DEBUG = False
 
 # Classes
 
@@ -132,6 +132,10 @@ def lengthDirect(shipNum):
         length = 2*(screenHeight/10)
         width = (screenWidth/10)
 
+    if shipNum > 4:     # Overflow protection
+        length = randint(2,5)*(screenHeight/10)
+        width = (screenWidth/10)
+
     # decides direction at random
     if randint(0,1):
         temp = length
@@ -173,6 +177,14 @@ def createLine():
     # returns dictionary
     return lineDic
 
+# number of ships
+numRect = 5
+
+# generate ships
+rectDic = createRect(numRect)
+for i in range(len(rectDic)):
+    rectDic["rect%s" %i].cleanUpRect(rectDic)
+
 # Create Grid
 lineDic = createLine()
 
@@ -182,11 +194,14 @@ run = True
 # framerate of the game
     # this probably won't matter too much, unless we decide to make animations
     # then we'll have to put in more thought into it
-frameRate = 0.5
+frameRate = 60
 
 #########################################################################################
-# MAIN GAME LOOP #
-##################
+# MAIN GAME LOOP 
+#########################################################################################
+# for rep detection
+antiRep = 0
+
 while run:
     # controls rate of the game
     clock.tick(frameRate)
@@ -196,14 +211,21 @@ while run:
         if event.type == pygame.QUIT:
             run = False
 
-    # creat random rectangles
-    # this will be before the main loop in the real game
-    # it is inside now for deminstation purposes
-    numRect = 5
-    rectDic = createRect(numRect)
-    for i in range(len(rectDic)):
-        rectDic["rect%s" %i].cleanUpRect(rectDic)
-    
+
+
+    # for test, generates new boats
+    key = pygame.key.get_pressed()
+    if key[pygame.K_SPACE] and antiRep == 0:
+        antiRep = 1     # blocks multiple interations in one click
+        rectDic = createRect(numRect)
+        for i in range(len(rectDic)):
+            rectDic["rect%s" %i].cleanUpRect(rectDic)
+    # this just makes sure when space is pressed, it only inputs once
+    if not(key[pygame.K_SPACE]):
+        antiRep = 0 
+
+
+
     # updates the screen to different events
     update(rectDic, lineDic)
 
