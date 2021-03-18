@@ -11,12 +11,15 @@ import math
 from random import randint
 
 # screen deminsions
-screenHeight = 1000
-screenWidth = 1000
+squareScreen = 1000
+screenHeight = squareScreen
+screenWidth = squareScreen
+
+margin = 0 + int(squareScreen/10)
 
 # initialize
 pygame.init()
-win = pygame.display.set_mode((screenWidth, screenHeight))
+win = pygame.display.set_mode((screenWidth + margin, screenHeight + margin))
 
 # clock
 clock = pygame.time.Clock()
@@ -67,7 +70,7 @@ class Rectangle():
 
                     # generates new ship with random position, direction, and maybe shape
                     directList = lengthDirect(i)
-                    rect = Rectangle((randint(0,255), randint(0,255), randint(0,255)), (screenWidth/10)*randint(0,10), (screenHeight/10)*randint(0,10), directList[0], directList[1])
+                    rect = Rectangle((randint(0,255), randint(0,255), randint(0,255)), (screenWidth/10)*randint(0,10) + margin, (screenHeight/10)*randint(0,10) + margin, directList[0], directList[1])
                     rectDic["rect%s" %i] = rect
                     # recussively calls the cleanUpRect fn again until all ships are no longer overlapping or partially off screen
                     rectDic["rect%s" %i].cleanUpRect(rectDic)
@@ -82,7 +85,7 @@ class Rectangle():
                
                 # generates new ship with random position, direction, and maybe shape
                 directList = lengthDirect(i)
-                rect = Rectangle((randint(0,255), randint(0,255), randint(0,255)), (screenWidth/10)*randint(0,10), (screenHeight/10)*randint(0,10), directList[0], directList[1])
+                rect = Rectangle((randint(0,255), randint(0,255), randint(0,255)), (screenWidth/10)*randint(0,10) + margin, (screenHeight/10)*randint(0,10) + margin, directList[0], directList[1])
                 rectDic["rect%s" %i] = rect
                 # recussively calls the cleanUpRect fn again until all ships are no longer overlapping or partially off screen
                 rectDic["rect%s" %i].cleanUpRect(rectDic)
@@ -92,7 +95,7 @@ def update(rectDic, lineDic):
     win.fill((0,0,0))       # makes background black
 
     # draw grit with lines
-    for i in range(1,len(lineDic)+1):
+    for i in range(1,len(lineDic)):
         lineDic["line%s" %i].draw()
 
     # drawing rectangles
@@ -153,7 +156,7 @@ def createRect(numRect):
         # gets length and orientation
         directList = lengthDirect(i)
         # creates rectangle object
-        rect = Rectangle((randint(0,255), randint(0,255), randint(0,255)), (screenWidth/10)*randint(0,9), (screenHeight/10)*randint(0,9), directList[0], directList[1])
+        rect = Rectangle((randint(0,255), randint(0,255), randint(0,255)), (screenWidth/10)*randint(0,9) + margin, (screenHeight/10)*randint(0,9) + margin, directList[0], directList[1])
         # creates and assigns key for rectangle dictionary
         # the syntax below is just to make keys in the style: rect0, rect1, rect2, ...
         rectDic["rect%s" %i] = rect
@@ -167,12 +170,12 @@ def createLine():
     # dictionary for lines
     lineDic = {}
     # creates horizontal lines
-    for i in range(1,10):
-        line = Line((screenWidth/10)*i-1,(screenWidth/10)*i-1, 0, screenHeight)
+    for i in range(0,11):
+        line = Line((screenWidth/10)*(i-1)-1 + margin,(screenWidth/10)*(i-1)-1 + margin, margin, screenHeight)
         lineDic["line%s" %i] = line
     # creates vertical lines
-    for i in range(10,19):
-        line = Line(0, screenWidth, (screenHeight/10)*(i-9)-1,(screenHeight/10)*(i-9)-1)
+    for i in range(11,21):
+        line = Line(margin, screenWidth, (screenHeight/10)*(i-11)-1 + margin,(screenHeight/10)*(i-11)-1 + margin)
         lineDic["line%s" %i] = line
     # returns dictionary
     return lineDic
