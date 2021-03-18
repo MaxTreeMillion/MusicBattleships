@@ -4,7 +4,7 @@
 #    - Working on ray casting for sonar later
 #    - Working on game deign evintually
 ################################################################
-# test
+
 # imports
 import pygame
 import math
@@ -23,6 +23,9 @@ clock = pygame.time.Clock()
 
 # x/y vectors
 vec = pygame.math.Vector2
+
+# Debugging
+DEBUG = True
 
 # Classes
 
@@ -57,10 +60,13 @@ class Rectangle():
         for i in range(len(rectDic)):
             if rectDic["rect%s" %i] != self:        # neglects the instense of dectecing if a ship collides with itself
                 if pygame.Rect.colliderect(self.rect, rectDic["rect%s" %i].rect):       # does current ship overlap with another ship
+                    if DEBUG:
+                        print("Overlapping: %s" %i)
+
                     del rectDic["rect%s" %i]        # deletes the key of the ship that is overlapping current ship
 
                     # generates new ship with random position, direction, and maybe shape
-                    directList = lengthDirect()
+                    directList = lengthDirect(i)
                     rect = Rectangle((randint(0,255), randint(0,255), randint(0,255)), (screenWidth/10)*randint(0,10), (screenHeight/10)*randint(0,10), directList[0], directList[1])
                     rectDic["rect%s" %i] = rect
                     # recussively calls the cleanUpRect fn again until all ships are no longer overlapping or partially off screen
@@ -69,10 +75,13 @@ class Rectangle():
         # checks if current ship is partially off screen
         for i in range(len(rectDic)):
             if ((rectDic["rect%s" %i].pos.x + rectDic["rect%s" %i].width) > screenWidth) or ((rectDic["rect%s" %i].pos.y + rectDic["rect%s" %i].height) > screenHeight):
-                del rectDic["rect%s" %i]        # deletes the key of the ship that is overlapping current ship
+                if DEBUG:
+                    print("Off Screen: %s" %i)
 
+                del rectDic["rect%s" %i]        # deletes the key of the ship that is overlapping current ship
+               
                 # generates new ship with random position, direction, and maybe shape
-                directList = lengthDirect()
+                directList = lengthDirect(i)
                 rect = Rectangle((randint(0,255), randint(0,255), randint(0,255)), (screenWidth/10)*randint(0,10), (screenHeight/10)*randint(0,10), directList[0], directList[1])
                 rectDic["rect%s" %i] = rect
                 # recussively calls the cleanUpRect fn again until all ships are no longer overlapping or partially off screen
@@ -138,9 +147,9 @@ def createRect(numRect):
     # creates as many ships needed
     for i in range(numRect):
         # gets length and orientation
-        directList = lengthDirect()
+        directList = lengthDirect(i)
         # creates rectangle object
-        rect = Rectangle((randint(0,255), randint(0,255), randint(0,255)), (screenWidth/10)*randint(0,9), (screenHeight/10)*randint(0,9), directList(i)[0], directList(i)[1])
+        rect = Rectangle((randint(0,255), randint(0,255), randint(0,255)), (screenWidth/10)*randint(0,9), (screenHeight/10)*randint(0,9), directList[0], directList[1])
         # creates and assigns key for rectangle dictionary
         # the syntax below is just to make keys in the style: rect0, rect1, rect2, ...
         rectDic["rect%s" %i] = rect
