@@ -11,7 +11,7 @@ import math
 from random import randint
 
 # screen deminsions
-squareScreen = 1000
+squareScreen = 600
 screenHeight = squareScreen
 screenWidth = squareScreen
 
@@ -43,6 +43,37 @@ class Line():
     def draw(self):
         pygame.draw.line(win, self.color, self.end1, self.end2, width = 2)
 
+##class Student(Person):
+##  def __init__(self, fname, lname):
+##    Person.__init__(self, fname, lname)
+
+# class for target which has mush of the same elements as the rectangle class
+def Target(Rectangle):
+    def __init__(self, color, x, y, width, height):
+        Rectangle.__init__(self, color, x, y, width, height)
+        self.rect = pygame.Rect(x, y, width, height)
+        
+    def move(self):
+        # detecting key presses
+        keys = pygame.key.get_pressed()
+
+        # horizontal boundary dectection
+        if self.pos.x > margin and self.pos.x < screenWidth - margin + self.width:
+            # horizontal movement
+            if keys[pygame.K_LEFT]:
+                self.pos.x -= 100
+
+            if keys[pygame.K_RIGHT]:
+                self.pos.x += 100
+        # vertical boundary dectection
+        if self.pos.y > margin and self.pos.y < screenHeight - margin + self.height:
+            # vertical movement
+            if keys[pygame.K_UP]:
+                self.pos.y -= 100
+                
+            if keys[pygame.K_DOWN]:
+                self.pos.y += 100
+    
 # class for rectangles that make the hitboxes for the ships
 class Rectangle():
     def __init__(self, color, x, y, width, height):
@@ -93,7 +124,7 @@ class Rectangle():
 # updates screen every frame
 def update(rectDic, lineDic):
     win.fill((0,0,0))       # makes background black
-
+    
     # draw grit with lines
     for i in range(1,len(lineDic)):
         lineDic["line%s" %i].draw()
@@ -103,6 +134,8 @@ def update(rectDic, lineDic):
     for i in range(len(rectDic)):
         rectDic["rect%s" %i].draw()
 
+    #curser.draw()
+    
     pygame.display.update()     # displays updated screen
 
 
@@ -180,6 +213,7 @@ def createLine():
     # returns dictionary
     return lineDic
 
+
 # number of ships
 numRect = 5
 
@@ -190,6 +224,9 @@ for i in range(len(rectDic)):
 
 # Create Grid
 lineDic = createLine()
+
+# Create Target/Curser
+#curser = Target((255,255,255), margin, margin, 100, 100)
 
 # boolean to allow the breaking of the main loop
 run = True
@@ -214,7 +251,7 @@ while run:
         if event.type == pygame.QUIT:
             run = False
 
-
+    
 
     # for test, generates new boats
     key = pygame.key.get_pressed()
@@ -225,10 +262,10 @@ while run:
             rectDic["rect%s" %i].cleanUpRect(rectDic)
     # this just makes sure when space is pressed, it only inputs once
     if not(key[pygame.K_SPACE]):
-        antiRep = 0 
-
-
-
+        antiRep = 0
+        
+    #curser.move()
+    
     # updates the screen to different events
     update(rectDic, lineDic)
 
