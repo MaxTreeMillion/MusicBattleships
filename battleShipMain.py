@@ -38,7 +38,7 @@ class Line():
 
     # this fn is call everytime the display is updated for every line
     def draw(self):
-        pygame.draw.line(win, self.color, self.end1, self.end2, width = 3)
+        pygame.draw.line(win, self.color, self.end1, self.end2, width = 2)
 
 # class for rectangles that make the hitboxes for the ships
 class Rectangle():
@@ -124,7 +124,7 @@ def lengthDirect(shipNum):
         length = 3*(screenHeight/10)
         width = (screenWidth/10)
 
-    if shipNum == 3:    # Submarine Ship
+    if shipNum == 3:    # Submarine Ship or another Cruiser
         length = 3*(screenHeight/10)
         width = (screenWidth/10)
 
@@ -164,11 +164,11 @@ def createLine():
     lineDic = {}
     # creates horizontal lines
     for i in range(1,10):
-        line = Line((screenWidth/10)*i,(screenWidth/10)*i, 0, screenHeight)
+        line = Line((screenWidth/10)*i-1,(screenWidth/10)*i-1, 0, screenHeight)
         lineDic["line%s" %i] = line
     # creates vertical lines
     for i in range(10,19):
-        line = Line(0, screenWidth, (screenHeight/10)*(i-9),(screenHeight/10)*(i-9))
+        line = Line(0, screenWidth, (screenHeight/10)*(i-9)-1,(screenHeight/10)*(i-9)-1)
         lineDic["line%s" %i] = line
     # returns dictionary
     return lineDic
@@ -178,10 +178,11 @@ lineDic = createLine()
 
 # boolean to allow the breaking of the main loop
 run = True
+
 # framerate of the game
     # this probably won't matter too much, unless we decide to make animations
     # then we'll have to put in more thought into it
-frameRate = 1
+frameRate = 0.5
 
 #########################################################################################
 # MAIN GAME LOOP #
