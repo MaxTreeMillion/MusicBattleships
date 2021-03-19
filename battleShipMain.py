@@ -155,7 +155,8 @@ def update(rectDic, lineDic):
     #for rect in rectList:
     for i in range(len(rectDic)):
         rectDic["rect%s" %i].draw()
-    
+
+    # moves and draws curser in new position
     curser.move()
     curser.draw()
     
