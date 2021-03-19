@@ -1,8 +1,10 @@
 ################################################################ 
 # Battleships the Musical: Main Code (at least now)
-#    - Working on ship generation
-#    - Working on ray casting for sonar later
-#    - Working on game deign evintually
+#    - Ship generation: {{ DONE }}
+#    - Hit dectection: {{ DONE }}
+"""  - Ship damage and sinking: {{ WORKING }}   """
+#    - Ray casting for sonar: {{ NOT STARTED }} 
+#    - Game deign: {{ NOT STARTED }}
 ################################################################
 
 # imports
@@ -11,7 +13,7 @@ import math
 from random import randint
 
 # screen deminsions
-squareScreen = 1000
+squareScreen = 500
 screenHeight = squareScreen
 screenWidth = squareScreen
 
@@ -30,7 +32,8 @@ vec = pygame.math.Vector2
 # Debugging
 DEBUG = False
 
-# Classes
+
+####### Classes #######
 
 # class for the lines that make up the grid
 class Line():
@@ -70,7 +73,7 @@ class Rectangle():
                     del rectDic["rect%s" %i]        # deletes the key of the ship that is overlapping current ship
 
                     # generates new ship with random position, direction, and maybe shape
-                    directList = lengthDirect(i)
+                    directList = lengthDirect(i, rectDic)
                     rect = Rectangle((randint(0,255), randint(0,255), randint(0,255)), (screenWidth/10)*randint(0,10) + margin, (screenHeight/10)*randint(0,10) + margin, directList[0], directList[1])
                     rectDic["rect%s" %i] = rect
                     # recussively calls the cleanUpRect fn again until all ships are no longer overlapping or partially off screen
@@ -83,9 +86,9 @@ class Rectangle():
                     print("Off Screen: %s" %i)
 
                 del rectDic["rect%s" %i]        # deletes the key of the ship that is overlapping current ship
-               
+
                 # generates new ship with random position, direction, and maybe shape
-                directList = lengthDirect(i)
+                directList = lengthDirect(i, rectDic)
                 rect = Rectangle((randint(0,255), randint(0,255), randint(0,255)), (screenWidth/10)*randint(0,10) + margin, (screenHeight/10)*randint(0,10) + margin, directList[0], directList[1])
                 rectDic["rect%s" %i] = rect
                 # recussively calls the cleanUpRect fn again until all ships are no longer overlapping or partially off screen
@@ -94,6 +97,7 @@ class Rectangle():
 
 # class for target which has mush of the same elements as the rectangle class
 class Target(Rectangle):
+    # hacky way of elemenating multiple calling when holding down mouse
     antiRep1 = 0
     antiRep2 = 0
     antiRep3 = 0
@@ -137,6 +141,9 @@ class Target(Rectangle):
             Target.antiRep4 = 0
 
 
+
+####### Functions #######
+
 # updates screen every frame
 def update(rectDic, lineDic):
     win.fill((0,0,0))       # makes background black
@@ -149,52 +156,68 @@ def update(rectDic, lineDic):
     #for rect in rectList:
     for i in range(len(rectDic)):
         rectDic["rect%s" %i].draw()
-    
+
+    # draws ship damage
+    for key, value in shipDamages.items():
+        shipDamages[key].draw()
+        
+    # moves and draws curser in new position
     curser.move()
     curser.draw()
+
     
     pygame.display.update()     # displays updated screen
 
 
 # decides legnth and direction of ship
-def lengthDirect(shipNum):
+def lengthDirect(shipNum, rectDic):
     global screenHeight
-    global screenWidt
-
+    global screenWidth
+    global shipHealths
+    
     # calcs the different sized ships
         # there are 5 ships
         # Legths: 5, 4, 3, 3, 2
 
     if shipNum == 0:    # Carrier Ship
-        length = 5*(screenHeight/10)
+        shipHealths["shipHealth%s" %0] = [1,1]
+        length = 2*(screenHeight/10)
         width = (screenWidth/10)
 
     if shipNum == 1:    # Battleship Ship
-        length = 4*(screenHeight/10)
+        shipHealths["shipHealth%s" %1] = [1,1,1]
+        length = 3*(screenHeight/10)
         width = (screenWidth/10)
 
     if shipNum == 2:    # Cruiser Ship
+        shipHealths["shipHealth%s" %2] = [1,1,1]
         length = 3*(screenHeight/10)
         width = (screenWidth/10)
 
     if shipNum == 3:    # Submarine Ship or another Cruiser
-        length = 3*(screenHeight/10)
+        shipHealths["shipHealth%s" %3] = [1,1,1,1]
+        length = 4*(screenHeight/10)
         width = (screenWidth/10)
 
     if shipNum == 4:    # Destroyer Ship
-        length = 2*(screenHeight/10)
+        shipHealths["shipHealth%s" %4] = [1,1,1,1,1]
+        length = 5*(screenHeight/10)
         width = (screenWidth/10)
 
     if shipNum > 4:     # Overflow protection
-        length = randint(2,5)*(screenHeight/10)
+        j = len(rectDic)
+        shipHealths["shipHealth%s" %j] = []
+        rand = randint(2,5)
+        for i in range(rand):
+            shipHealths["shipHealth%s" %j].append(1)
+        length = rand*(screenHeight/10)
         width = (screenWidth/10)
-
     # decides direction at random
     if randint(0,1):
         temp = length
         length = width
         width = temp
-    return width, length
+    return width, length#, shipHealths
 
 
 # creates ships of random shapes and position
@@ -204,7 +227,7 @@ def createRect(numRect):
     # creates as many ships needed
     for i in range(numRect):
         # gets length and orientation
-        directList = lengthDirect(i)
+        directList = lengthDirect(i, rectDic)
         # creates rectangle object
         rect = Rectangle((randint(0,255), randint(0,255), randint(0,255)), (screenWidth/10)*randint(0,9) + margin, (screenHeight/10)*randint(0,9) + margin, directList[0], directList[1])
         # creates and assigns key for rectangle dictionary
@@ -234,11 +257,25 @@ def createLine():
 def isCollide():
     for i in range(len(rectDic)):
         if pygame.Rect.colliderect(pygame.Rect(curser.pos.x, curser.pos.y, curser.width, curser.height), rectDic["rect%s" %i].rect):
-            print("Ship {} in the cross hairs!". format(i+1))
+            return True, i
+    return False, i
 
+def shootMissile():
+    global shipDamages
+    isCollides = isCollide()
+    if isCollides[0]:
+        print("That's a hit!!")
+        shipDamages["shipDamage%s" %isCollides[1]] = Rectangle((255,255,0), curser.pos.x, curser.pos.y, curser.width, curser.height)
+    else:
+        print("All you shot was sea!")
+    
 
 # number of ships
 numRect = 5
+# ship health in order
+shipHealths = {}
+# damage dictionary
+shipDamages = {}
 
 # generate ships
 rectDic = createRect(numRect)
@@ -259,11 +296,14 @@ run = True
     # then we'll have to put in more thought into it
 frameRate = 60
 
+
+
 #########################################################################################
 # MAIN GAME LOOP 
 #########################################################################################
 # for rep detection
 antiRep = 0
+antiRep1 = 1
 
 while run:
     # controls rate of the game
@@ -277,6 +317,8 @@ while run:
     # for test, generates new boats
     key = pygame.key.get_pressed()
     if key[pygame.K_SPACE] and antiRep == 0:
+        shipDamages = {}
+        shipHealths = {}
         antiRep = 1     # blocks multiple interations in one click
         rectDic = createRect(numRect)
         for i in range(len(rectDic)):
@@ -285,8 +327,13 @@ while run:
     if not(key[pygame.K_SPACE]):
         antiRep = 0
         
-    # is the curser colliding with ship
-    isCollide()
+    # shooting missle
+    if key[pygame.K_RETURN] and antiRep1 == 0:
+        antiRep1 = 1
+        shootMissile()
+    # this just makes sure when space is pressed, it only inputs once
+    if not(key[pygame.K_RETURN]):
+        antiRep1 = 0
 
     #print("x: {} y: {}". format(curser.pos.x, curser.pos.y))
     
