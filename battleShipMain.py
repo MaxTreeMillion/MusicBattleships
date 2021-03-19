@@ -1,8 +1,10 @@
 ################################################################ 
 # Battleships the Musical: Main Code (at least now)
-#    - Working on ship generation
-#    - Working on ray casting for sonar later
-#    - Working on game deign evintually
+#    - Ship generation: {{ DONE }}
+#    - Hit dectection: {{ DONE }}
+"""  - Ship damage and sinking: {{ WORKING }}   """
+#    - Ray casting for sonar: {{ NOT STARTED }} 
+#    - Game deign: {{ NOT STARTED }}
 ################################################################
 
 # imports
@@ -30,7 +32,8 @@ vec = pygame.math.Vector2
 # Debugging
 DEBUG = False
 
-# Classes
+
+####### Classes #######
 
 # class for the lines that make up the grid
 class Line():
@@ -137,6 +140,9 @@ class Target(Rectangle):
             Target.antiRep4 = 0
 
 
+
+####### Functions #######
+
 # updates screen every frame
 def update(rectDic, lineDic):
     win.fill((0,0,0))       # makes background black
@@ -166,11 +172,11 @@ def lengthDirect(shipNum):
         # Legths: 5, 4, 3, 3, 2
 
     if shipNum == 0:    # Carrier Ship
-        length = 5*(screenHeight/10)
+        length = 2*(screenHeight/10)
         width = (screenWidth/10)
 
     if shipNum == 1:    # Battleship Ship
-        length = 4*(screenHeight/10)
+        length = 3*(screenHeight/10)
         width = (screenWidth/10)
 
     if shipNum == 2:    # Cruiser Ship
@@ -178,11 +184,11 @@ def lengthDirect(shipNum):
         width = (screenWidth/10)
 
     if shipNum == 3:    # Submarine Ship or another Cruiser
-        length = 3*(screenHeight/10)
+        length = 4*(screenHeight/10)
         width = (screenWidth/10)
 
     if shipNum == 4:    # Destroyer Ship
-        length = 2*(screenHeight/10)
+        length = 5*(screenHeight/10)
         width = (screenWidth/10)
 
     if shipNum > 4:     # Overflow protection
@@ -265,6 +271,8 @@ run = True
     # this probably won't matter too much, unless we decide to make animations
     # then we'll have to put in more thought into it
 frameRate = 60
+
+
 
 #########################################################################################
 # MAIN GAME LOOP 
