@@ -180,27 +180,27 @@ def lengthDirect(shipNum, rectDic):
         # Legths: 5, 4, 3, 3, 2
 
     if shipNum == 0:    # Carrier Ship
-        shipHealths["shipHealth%s" %0] = [1,1]
+        shipHealths["shipHealth%s" %0] = 2          #[1,1]
         length = 2*(screenHeight/10)
         width = (screenWidth/10)
 
     if shipNum == 1:    # Battleship Ship
-        shipHealths["shipHealth%s" %1] = [1,1,1]
+        shipHealths["shipHealth%s" %1] = 3          #[1,1,1]
         length = 3*(screenHeight/10)
         width = (screenWidth/10)
 
     if shipNum == 2:    # Cruiser Ship
-        shipHealths["shipHealth%s" %2] = [1,1,1]
+        shipHealths["shipHealth%s" %2] = 3          #[1,1,1]
         length = 3*(screenHeight/10)
         width = (screenWidth/10)
 
     if shipNum == 3:    # Submarine Ship or another Cruiser
-        shipHealths["shipHealth%s" %3] = [1,1,1,1]
+        shipHealths["shipHealth%s" %3] = 4          #[1,1,1,1]
         length = 4*(screenHeight/10)
         width = (screenWidth/10)
 
     if shipNum == 4:    # Destroyer Ship
-        shipHealths["shipHealth%s" %4] = [1,1,1,1,1]
+        shipHealths["shipHealth%s" %4] = 5          #[1,1,1,1,1]
         length = 5*(screenHeight/10)
         width = (screenWidth/10)
 
@@ -262,12 +262,16 @@ def isCollide():
 
 def shootMissile():
     global shipDamages
+    global shipHealths
     isCollides = isCollide()
     if isCollides[0]:
-        print("That's a hit!!")
-        shipDamages["shipDamage%s" %isCollides[1]] = Rectangle((255,255,0), curser.pos.x, curser.pos.y, curser.width, curser.height)
+        print("You hit boat {}!!". format(isCollides[1]+1))
+        shipDamages["shipDamage%s" %len(shipDamages)] = Rectangle((255,255,0), curser.pos.x, curser.pos.y, curser.width, curser.height)
+        shipHealths["shipHealth%s" % isCollides[1]] -= 1
+        print(shipHealths)
     else:
         print("All you shot was sea!")
+
     
 
 # number of ships
