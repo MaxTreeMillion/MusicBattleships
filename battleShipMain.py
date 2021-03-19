@@ -1,10 +1,8 @@
 ################################################################ 
 # Battleships the Musical: Main Code (at least now)
-#    - Ship generation: {{ DONE }}
-#    - Hit dectection: {{ DONE }}
-"""  - Ship damage and sinking: {{ WORKING }}   """
-#    - Ray casting for sonar: {{ NOT STARTED }} 
-#    - Game deign: {{ NOT STARTED }}
+#    - Working on ship generation
+#    - Working on ray casting for sonar later
+#    - Working on game deign evintually
 ################################################################
 
 # imports
@@ -32,8 +30,7 @@ vec = pygame.math.Vector2
 # Debugging
 DEBUG = False
 
-
-####### Classes #######
+# Classes
 
 # class for the lines that make up the grid
 class Line():
@@ -140,9 +137,6 @@ class Target(Rectangle):
             Target.antiRep4 = 0
 
 
-
-####### Functions #######
-
 # updates screen every frame
 def update(rectDic, lineDic):
     win.fill((0,0,0))       # makes background black
@@ -155,8 +149,7 @@ def update(rectDic, lineDic):
     #for rect in rectList:
     for i in range(len(rectDic)):
         rectDic["rect%s" %i].draw()
-
-    # moves and draws curser in new position
+    
     curser.move()
     curser.draw()
     
@@ -173,11 +166,11 @@ def lengthDirect(shipNum):
         # Legths: 5, 4, 3, 3, 2
 
     if shipNum == 0:    # Carrier Ship
-        length = 2*(screenHeight/10)
+        length = 5*(screenHeight/10)
         width = (screenWidth/10)
 
     if shipNum == 1:    # Battleship Ship
-        length = 3*(screenHeight/10)
+        length = 4*(screenHeight/10)
         width = (screenWidth/10)
 
     if shipNum == 2:    # Cruiser Ship
@@ -185,11 +178,11 @@ def lengthDirect(shipNum):
         width = (screenWidth/10)
 
     if shipNum == 3:    # Submarine Ship or another Cruiser
-        length = 4*(screenHeight/10)
+        length = 3*(screenHeight/10)
         width = (screenWidth/10)
 
     if shipNum == 4:    # Destroyer Ship
-        length = 5*(screenHeight/10)
+        length = 2*(screenHeight/10)
         width = (screenWidth/10)
 
     if shipNum > 4:     # Overflow protection
@@ -241,14 +234,7 @@ def createLine():
 def isCollide():
     for i in range(len(rectDic)):
         if pygame.Rect.colliderect(pygame.Rect(curser.pos.x, curser.pos.y, curser.width, curser.height), rectDic["rect%s" %i].rect):
-            return True
-    return False
-
-def shootMissile():
-    if isCollide():
-        print("That's a hit!!")
-    else:
-        print("All you shot was sea!")
+            print("Ship {} in the cross hairs!". format(i+1))
 
 
 # number of ships
@@ -273,14 +259,11 @@ run = True
     # then we'll have to put in more thought into it
 frameRate = 60
 
-
-
 #########################################################################################
 # MAIN GAME LOOP 
 #########################################################################################
 # for rep detection
 antiRep = 0
-antiRep1 = 1
 
 while run:
     # controls rate of the game
@@ -302,13 +285,8 @@ while run:
     if not(key[pygame.K_SPACE]):
         antiRep = 0
         
-    # shooting missle
-    if key[pygame.K_RETURN] and antiRep1 == 0:
-        antiRep1 = 1
-        shootMissile()
-    # this just makes sure when space is pressed, it only inputs once
-    if not(key[pygame.K_RETURN]):
-        antiRep1 = 0
+    # is the curser colliding with ship
+    isCollide()
 
     #print("x: {} y: {}". format(curser.pos.x, curser.pos.y))
     
