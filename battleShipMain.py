@@ -104,7 +104,7 @@ class Target(Rectangle):
     def move(self):
         # detecting key presses
         keys = pygame.key.get_pressed()
-        # horizontal boundary dectection
+        # right bound detection and left movement
         if self.pos.x > margin and keys[pygame.K_LEFT] and Target.antiRep1 == 0:
             Target.antiRep1 = 1
             self.pos.x -= int(squareScreen/10)
@@ -112,6 +112,7 @@ class Target(Rectangle):
         if not(keys[pygame.K_LEFT]):
             Target.antiRep1 = 0
 
+        # left bound detection and right movement
         if self.pos.x < screenWidth - margin and keys[pygame.K_RIGHT] and Target.antiRep2 == 0:
             Target.antiRep2 = 1
             self.pos.x += int(squareScreen/10)
@@ -119,7 +120,7 @@ class Target(Rectangle):
         if not(keys[pygame.K_RIGHT]):
             Target.antiRep2 = 0
 
-        # vertical boundary dectection
+        # bottom bound detection and up movement
         if self.pos.y > margin and keys[pygame.K_UP] and Target.antiRep3 == 0:
             Target.antiRep3 = 1
             self.pos.y -= int(squareScreen/10)
@@ -127,6 +128,7 @@ class Target(Rectangle):
         if not(keys[pygame.K_UP]):
             Target.antiRep3 = 0    
             
+        # top bound detection and down movement
         if self.pos.y < screenHeight - margin and keys[pygame.K_DOWN] and Target.antiRep4 == 0:
             Target.antiRep4 = 1
             self.pos.y += int(squareScreen/10)
@@ -147,7 +149,7 @@ def update(rectDic, lineDic):
     #for rect in rectList:
     for i in range(len(rectDic)):
         rectDic["rect%s" %i].draw()
-
+    
     curser.move()
     curser.draw()
     
@@ -228,6 +230,19 @@ def createLine():
     # returns dictionary
     return lineDic
 
+# dectects collision of curser and ship
+def isCollide():
+    for i in range(len(rectDic)):
+        if pygame.Rect.colliderect(pygame.Rect(curser.pos.x, curser.pos.y, curser.width, curser.height), rectDic["rect%s" %i].rect):
+            return True
+    return False
+
+def shootMissile():
+    if isCollide():
+        print("That's a hit!!")
+    else:
+        print("All you shot was sea!")
+
 
 # number of ships
 numRect = 5
@@ -256,6 +271,7 @@ frameRate = 60
 #########################################################################################
 # for rep detection
 antiRep = 0
+antiRep1 = 1
 
 while run:
     # controls rate of the game
@@ -277,9 +293,15 @@ while run:
     if not(key[pygame.K_SPACE]):
         antiRep = 0
         
-    print("x: {} y: {}". format(curser.pos.x, curser.pos.y))
+    # shooting missle
+    if key[pygame.K_RETURN] and antiRep1 == 0:
+        antiRep1 = 1
+        shootMissile()
+    # this just makes sure when space is pressed, it only inputs once
+    if not(key[pygame.K_RETURN]):
+        antiRep1 = 0
 
-    curser.move()
+    #print("x: {} y: {}". format(curser.pos.x, curser.pos.y))
     
     # updates the screen to different events
     update(rectDic, lineDic)
