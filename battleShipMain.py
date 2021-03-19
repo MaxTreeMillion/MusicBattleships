@@ -11,7 +11,7 @@ import math
 from random import randint
 
 # screen deminsions
-squareScreen = 600
+squareScreen = 1000
 screenHeight = squareScreen
 screenWidth = squareScreen
 
@@ -43,37 +43,7 @@ class Line():
     def draw(self):
         pygame.draw.line(win, self.color, self.end1, self.end2, width = 2)
 
-##class Student(Person):
-##  def __init__(self, fname, lname):
-##    Person.__init__(self, fname, lname)
 
-# class for target which has mush of the same elements as the rectangle class
-def Target(Rectangle):
-    def __init__(self, color, x, y, width, height):
-        Rectangle.__init__(self, color, x, y, width, height)
-        self.rect = pygame.Rect(x, y, width, height)
-        
-    def move(self):
-        # detecting key presses
-        keys = pygame.key.get_pressed()
-
-        # horizontal boundary dectection
-        if self.pos.x > margin and self.pos.x < screenWidth - margin + self.width:
-            # horizontal movement
-            if keys[pygame.K_LEFT]:
-                self.pos.x -= 100
-
-            if keys[pygame.K_RIGHT]:
-                self.pos.x += 100
-        # vertical boundary dectection
-        if self.pos.y > margin and self.pos.y < screenHeight - margin + self.height:
-            # vertical movement
-            if keys[pygame.K_UP]:
-                self.pos.y -= 100
-                
-            if keys[pygame.K_DOWN]:
-                self.pos.y += 100
-    
 # class for rectangles that make the hitboxes for the ships
 class Rectangle():
     def __init__(self, color, x, y, width, height):
@@ -81,11 +51,11 @@ class Rectangle():
         self.pos = vec(x,y)
         self.width = width
         self.height = height
-        self.rect = pygame.Rect(x, y, width, height)        # hitbox of ship
+        self.rect = pygame.Rect(self.pos.x, self.pos.y, self.width, self.height)        # hitbox of ship
 
     # this fn is call everytime the display is updated for every rect
     def draw(self):
-        pygame.draw.rect(win, self.color, self.rect)
+        pygame.draw.rect(win, self.color, (self.pos.x, self.pos.y, self.width, self.height))
 
     # cleans the ship generation by insuring no ship is overlapping another or partially off screen
     # this fn is called for all 5 ships
@@ -121,6 +91,50 @@ class Rectangle():
                 # recussively calls the cleanUpRect fn again until all ships are no longer overlapping or partially off screen
                 rectDic["rect%s" %i].cleanUpRect(rectDic)
 
+
+# class for target which has mush of the same elements as the rectangle class
+class Target(Rectangle):
+    antiRep1 = 0
+    antiRep2 = 0
+    antiRep3 = 0
+    antiRep4 = 0
+    def __init__(self, color, x, y, width, height):
+        Rectangle.__init__(self, color, x, y, width, height)
+      
+    def move(self):
+        # detecting key presses
+        keys = pygame.key.get_pressed()
+        # horizontal boundary dectection
+        if self.pos.x > margin and keys[pygame.K_LEFT] and Target.antiRep1 == 0:
+            Target.antiRep1 = 1
+            self.pos.x -= int(squareScreen/10)
+        # anti repetition
+        if not(keys[pygame.K_LEFT]):
+            Target.antiRep1 = 0
+
+        if self.pos.x < screenWidth - margin and keys[pygame.K_RIGHT] and Target.antiRep2 == 0:
+            Target.antiRep2 = 1
+            self.pos.x += int(squareScreen/10)
+        # anti repetition
+        if not(keys[pygame.K_RIGHT]):
+            Target.antiRep2 = 0
+
+        # vertical boundary dectection
+        if self.pos.y > margin and keys[pygame.K_UP] and Target.antiRep3 == 0:
+            Target.antiRep3 = 1
+            self.pos.y -= int(squareScreen/10)
+        # anti repetition
+        if not(keys[pygame.K_UP]):
+            Target.antiRep3 = 0    
+            
+        if self.pos.y < screenHeight - margin and keys[pygame.K_DOWN] and Target.antiRep4 == 0:
+            Target.antiRep4 = 1
+            self.pos.y += int(squareScreen/10)
+        # anti repetition
+        if not(keys[pygame.K_DOWN]):
+            Target.antiRep4 = 0
+
+
 # updates screen every frame
 def update(rectDic, lineDic):
     win.fill((0,0,0))       # makes background black
@@ -134,7 +148,8 @@ def update(rectDic, lineDic):
     for i in range(len(rectDic)):
         rectDic["rect%s" %i].draw()
 
-    #curser.draw()
+    curser.move()
+    curser.draw()
     
     pygame.display.update()     # displays updated screen
 
@@ -226,7 +241,7 @@ for i in range(len(rectDic)):
 lineDic = createLine()
 
 # Create Target/Curser
-#curser = Target((255,255,255), margin, margin, 100, 100)
+curser = Target((255,255,255), margin, margin, int(squareScreen/10), int(squareScreen/10))
 
 # boolean to allow the breaking of the main loop
 run = True
@@ -251,8 +266,6 @@ while run:
         if event.type == pygame.QUIT:
             run = False
 
-    
-
     # for test, generates new boats
     key = pygame.key.get_pressed()
     if key[pygame.K_SPACE] and antiRep == 0:
@@ -264,13 +277,13 @@ while run:
     if not(key[pygame.K_SPACE]):
         antiRep = 0
         
-    #curser.move()
+    print("x: {} y: {}". format(curser.pos.x, curser.pos.y))
+
+    curser.move()
     
     # updates the screen to different events
     update(rectDic, lineDic)
 
 # if main loop is broke then close program
 pygame.quit()
-
-
 
