@@ -146,6 +146,7 @@ class Target(Rectangle):
 
 # updates screen every frame
 def update(rectDic, lineDic):
+    global shipHealths
     win.fill((0,0,0))       # makes background black
     
     # draw grit with lines
@@ -153,9 +154,9 @@ def update(rectDic, lineDic):
         lineDic["line%s" %i].draw()
 
     # drawing rectangles
-    #for rect in rectList:
     for i in range(len(rectDic)):
-        rectDic["rect%s" %i].draw()
+        if not(isSunk(shipHealths, i)):
+            rectDic["rect%s" %i].draw()
 
     # draws ship damage
     for key, value in shipDamages.items():
@@ -257,22 +258,61 @@ def createLine():
 def isCollide():
     for i in range(len(rectDic)):
         if pygame.Rect.colliderect(pygame.Rect(curser.pos.x, curser.pos.y, curser.width, curser.height), rectDic["rect%s" %i].rect):
-            return True, i
+            return True, i      # returns if collision and if so, the ship that was hit
     return False, i
 
 def shootMissile():
     global shipDamages
     global shipHealths
-    isCollides = isCollide()
-    if isCollides[0]:
-        print("You hit boat {}!!". format(isCollides[1]+1))
-        shipDamages["shipDamage%s" %len(shipDamages)] = Rectangle((255,255,0), curser.pos.x, curser.pos.y, curser.width, curser.height)
-        shipHealths["shipHealth%s" % isCollides[1]] -= 1
-        print(shipHealths)
-    else:
-        print("All you shot was sea!")
+    damageTest = 1
 
-    
+    # so the user cant shoot the same spot and do more damage
+    for i in range(len(shipDamages)):
+        if (shipDamages["shipDamage%s" %i].pos.x == curser.pos.x) and (shipDamages["shipDamage%s" %i].pos.y == curser.pos.y):
+            damageTest = 0
+
+    # set to a variable to extract 2 returns
+    isCollides = isCollide()
+    # did it hit
+    if isCollides[0] and damageTest:
+        print("You hit boat {}!!". format(isCollides[1]+1))
+        # places yellow square on damaged spot
+        shipDamages["shipDamage%s" %len(shipDamages)] = Rectangle((255,255,0), curser.pos.x, curser.pos.y, curser.width, curser.height)
+        # decreases health
+        #print(shipDamages)
+        if shipHealths["shipHealth%s" % isCollides[1]] > 0:
+            shipHealths["shipHealth%s" % isCollides[1]] -= 1
+
+    else:
+        if damageTest:
+            print("All you shot was sea!")
+        else:
+            print("You already damaged that part!")
+
+def isSunk(shipHealths, i):
+    #for i in range(len(shipHealths)):
+    if not(shipHealths["shipHealth%s" %i]):
+        sink(i)
+        return True
+    else:
+        return False
+
+def sink(i):
+     for j in range(len(shipDamages)):
+        if pygame.Rect.colliderect(pygame.Rect(shipDamages["shipDamage%s" %j].pos.x, shipDamages["shipDamage%s" %j].pos.y, shipDamages["shipDamage%s" %j].width, shipDamages["shipDamage%s" %j].height), rectDic["rect%s" %i].rect):
+            del shipDamages["shipDamage%s" %j]
+
+def isWin():
+    global shipHealths
+    tot = 0
+    for i in range(len(shipHealths)):
+        tot += shipHealths["shipHealth%s" %i]
+
+    if tot != 0:
+        return False
+    else:
+        return True
+
 
 # number of ships
 numRect = 5
@@ -339,7 +379,12 @@ while run:
     if not(key[pygame.K_RETURN]):
         antiRep1 = 0
 
-    #print("x: {} y: {}". format(curser.pos.x, curser.pos.y))
+    # detects winning condition met
+    if isWin():
+        print("\n\n\n\t\t\t\t**********************")
+        print("\t\t\t\t*****  You Win!  *****")
+        print("\t\t\t\t**********************")
+        run = False
     
     # updates the screen to different events
     update(rectDic, lineDic)
