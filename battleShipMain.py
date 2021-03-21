@@ -13,7 +13,7 @@ import math
 from random import randint
 
 # screen deminsions
-squareScreen = 500
+squareScreen = 1000
 screenHeight = squareScreen
 screenWidth = squareScreen
 
@@ -45,6 +45,23 @@ class Line():
     # this fn is call everytime the display is updated for every line
     def draw(self):
         pygame.draw.line(win, self.color, self.end1, self.end2, width = 2)
+
+class Sonar():
+    # hacky way of elemenating multiple calling when holding down mouse
+    antiRep1 = 0
+    antiRep2 = 0
+    antiRep3 = 0
+    antiRep4 = 0
+
+    def __init__(self, color, x1, y1, x2, y2):
+        self.color = color
+        self.end1 = vec(x1,y1)
+        self.end2 = vec(x2,y2)
+
+    # this fn is call everytime the display is updated for every line
+    def draw(self):
+        pygame.draw.line(win, self.color, self.end1, self.end2, width = 1)
+
 
 
 # class for rectangles that make the hitboxes for the ships
@@ -161,12 +178,18 @@ def update(rectDic, lineDic):
     # draws ship damage
     for key, value in shipDamages.items():
         shipDamages[key].draw()
-        
+
+
     # moves and draws curser in new position
     curser.move()
     curser.draw()
 
-    
+    # draw grit with lines
+    #for i in range(1,len(sonarDic)):
+    #    sonarDic["beam%s" %i].draw()
+    for key, value in sonarDic.items():
+        sonarDic[key].draw()
+
     pygame.display.update()     # displays updated screen
 
 
@@ -254,6 +277,41 @@ def createLine():
     # returns dictionary
     return lineDic
 
+def sonarAim():
+    global sonarRange
+    global sonarWidth
+    global sonarStartAngle
+
+    sonarDic = {}
+
+    keys = pygame.key.get_pressed()
+
+    # rotate counter-clockwise
+    if keys[pygame.K_a]:
+        sonarStartAngle += 5
+ 
+    # rotate clockwise
+    if keys[pygame.K_d]:
+        sonarStartAngle -= 5
+    
+    if keys[pygame.K_w]:
+        sonarRange += 5
+
+    if keys[pygame.K_s]:
+        sonarRange -= 5
+
+    if keys[pygame.K_EQUALS]:
+        sonarWidth += 1
+
+    if keys[pygame.K_MINUS]:
+        sonarWidth -= 1
+
+    for i in range(sonarStartAngle, sonarStartAngle + sonarWidth + 1):
+        x2 = (screenHeight + margin)/2 + math.cos(-math.radians(i)) * sonarRange 
+        y2 = (screenWidth + margin)/2 + math.sin(-math.radians(i)) * sonarRange 
+        sonarDic["beam%s" %i] = Sonar((255,0,255), (screenHeight + margin)/2 , (screenWidth + margin)/2 , x2, y2)
+    return sonarDic
+
 # dectects collision of curser and ship
 def isCollide():
     for i in range(len(rectDic)):
@@ -326,6 +384,11 @@ rectDic = createRect(numRect)
 for i in range(len(rectDic)):
     rectDic["rect%s" %i].cleanUpRect(rectDic)
 
+# Default sonar 
+sonarRange = 200
+sonarWidth = 45
+sonarStartAngle = 0
+
 # Create Grid
 lineDic = createLine()
 
@@ -370,7 +433,10 @@ while run:
     # this just makes sure when space is pressed, it only inputs once
     if not(key[pygame.K_SPACE]):
         antiRep = 0
-        
+    
+    # Generate first Sonar
+    sonarDic = sonarAim()
+
     # shooting missle
     if key[pygame.K_RETURN] and antiRep1 == 0:
         antiRep1 = 1
