@@ -13,7 +13,7 @@ import math
 from random import randint
 
 # screen deminsions
-squareScreen = 1000
+squareScreen = 500
 screenHeight = squareScreen
 screenWidth = squareScreen
 
@@ -322,20 +322,20 @@ def sonarAim():
     
     # controls
     # rotate counter-clockwise
-    if mouse[0]:
+    if mouse[0] or keys[pygame.K_9]:
         sonarStartAngle += 5
  
     # rotate clockwise
-    if mouse[2]:
+    if mouse[2] or keys[pygame.K_0]:
         sonarStartAngle -= 5
 
     # increase range
 
-    if mouse[4] and not(mouse[1]) and sonarRange <= math.sqrt(((screenHeight - margin)/2)**2 + ((screenWidth - margin)/2)**2):
+    if (keys[pygame.K_RIGHTBRACKET] or (mouse[4] and not(mouse[1]))) and sonarRange <= math.sqrt(((screenHeight - margin)/2)**2 + ((screenWidth - margin)/2)**2):
         sonarRange += 5
 
     # decrease range
-    if mouse[3] and not(mouse[1]) and sonarRange >= 50:
+    if (keys[pygame.K_LEFTBRACKET] or (mouse[3] and not(mouse[1]))) and sonarRange >= 50:
         sonarRange -= 5
 
     # increase width
@@ -359,7 +359,14 @@ def createSonar():
         x2 = sonarPos.x + math.cos(-math.radians(i)) * sonarRange 
         y2 = sonarPos.y + math.sin(-math.radians(i)) * sonarRange 
         sonarDic["beam%s" %i] = Sonar((255,0,255), sonarPos.x , sonarPos.y , x2, y2)
+        #sonarDic["beam%s" %i] = isCollideSonar(i)
     return sonarDic
+
+# sonar collision
+##def isCollideSonar(beamNum):
+##    for i in range(len(rectDic)):
+##    rectDic["rect%s" %i].rect.clipline(sonarDic["beam%s" %beamNum])
+    
 
 # dectects collision of curser and ship
 def isCollide():
