@@ -47,12 +47,10 @@ class Line():
         pygame.draw.line(win, self.color, self.end1, self.end2, width = 2)
 
 class Sonar():
-    # hacky way of elemenating multiple calling when holding down mouse
     antiRep1 = 0
     antiRep2 = 0
     antiRep3 = 0
     antiRep4 = 0
-
     def __init__(self, color, x1, y1, x2, y2):
         self.color = color
         self.end1 = vec(x1,y1)
@@ -192,7 +190,6 @@ def update(rectDic, lineDic):
 
     pygame.display.update()     # displays updated screen
 
-
 # decides legnth and direction of ship
 def lengthDirect(shipNum, rectDic):
     global screenHeight
@@ -241,8 +238,7 @@ def lengthDirect(shipNum, rectDic):
         temp = length
         length = width
         width = temp
-    return width, length#, shipHealths
-
+    return width, length #, shipHealth
 
 # creates ships of random shapes and position
 def createRect(numRect):
@@ -277,39 +273,92 @@ def createLine():
     # returns dictionary
     return lineDic
 
+# aims, widens, and extense the sonar
 def sonarAim():
     global sonarRange
     global sonarWidth
     global sonarStartAngle
-
-    sonarDic = {}
+    global sonarPos
+    
 
     keys = pygame.key.get_pressed()
 
+    mouse = pygame.mouse.get_pressed(num_buttons=5)
+
+    # sonar center position
+
+    # right bound detection and left movement
+    if sonarPos.x > margin + int(squareScreen/10)/2 and keys[pygame.K_a] and Sonar.antiRep1 == 0:
+        Sonar.antiRep1 = 1
+        sonarPos.x -= int(squareScreen/10)
+    # anti repetition
+    if not(keys[pygame.K_a]):
+        Sonar.antiRep1 = 0
+
+    # left bound detection and right movement
+    if sonarPos.x < screenWidth - margin and keys[pygame.K_d] and Sonar.antiRep2 == 0:
+        Sonar.antiRep2 = 1
+        sonarPos.x += int(squareScreen/10)
+    # anti repetition
+    if not(keys[pygame.K_d]):
+        Sonar.antiRep2 = 0
+
+    # bottom bound detection and up movement
+    if sonarPos.y > margin + int(squareScreen/10)/2 and keys[pygame.K_w] and Sonar.antiRep3 == 0:
+        Sonar.antiRep3 = 1
+        sonarPos.y -= int(squareScreen/10)
+    # anti repetition
+    if not(keys[pygame.K_w]):
+        Sonar.antiRep3 = 0    
+        
+    # top bound detection and down movement
+    if sonarPos.y < screenHeight - margin and keys[pygame.K_s] and Sonar.antiRep4 == 0:
+        Sonar.antiRep4 = 1
+        sonarPos.y += int(squareScreen/10)
+    # anti repetition
+    if not(keys[pygame.K_s]):
+        Sonar.antiRep4 = 0
+
+    
+    # controls
     # rotate counter-clockwise
-    if keys[pygame.K_a]:
+    if mouse[0]:
         sonarStartAngle += 5
  
     # rotate clockwise
-    if keys[pygame.K_d]:
+    if mouse[2]:
         sonarStartAngle -= 5
-    
-    if keys[pygame.K_w]:
+
+    # increase range
+
+    if mouse[4] and not(mouse[1]) and sonarRange <= math.sqrt(((screenHeight - margin)/2)**2 + ((screenWidth - margin)/2)**2):
         sonarRange += 5
 
-    if keys[pygame.K_s]:
+    # decrease range
+    if mouse[3] and not(mouse[1]) and sonarRange >= 50:
         sonarRange -= 5
 
-    if keys[pygame.K_EQUALS]:
+    # increase width
+    if (keys[pygame.K_EQUALS] or (mouse[4] and mouse[1])) and sonarWidth <= 358:
         sonarWidth += 1
-
-    if keys[pygame.K_MINUS]:
+    # decrease width
+    if (keys[pygame.K_MINUS] or (mouse[3] and mouse[1])) and sonarWidth >= 1:
         sonarWidth -= 1
 
+# sonar creation
+def createSonar():
+    global sonarPos
+    # reset sonar dictionary
+    sonarDic ={}
+
+    # get the aim of the sonar
+    sonarAim()
+
+    # create each beam of the sonar
     for i in range(sonarStartAngle, sonarStartAngle + sonarWidth + 1):
-        x2 = (screenHeight + margin)/2 + math.cos(-math.radians(i)) * sonarRange 
-        y2 = (screenWidth + margin)/2 + math.sin(-math.radians(i)) * sonarRange 
-        sonarDic["beam%s" %i] = Sonar((255,0,255), (screenHeight + margin)/2 , (screenWidth + margin)/2 , x2, y2)
+        x2 = sonarPos.x + math.cos(-math.radians(i)) * sonarRange 
+        y2 = sonarPos.y + math.sin(-math.radians(i)) * sonarRange 
+        sonarDic["beam%s" %i] = Sonar((255,0,255), sonarPos.x , sonarPos.y , x2, y2)
     return sonarDic
 
 # dectects collision of curser and ship
@@ -319,6 +368,7 @@ def isCollide():
             return True, i      # returns if collision and if so, the ship that was hit
     return False, i
 
+# shoots a missle where the curser is 
 def shootMissile():
     global shipDamages
     global shipHealths
@@ -347,6 +397,7 @@ def shootMissile():
         else:
             print("You already damaged that part!")
 
+# detects if ship is sunk
 def isSunk(shipHealths, i):
     #for i in range(len(shipHealths)):
     if not(shipHealths["shipHealth%s" %i]):
@@ -355,11 +406,13 @@ def isSunk(shipHealths, i):
     else:
         return False
 
+# sinks the ship and tells draw function to not draw ship
 def sink(i):
      for j in range(len(shipDamages)):
         if pygame.Rect.colliderect(pygame.Rect(shipDamages["shipDamage%s" %j].pos.x, shipDamages["shipDamage%s" %j].pos.y, shipDamages["shipDamage%s" %j].width, shipDamages["shipDamage%s" %j].height), rectDic["rect%s" %i].rect):
             del shipDamages["shipDamage%s" %j]
 
+# detects if game has been won
 def isWin():
     global shipHealths
     tot = 0
@@ -388,6 +441,7 @@ for i in range(len(rectDic)):
 sonarRange = 200
 sonarWidth = 45
 sonarStartAngle = 0
+sonarPos = vec((screenHeight + margin)/2,(screenWidth + margin)/2)
 
 # Create Grid
 lineDic = createLine()
@@ -435,7 +489,7 @@ while run:
         antiRep = 0
     
     # Generate first Sonar
-    sonarDic = sonarAim()
+    sonarDic = createSonar()
 
     # shooting missle
     if key[pygame.K_RETURN] and antiRep1 == 0:
