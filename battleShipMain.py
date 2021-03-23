@@ -13,7 +13,7 @@ import math
 from random import randint
 
 # screen deminsions
-squareScreen = 500
+squareScreen = 1000
 screenHeight = squareScreen
 screenWidth = squareScreen
 
@@ -349,24 +349,60 @@ def sonarAim():
 def createSonar():
     global sonarPos
     # reset sonar dictionary
-    sonarDic ={}
+    sonarDic = {}
 
     # get the aim of the sonar
     sonarAim()
 
     # create each beam of the sonar
     for i in range(sonarStartAngle, sonarStartAngle + sonarWidth + 1):
+        # gives the beams a radius of influence
         x2 = sonarPos.x + math.cos(-math.radians(i)) * sonarRange 
         y2 = sonarPos.y + math.sin(-math.radians(i)) * sonarRange 
+        # creates first case line for collision function to use
         sonarDic["beam%s" %i] = Sonar((255,0,255), sonarPos.x , sonarPos.y , x2, y2)
-        #sonarDic["beam%s" %i] = isCollideSonar(i)
+        # modifies beam to new length depending on if it collided
+        sonarDic["beam%s" %i] = isCollideSonar(i, sonarDic, x2, y2)
+    # returns dictionary of all the lines
     return sonarDic
 
 # sonar collision
-##def isCollideSonar(beamNum):
-##    for i in range(len(rectDic)):
-##    rectDic["rect%s" %i].rect.clipline(sonarDic["beam%s" %beamNum])
-    
+def isCollideSonar(beamnum, sonarDic, x2, y2):
+    # temp dictionary for use when beam crosses multiple rectangles
+    tempCollDic = {}
+    minCalcDic = {}
+
+    """per beam, it runs through and checks if that beam is colliding with ANY rectangles
+    this means that the beam could possibly pass through multiple rectangles
+    to midigate this I put of the rectangles that the beam collided with into a temporary dictionary "tempCollDic"
+    I then find the distance between the origin of the sonar and the collision points of each rectangle
+    I find the smallest of those distances and make that the new end point of that beam
+    though, you must keep in mind that this function is called once per beam
+    if 80 beams are shot out, then the function runs 80 times per frame"""
+    # runs through each rect
+    for i in range(len(rectDic)):
+        # checks if beam collides with rect
+        newEnd = rectDic["rect%s" %i].rect.clipline(sonarDic["beam%s" %beamnum].end1.x, sonarDic["beam%s" %beamnum].end1.y, sonarDic["beam%s" %beamnum].end2.x, sonarDic["beam%s" %beamnum].end2.y)
+        # weird syntax that more complex than it should be
+            # but for whateer reason I wasnt able to unpack the tuple that the 'clipline' fn gave
+            # this was the only way a got it working
+        for item in newEnd:
+            if item == newEnd[0] and item != ():
+                # saves the coords of the entrance point to the dictionary
+                tempCollDic["col%s" %i] = item
+
+    # calcs the distances of each entrance coord and the sonars origin
+        # then saves in another dictionary
+    for key, value in tempCollDic.items():
+        minCalcDic[key] = math.sqrt((sonarPos.x-value[0])**2 + (sonarPos.y-value[1])**2)
+
+    # if the dictionary is empty then there was no collision so return the same line
+    if tempCollDic == {}:
+        return Sonar((255,0,255), sonarPos.x , sonarPos.y , x2, y2)
+    else:
+        # if not, then update line
+        newEnd = min(minCalcDic, key = minCalcDic.get)
+        return Sonar((255,0,255), sonarPos.x , sonarPos.y , tempCollDic[newEnd][0], tempCollDic[newEnd][1])
 
 # dectects collision of curser and ship
 def isCollide():
