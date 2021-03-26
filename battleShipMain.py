@@ -165,34 +165,39 @@ class ShipDamage(Rectangle):
         Rectangle.__init__(self, color, x, y, width, height)
 
 
-#### Functions ####
+####### Functions ########
 
 # updates image/screen
-def update(gridDic):
+def update():
     # blacks out background
     win.fill((0,0,0))
 
     # draws grid with lines
     for key, val in gridDic.items():
         gridDic[key].draw()
+    
+    # gets the average distance from sonar orgin to ship
+    averageDist()
 
     # draws all ships
+    print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~") 
     for key, val in shipDic.items():
         shipDic[key].draw()
-        ###################################################################################################################
-        ###    THIS IS WHERE THE OUTPUTS FOR WHAT SHIP IS BEING HIT BY SONAR AND HOW MANY SONAR BEANS ARE HITTING IT    ###
-        #                                                                                                                 #
-        #                                                                                                                 #
-        #                                                                                                                 #
-        print("{}: {}". format(key, shipDic[key].sonarHitNum))                                                            #
-        #                                                                                                                 #
-        #                                                                                                                 #
-        #                                                                                                                 #
-        ###################################################################################################################
+        #########################################################################################################################
+        ###       THIS IS WHERE THE OUTPUTS FOR WHAT SHIP IS BEING HIT BY SONAR AND HOW MANY SONAR BEANS ARE HITTING IT       ###
+        #                                                                                                                       #
+        #                                                                                                                       #
+        print("{0:5}: {1:3}    Average Distance in Range:". format(key, shipDic[key].sonarHitNum), shipDic[key].averageDistance)#
+        #                                                                                                                       #
+        ###                                                                                                                   ###
+        #########################################################################################################################
 
         #reset sonar collide counters (how many beams are currently hitting a ship 
         shipDic[key].sonarHitNum = 0
-    
+
+        for key, val in shipDic.items():
+            averageLength[key] = []
+
     # draws all ship damage sprites
     for key, val in shipDamages.items():
         shipDamages[key].draw()
@@ -204,8 +209,18 @@ def update(gridDic):
     for key, value in sonarDic.items():
         sonarDic[key].draw()
 
+
     # updates screen
     pygame.display.update()
+
+# takes the average length of all beams colliding with a ship
+def averageDist():
+    for key, val in averageLength.items():
+        if len(averageLength[key]) != 0:
+            shipDic[key].averageDistance = sum(averageLength[key])/len(averageLength[key])
+        else:
+            shipDic[key].averageDistance = 0
+
 
 # creates grid for game board
 def createGrid():
@@ -320,10 +335,10 @@ def createSonar():
 
 # sonar collision
 def isCollideSonar(beamnum, sonarDic, x2, y2):
+    global averageDistance
     # temp dictionary for use when beam crosses multiple ships
     tempCollDic = {}
     minCalcDic = {}
-    averageLength = {}
 
     """per beam, it runs through and checks if that beam is caolliding with ANY ships
     this means that the beam could possibly pass through multiple ships
@@ -343,7 +358,6 @@ def isCollideSonar(beamnum, sonarDic, x2, y2):
             if item == newEnd[0] and item != ():
                 # saves the coords of the entrance point to the dictionary
                 tempCollDic[key] = item
-                collideShip = key
     # calcs the distances of each entrance coord and the sonars origin
         # then saves in another dictionary
     for key, value in tempCollDic.items():
@@ -354,9 +368,11 @@ def isCollideSonar(beamnum, sonarDic, x2, y2):
         return Sonar((255,0,255), sonarPos.x , sonarPos.y , x2, y2)
     else:
         # if not, then update line
-        newEnd = tempCollDic[min(minCalcDic, key = minCalcDic.get)]
-
+        collideShip = min(minCalcDic, key = minCalcDic.get)
+        newEnd = tempCollDic[collideShip]
         shipDic[collideShip].sonarHitNum += 1
+
+        averageLength[collideShip].append(math.sqrt((sonarPos.x-newEnd[0])**2 + (sonarPos.y-newEnd[1])**2))
 
         ######                                                                                              ######
         ###       The idea is create dictionary of list where the keys are ship names and the list are full    ###
@@ -556,6 +572,9 @@ sonarWidth = 45
 sonarStartAngle = 0
 sonarPos = vec(sideMargin + tile/2, topBotMargin + tile/2)
 
+# for calculating average distance
+averageLength = {}
+
 # creating game grid
 gridDic = createGrid()
 
@@ -582,7 +601,7 @@ while Global.run:
     # is there a sunken ship
     isSunk()
     # updates screen
-    update(gridDic)
+    update()
     # did win
     isWin()
 
