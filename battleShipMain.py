@@ -42,6 +42,8 @@ isPress_RIGHT = 0
 isPress_SPACE = 0
 isPress_RETURN = 0
 isPress_LSHIFT = 0
+isPress_TAB = 0
+isPress_BACKQUOTE = 0
 isPress_w = 0
 isPress_a = 0
 isPress_s = 0
@@ -1028,27 +1030,27 @@ def sonarAim():
     
     # controls
     # rotate counter-clockwise
-    if mouse[0] or keys[pygame.K_9]:
+    if mouse[0] or keys[pygame.K_SEMICOLON]:
         sonarStartAngle += 5
  
     # rotate clockwise
-    if mouse[2] or keys[pygame.K_0]:
+    if mouse[2] or keys[pygame.K_BACKSLASH]:
         sonarStartAngle -= 5
 
     # increase range
 
-    if (keys[pygame.K_RIGHTBRACKET] or (mouse[4] and not(mouse[1]))) and sonarRange <= math.sqrt((playScreen/2)**2 + (playScreen/2)**2):
+    if (keys[pygame.K_EQUALS] or (mouse[4] and not(mouse[1]))) and sonarRange <= math.sqrt((playScreen/2)**2 + (playScreen/2)**2):
         sonarRange += 5
 
     # decrease range
-    if (keys[pygame.K_LEFTBRACKET] or (mouse[3] and not(mouse[1]))) and sonarRange >= 50:
+    if (keys[pygame.K_MINUS] or (mouse[3] and not(mouse[1]))) and sonarRange >= 50:
         sonarRange -= 5
 
     # increase width
-    if (keys[pygame.K_EQUALS] or (mouse[4] and mouse[1])) and sonarWidth <= 358:
+    if (keys[pygame.K_RIGHTBRACKET] or (mouse[4] and mouse[1])) and sonarWidth <= 358:
         sonarWidth += 1
     # decrease width
-    if (keys[pygame.K_MINUS] or (mouse[3] and mouse[1])) and sonarWidth >= 1:
+    if (keys[pygame.K_LEFTBRACKET] or (mouse[3] and mouse[1])) and sonarWidth >= 1:
         sonarWidth -= 1
 
 # creates sonar array
@@ -1268,23 +1270,26 @@ def detectInputs(numShip):
     global isPress_SPACE
     global isPress_RETURN
     global isPress_LSHIFT
+    global isPress_TAB
+    global isPress_BACKQUOTE
     global shipDic
+    global run
+
+    key = pygame.key.get_pressed()
     # detects if user wants to close the program
     for event in pygame.event.get():
-        if event.type == pygame.QUIT:
+        if event.type == pygame.QUIT or key[pygame.K_ESCAPE]:
             run = False
-       
-    key = pygame.key.get_pressed()
 
-    ## for test, generates new boats
-    #if key[pygame.K_SPACE] and isPress_SPACE == 0:
-    #    isPress_SPACE = 1
-    #    shipDic = createShip(numShip)
-    #    for i in range(len(shipDic)):
-    #        shipDic["ship%s" %i].cleanUpShip(shipDic)
-    ## anti repetition
-    #if not(key[pygame.K_SPACE]):
-    #    isPress_SPACE = 0
+    # for test, generates new boats
+    if key[pygame.K_TAB] and isPress_TAB == 0:
+        isPress_TAB = 1
+        shipDic = createShip(numShip)
+        for i in range(len(shipDic)):
+            shipDic["ship%s" %i].cleanUpShip(shipDic)
+    # anti repetition
+    if not(key[pygame.K_TAB]):
+        isPress_TAB = 0
     
     # shooting missle
     if key[pygame.K_SPACE] and isPress_SPACE == 0:
@@ -1294,15 +1299,7 @@ def detectInputs(numShip):
     if not(key[pygame.K_SPACE]):
         isPress_SPACE = 0
 
-    # checking random stuff (changes a lot)
-    #if key[pygame.K_RETURN] and isPress_RETURN == 0:
-    #    isPress_RETURN = 1
-    #    for key, val in shipDic.items():
-    #        print(shipDic[key].health)
-    ## anti repetition
-    #if not(key[pygame.K_RETURN]):
-    #    isPress_RETURN = 0
-
+    # curser movement is in it's own class function
     curser.move()
  
 
