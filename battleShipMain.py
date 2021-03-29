@@ -219,7 +219,11 @@ def averageDist():
         if len(averageLength[key]) != 0:
             shipDic[key].averageDistance = sum(averageLength[key])/len(averageLength[key])
         else:
-            shipDic[key].averageDistance = 0
+            # crashes if i dont do the try/except -/(-.-)\-
+            try:
+                shipDic[key].averageDistance = 0
+            except:
+                pass
 
 
 # creates grid for game board
@@ -372,17 +376,12 @@ def isCollideSonar(beamnum, sonarDic, x2, y2):
         newEnd = tempCollDic[collideShip]
         shipDic[collideShip].sonarHitNum += 1
 
-        averageLength[collideShip].append(math.sqrt((sonarPos.x-newEnd[0])**2 + (sonarPos.y-newEnd[1])**2))
+        # crashes if i dont do the try/except -/(-.-)\-
+        try:
+            averageLength[collideShip].append(math.sqrt((sonarPos.x-newEnd[0])**2 + (sonarPos.y-newEnd[1])**2))
+        except:
+            pass
 
-        ######                                                                                              ######
-        ###       The idea is create dictionary of list where the keys are ship names and the list are full    ###
-        #      of the lengths of all the beams colliding with the ship. After that we just need to take the      #
-        ###    average of the lengthes of those beams and then return it !!!!!                                 ###
-        #####                                                                                               ######
-
-        #averageLength[collideShip].append(math.sqrt((sonarPos.x-value[0])**2 + (sonarPos.y-value[1])**2))
-        #print(averageLength)
-        # return updated line
         return Sonar((255,0,255), sonarPos.x , sonarPos.y , newEnd[0], newEnd[1])
 
 # decides legnth and direction of ship
@@ -460,8 +459,13 @@ def shootMissile():
     damageTest = 1
     # so the user cant shoot the same spot and do more damage
     for i in range(len(shipDamages)):
-        if (shipDamages["shipDamage%s" %i].pos.x == curser.pos.x) and (shipDamages["shipDamage%s" %i].pos.y == curser.pos.y):
-            damageTest = 0
+        # crashes if i dont do the try/except -/(-.-)\-
+        try:
+            if (shipDamages["shipDamage%s" %i].pos.x == curser.pos.x) and (shipDamages["shipDamage%s" %i].pos.y == curser.pos.y):
+                damageTest = 0
+        except:
+            pass
+
     
     # set to a variable to extract 2 returns
     isCollides = isCollide()
