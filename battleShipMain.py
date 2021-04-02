@@ -3,8 +3,8 @@
 #    - Ship generation: {{ DONE }}
 #    - Hit dectection: {{ DONE }}
 #    - Ship damage and sinking: {{ DONE }} 
-"""  - Ray casting for sonar: {{ WORKING }}  """
-#    - Game deign: {{ NOT STARTED }}
+#    - Ray casting for sonar: {{ DONE }} 
+"""  - Game deign: {{ WORKING }}   """
 ################################################################
 
 # imports
@@ -13,18 +13,20 @@ import math
 from random import randint
 
 # screen deminsions
-squareScreen = 1200
-screenHeight = randint(1000, 1400)
-screenWidth = randint(1000, 1400)
-playScreen = randint(800, 1000)
-topBotMargin = (screenHeight - playScreen)/2
-sideMargin = (screenWidth - playScreen)/2
-tile = int(playScreen/10)
+screenHeight = 1280
+screenWidth = 720
+doubleScreenWidth = screenWidth*2
+playScreenHeight = int(screenHeight/2)
+playScreenWidth = screenWidth
+playScreen = int(playScreenHeight*0.9)
+topBotMargin = (playScreenHeight - playScreen)/2
+sideMargin = (playScreenWidth - playScreen)/2
+tile = int(playScreen/10) + 0.75
 
 # initialize
 pygame.init()
-win = pygame.display.set_mode((screenWidth, screenHeight))
-
+win = pygame.display.set_mode((doubleScreenWidth, screenHeight))
+pygame.display.set_caption("Battleships the Musical")
 # clock
 clock = pygame.time.Clock()
 
@@ -129,12 +131,14 @@ class Rectangle():
 
 # class for ships in the game
 class Ship(Rectangle):
-    def __init__(self, health, color, x, y, width, height):
+    def __init__(self, health, shipSprite, color, x, y, width, height):
         Rectangle.__init__(self, color, x, y, width, height)
         self.health = health
         self.damage = 0
         self.sonarHitNum = 0
         self.averageDistance = 0
+        self.shipSprite = shipSprite
+        self.shipSpritePos = vec(x,y)
 
     # cleans the ship generation by insuring no ship is overlapping another or partially off screen
         # this fn is called for all 5 ships
@@ -146,25 +150,33 @@ class Ship(Rectangle):
                     # overides overlapping ship with new ship generation
                     # generates new ship with random position, direction, and maybe shape
                     directList = lengthDirect(i, shipDic)
-                    ship = Ship(directList[2], (randint(0,255), randint(0,255), randint(0,255)), tile*randint(0,9) + sideMargin, tile*randint(0,9) + topBotMargin, directList[0], directList[1])
+                    shipSprite = pygame.transform.rotate(pygame.transform.smoothscale(pygame.image.load('Sprites/ship%s.png' % i), (int(tile), int(tile*(directList[2])))), directList[3])
+                    ship = Ship(directList[2], shipSprite, (randint(0,255), randint(0,255), randint(0,255)), tile*randint(0,9) + sideMargin, tile*randint(0,9) + topBotMargin + playScreenHeight, directList[0], directList[1])
                     shipDic["ship%s" %i] = ship
-                    # recussively calls the cleanUpShip fn again until all ships are no longer overlapping or partially off screen
+                    # recussively calls
+                    # the cleanUpShip fn again until all ships are no longer overlapping or partially off screen
                     shipDic["ship%s" %i].cleanUpShip(shipDic)
 
         # checks if current ship is partially off screen
         for i in range(len(shipDic)):
-            if ((shipDic["ship%s" %i].pos.x + shipDic["ship%s" %i].width) > sideMargin + playScreen) or ((shipDic["ship%s" %i].pos.y + shipDic["ship%s" %i].height) > topBotMargin + playScreen):
+            if ((shipDic["ship%s" %i].pos.x + shipDic["ship%s" %i].width) > sideMargin + playScreen) or ((shipDic["ship%s" %i].pos.y + shipDic["ship%s" %i].height) > topBotMargin + playScreen + playScreenHeight):
                 # generates new ship with random position, direction, and maybe shape
                 directList = lengthDirect(i, shipDic)
-                ship = Ship(directList[2], (randint(0,255), randint(0,255), randint(0,255)), tile*randint(0,9) + sideMargin, tile*randint(0,9) + topBotMargin, directList[0], directList[1])
+                shipSprite = pygame.transform.rotate(pygame.transform.smoothscale(pygame.image.load('Sprites/ship%s.png' % i), (int(tile), int(tile*(directList[2])))), directList[3])
+                ship = Ship(directList[2], shipSprite, (randint(0,255), randint(0,255), randint(0,255)), tile*randint(0,9) + sideMargin, tile*randint(0,9) + topBotMargin + playScreenHeight, directList[0], directList[1])
                 shipDic["ship%s" %i] = ship
                 # recussively calls the cleanUpShip fn again until all ships are no longer overlapping or partially off screen
                 shipDic["ship%s" %i].cleanUpShip(shipDic)
+    def draw(self):
+        win.blit(self.shipSprite, (self.pos.x, self.pos.y))
 
 # class for missile target
 class Target(Rectangle):
     def __init__(self, color, x, y, width, height):
         Rectangle.__init__(self, color, x, y, width, height)
+
+    def draw(self):
+        win.blit(pygame.transform.smoothscale(pygame.image.load('Sprites/crosshair.png'), (int(tile), int(tile))), (self.pos.x, self.pos.y))
 
     def move(self):
         global targetCoords
@@ -894,17 +906,34 @@ class ShipDamage(Rectangle):
     def __init__(self, color, x, y, width, height):
         Rectangle.__init__(self, color, x, y, width, height)
 
+    def draw(self):
+        win.blit(pygame.transform.smoothscale(pygame.image.load('Sprites/bulletHole.png'), (int(tile), int(tile))), (self.pos.x, self.pos.y))
 
+class Sprite():
+    ocean = pygame.transform.smoothscale(pygame.image.load('Sprites/Ocean.jpg'), (playScreen, playScreen))
+    sonarBackground = pygame.transform.smoothscale(pygame.image.load('Sprites/sonarBackground.png'), (playScreen, playScreen))
+    grid = pygame.transform.smoothscale(pygame.image.load('Sprites/grid.png'), (playScreen + 2, playScreen + 2))
+    gridSonar = pygame.transform.smoothscale(pygame.image.load('Sprites/gridSonar.png'), (playScreen + 2, playScreen + 2))
+    backGround = pygame.transform.smoothscale(pygame.image.load('Sprites/subControls.jpg'), (doubleScreenWidth, screenHeight))
+    hitSprite = pygame.transform.smoothscale(pygame.image.load('Sprites/hitTile.png'), (int(tile), int(tile)))
+    missSprite = pygame.transform.smoothscale(pygame.image.load('Sprites/missTile.png'), (int(tile), int(tile)))
 ####### Functions ########
 
 # updates image/screen
 def update():
-    # blacks out background
-    win.fill((0,0,0))
+    # adds background
+    win.blit(Sprite.backGround, (0,0))
 
-    # draws grid with lines
-    for key, val in gridDic.items():
-        gridDic[key].draw()
+    # behind the grids image
+    win.blit(Sprite.sonarBackground, (sideMargin, topBotMargin))
+    win.blit(Sprite.ocean, (sideMargin, topBotMargin + playScreenHeight))
+    win.blit(Sprite.sonarBackground, (sideMargin + playScreenWidth, topBotMargin))
+    win.blit(Sprite.ocean, (sideMargin + playScreenWidth, topBotMargin + playScreenHeight))
+    # draws grid
+    win.blit(Sprite.gridSonar, (sideMargin - 1, topBotMargin - 1))
+    win.blit(Sprite.grid, (sideMargin - 1, topBotMargin + playScreenHeight - 1))
+    win.blit(Sprite.gridSonar, (sideMargin + playScreenWidth - 1, topBotMargin - 1))
+    win.blit(Sprite.grid, (sideMargin + playScreenWidth - 1, topBotMargin + playScreenHeight - 1))
     
     # gets the average distance from sonar orgin to ship
     averageDist()
@@ -959,26 +988,6 @@ def averageDist():
             except:
                 pass
 
-# creates grid for game board
-def createGrid():
-    # dictionary for lines making up the grid
-    gridDic = {}
-    # creates horizontal lines
-    for i in range(0,11):
-        x = sideMargin + tile*i -1
-        y = topBotMargin
-        new_y = topBotMargin + playScreen
-        gridDic["line%s" %i] = Line(x, y, x, new_y)
-    # creates vertical lines
-    for i in range(11,22):
-        x = sideMargin
-        new_x = sideMargin + playScreen
-        y = topBotMargin + tile*(i-11)-1
-        gridDic["line%s" %i] = Line(x, y, new_x, y)
-
-    # returns dictionary
-    return gridDic
-
 # aims, widens, and extense the sonar
 def sonarAim():
     global sonarRange
@@ -997,7 +1006,7 @@ def sonarAim():
     # sonar center position
 
     # right bound detection and left movement
-    if sonarPos.x > sideMargin + tile/2 and keys[pygame.K_LEFT] and isPress_LEFT == 0:
+    if sonarPos.x > sideMargin + tile and keys[pygame.K_LEFT] and isPress_LEFT == 0:
         isPress_LEFT = 1
         sonarPos.x -= tile
     # anti repetition
@@ -1013,7 +1022,7 @@ def sonarAim():
         isPress_RIGHT = 0
 
     # bottom bound detection and up movement
-    if sonarPos.y > topBotMargin + tile/2 and keys[pygame.K_UP] and isPress_UP == 0:
+    if sonarPos.y > topBotMargin + tile + playScreenHeight and keys[pygame.K_UP] and isPress_UP == 0:
         isPress_UP = 1
         sonarPos.y -= tile
     # anti repetition
@@ -1021,7 +1030,7 @@ def sonarAim():
         isPress_UP = 0    
         
     # top bound detection and down movement
-    if sonarPos.y < playScreen + topBotMargin - tile and keys[pygame.K_DOWN] and isPress_DOWN == 0:
+    if sonarPos.y < playScreen + topBotMargin - tile + playScreenHeight and keys[pygame.K_DOWN] and isPress_DOWN == 0:
         isPress_DOWN = 1
         sonarPos.y += tile
     # anti repetition
@@ -1126,6 +1135,7 @@ def lengthDirect(shipNum, shipDic):
     # calcs the different sized ships
         # there are 5 ships
         # Legths: 5, 4, 3, 3, 2
+    isRotate = 0
 
     if shipNum == 0:    # Carrier Ship
         length = 2*tile
@@ -1161,10 +1171,12 @@ def lengthDirect(shipNum, shipDic):
 
     # decides direction at random
     if randint(0,1):
+        isRotate = 90
         temp = length
         length = width
         width = temp
-    return width, length, health
+
+    return width, length, health, isRotate
 
 # creates all ships
 def createShip(numShip):
@@ -1175,7 +1187,9 @@ def createShip(numShip):
         # gets length and orientation
         directList = lengthDirect(i, shipDic)
         # creates ship object
-        ship = Ship(directList[2], (randint(0,255), randint(0,255), randint(0,255)), tile*randint(0,9) + sideMargin, tile*randint(0,9) + topBotMargin, directList[0], directList[1])
+        
+        shipSprite = pygame.transform.rotate(pygame.transform.smoothscale(pygame.image.load('Sprites/ship%s.png' % i), (int(tile), int(tile*(directList[2])))), directList[3])
+        ship = Ship(directList[2], shipSprite, (randint(0,255), randint(0,255), randint(0,255)), tile*randint(0,9) + sideMargin, tile*randint(0,9) + topBotMargin*2 + playScreenWidth + 3.5, directList[0], directList[1])
         # creates and assigns key for ship dictionary
         # the syntax below is just to make keys in the style: ship0, ship1, ship2, ...
         shipDic["ship%s" %i] = ship
@@ -1316,13 +1330,10 @@ shipDamages = {}
 sonarRange = 200
 sonarWidth = 45
 sonarStartAngle = 0
-sonarPos = vec(sideMargin + tile/2, topBotMargin + tile/2)
+sonarPos = vec(sideMargin + tile/2, topBotMargin + tile/2 + playScreenHeight)
 
 # for calculating average distance
 averageLength = {}
-
-# creating game grid
-gridDic = createGrid()
 
 # create target curser
 curser = Target((150,150,150), sideMargin + tile, topBotMargin + tile, tile, tile)
