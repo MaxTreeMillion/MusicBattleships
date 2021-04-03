@@ -142,31 +142,25 @@ class Ship(Rectangle):
 
     # cleans the ship generation by insuring no ship is overlapping another or partially off screen
         # this fn is called for all 5 ships
-    def cleanUpShip(self, shipDic):
+    def cleanUpShip(self, shipDic1):
         # checks if current ship is overlapping any of the other ships
-        for i in range(len(shipDic)):
-            if shipDic["ship%s" %i] != self:        # neglects the instense of dectecing if a ship collides with itself
-                if pygame.Rect.colliderect(self.rect, shipDic["ship%s" %i].rect):       # does current ship overlap with another ship
+        for i in range(len(shipDic1)):
+            if shipDic1["ship%s" %i] != self:        # neglects the instense of dectecing if a ship collides with itself
+                if pygame.Rect.colliderect(self.rect, shipDic1["ship%s" %i].rect):       # does current ship overlap with another ship
                     # overides overlapping ship with new ship generation
                     # generates new ship with random position, direction, and maybe shape
-                    directList = lengthDirect(i, shipDic)
-                    shipSprite = pygame.transform.rotate(pygame.transform.smoothscale(pygame.image.load('Sprites/ship%s.png' % i), (int(tile), int(tile*(directList[2])))), directList[3])
-                    ship = Ship(directList[2], shipSprite, (randint(0,255), randint(0,255), randint(0,255)), tile*randint(0,9) + sideMargin, tile*randint(0,9) + topBotMargin + playScreenHeight, directList[0], directList[1])
-                    shipDic["ship%s" %i] = ship
+                    shipDic1["ship%s" %i] = createShip(i)
                     # recussively calls
                     # the cleanUpShip fn again until all ships are no longer overlapping or partially off screen
-                    shipDic["ship%s" %i].cleanUpShip(shipDic)
+                    shipDic1["ship%s" %i].cleanUpShip(shipDic1)
 
         # checks if current ship is partially off screen
-        for i in range(len(shipDic)):
-            if ((shipDic["ship%s" %i].pos.x + shipDic["ship%s" %i].width) > sideMargin + playScreen) or ((shipDic["ship%s" %i].pos.y + shipDic["ship%s" %i].height) > topBotMargin + playScreen + playScreenHeight):
+        for i in range(len(shipDic1)):
+            if ((shipDic1["ship%s" %i].pos.x + shipDic1["ship%s" %i].width) > sideMargin + playScreen + tile) or ((shipDic1["ship%s" %i].pos.y + shipDic1["ship%s" %i].height) > topBotMargin + playScreen + playScreenHeight + tile):
                 # generates new ship with random position, direction, and maybe shape
-                directList = lengthDirect(i, shipDic)
-                shipSprite = pygame.transform.rotate(pygame.transform.smoothscale(pygame.image.load('Sprites/ship%s.png' % i), (int(tile), int(tile*(directList[2])))), directList[3])
-                ship = Ship(directList[2], shipSprite, (randint(0,255), randint(0,255), randint(0,255)), tile*randint(0,9) + sideMargin, tile*randint(0,9) + topBotMargin + playScreenHeight, directList[0], directList[1])
-                shipDic["ship%s" %i] = ship
+                shipDic1["ship%s" %i] = createShip(i)
                 # recussively calls the cleanUpShip fn again until all ships are no longer overlapping or partially off screen
-                shipDic["ship%s" %i].cleanUpShip(shipDic)
+                shipDic1["ship%s" %i].cleanUpShip(shipDic1)
     def draw(self):
         win.blit(self.shipSprite, (self.pos.x, self.pos.y))
 
@@ -940,21 +934,21 @@ def update():
 
     # draws all ships
     #print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~") 
-    for key, val in shipDic.items():
-        shipDic[key].draw()
+    for key, val in shipDic1.items():
+        shipDic1[key].draw()
         #########################################################################################################################
         ###       THIS IS WHERE THE OUTPUTS FOR WHAT SHIP IS BEING HIT BY SONAR AND HOW MANY SONAR BEANS ARE HITTING IT       ###
         #                                                                                                                       #
         #                                                                                                                       #
-        #print("{0:5}: {1:3}    Average Distance in Range:". format(key, shipDic[key].sonarHitNum), shipDic[key].averageDistance)#
+        #print("{0:5}: {1:3}    Average Distance in Range:". format(key, shipDic1[key].sonarHitNum), shipDic1[key].averageDistance)#
         #                                                                                                                       #
         ###                                                                                                                   ###
         #########################################################################################################################
 
         #reset sonar collide counters (how many beams are currently hitting a ship 
-        shipDic[key].sonarHitNum = 0
+        shipDic1[key].sonarHitNum = 0
 
-        for key, val in shipDic.items():
+        for key, val in shipDic1.items():
             averageLength[key] = []
 
     # draws all ship damage sprites
@@ -978,13 +972,13 @@ def averageDist():
         if len(averageLength[key]) != 0:
             # crashes if i dont do the try/except -/(-.-)\-
             try:
-                shipDic[key].averageDistance = sum(averageLength[key])/len(averageLength[key])
+                shipDic1[key].averageDistance = sum(averageLength[key])/len(averageLength[key])
             except:
                 pass
         else:
             # crashes if i dont do the try/except -/(-.-)\-
             try:
-                shipDic[key].averageDistance = 0
+                shipDic1[key].averageDistance = 0
             except:
                 pass
 
@@ -1098,9 +1092,9 @@ def isCollideSonar(beamnum, sonarDic, x2, y2):
     though, you must keep in mind that this function is called once per beam
     if 80 beams are shot out, then the function runs 80 times per frame"""
     # runs through each ship
-    for key, val in shipDic.items():
+    for key, val in shipDic1.items():
         # checks if beam collides with ship
-        newEnd = shipDic[key].rect.clipline(sonarDic["beam%s" %beamnum].end1.x, sonarDic["beam%s" %beamnum].end1.y, sonarDic["beam%s" %beamnum].end2.x, sonarDic["beam%s" %beamnum].end2.y)
+        newEnd = shipDic1[key].rect.clipline(sonarDic["beam%s" %beamnum].end1.x, sonarDic["beam%s" %beamnum].end1.y, sonarDic["beam%s" %beamnum].end2.x, sonarDic["beam%s" %beamnum].end2.y)
         # weird syntax that more complex than it should be
             # but for whateer reason I wasnt able to unpack the tuple that the 'clipline' fn gave
             # this was the only way a got it working
@@ -1120,7 +1114,7 @@ def isCollideSonar(beamnum, sonarDic, x2, y2):
         # if not, then update line
         collideShip = min(minCalcDic, key = minCalcDic.get)
         newEnd = tempCollDic[collideShip]
-        shipDic[collideShip].sonarHitNum += 1
+        shipDic1[collideShip].sonarHitNum += 1
 
         # crashes if i dont do the try/except -/(-.-)\-
         try:
@@ -1131,7 +1125,7 @@ def isCollideSonar(beamnum, sonarDic, x2, y2):
         return Sonar((255,0,255), sonarPos.x , sonarPos.y , newEnd[0], newEnd[1])
 
 # decides legnth and direction of ship
-def lengthDirect(shipNum, shipDic):
+def lengthDirect(shipNum):
     # calcs the different sized ships
         # there are 5 ships
         # Legths: 5, 4, 3, 3, 2
@@ -1163,7 +1157,6 @@ def lengthDirect(shipNum, shipDic):
         health = 5
 
     if shipNum > 4:     # Overflow protection
-        j = len(shipDic)
         rand = randint(2,5)
         length = rand*tile
         width = tile
@@ -1179,28 +1172,21 @@ def lengthDirect(shipNum, shipDic):
     return width, length, health, isRotate
 
 # creates all ships
-def createShip(numShip):
-    # holds the ship names and class info
-    shipDic = {}
+def createShip(i):
     # creates ships as needed
-    for i in range(numShip):
-        # gets length and orientation
-        directList = lengthDirect(i, shipDic)
-        # creates ship object
-        
-        shipSprite = pygame.transform.rotate(pygame.transform.smoothscale(pygame.image.load('Sprites/ship%s.png' % i), (int(tile), int(tile*(directList[2])))), directList[3])
-        ship = Ship(directList[2], shipSprite, (randint(0,255), randint(0,255), randint(0,255)), tile*randint(0,9) + sideMargin, tile*randint(0,9) + topBotMargin*2 + playScreenWidth + 3.5, directList[0], directList[1])
-        # creates and assigns key for ship dictionary
-        # the syntax below is just to make keys in the style: ship0, ship1, ship2, ...
-        shipDic["ship%s" %i] = ship
+    # gets length and orientation
+    directList = lengthDirect(i)
+    # creates ship object
+    shipSprite = pygame.transform.rotate(pygame.transform.smoothscale(pygame.image.load('Sprites/ship%s.png' % i), (int(tile), int(tile*(directList[2])))), directList[3])
+    ship = Ship(directList[2], shipSprite, (randint(0,255), randint(0,255), randint(0,255)), tile*randint(0,9) + sideMargin, tile*randint(0,9) + playScreenHeight + topBotMargin, directList[0], directList[1])
     # returns dictionary
-    return shipDic
+    return ship
 
 # dectects collision of curser and ship
 def isCollide():
     key = "NONE"
-    for key, val in shipDic.items():
-        if pygame.Rect.colliderect(pygame.Rect(curser.pos.x, curser.pos.y, curser.width, curser.height), shipDic[key].rect):
+    for key, val in shipDic1.items():
+        if pygame.Rect.colliderect(pygame.Rect(curser.pos.x, curser.pos.y, curser.width, curser.height), shipDic1[key].rect):
             return True, key      # returns if collision and if so, the ship that was hit
     return False, key
 
@@ -1228,8 +1214,8 @@ def shootMissile():
         # places yellow square on damaged spot
         shipDamages["shipDamage%s" %len(shipDamages)] = ShipDamage((255,255,0), curser.pos.x, curser.pos.y, curser.width, curser.height)
         # decreases health
-        if shipDic[isCollides[1]].health > 0:
-            shipDic[isCollides[1]].health -= 1
+        if shipDic1[isCollides[1]].health > 0:
+            shipDic1[isCollides[1]].health -= 1
     else:
         if damageTest:
             print("All you shot was sea!")
@@ -1240,28 +1226,28 @@ def shootMissile():
 
 # detects if any sunken ships
 def isSunk():
-    global shipDic
+    global shipDic1
     deadShip = 0
     # sinks ship if health is zero
-    for key, items in shipDic.items():
-        if not(shipDic[key].health):
+    for key, items in shipDic1.items():
+        if not(shipDic1[key].health):
             print("You got one!!")
             print("~~~~~~~~")
             sink(key)
             deadShip = key
     # deletes ship thats been sunk
     if deadShip:
-        del shipDic[deadShip]
+        del shipDic1[deadShip]
 
 # is ship is sunken, then remove it and the shipDamage
 def sink(ship):
-    global shipDic
+    global shipDic1
     global shipDamages
     delShipDamages = []
 
     # deletes shipDamage sprites that are on sunken ship
     for key, val in shipDamages.items():
-        if pygame.Rect.colliderect(pygame.Rect(shipDamages[key].pos.x, shipDamages[key].pos.y, shipDamages[key].width, shipDamages[key].height), shipDic[ship].rect):
+        if pygame.Rect.colliderect(pygame.Rect(shipDamages[key].pos.x, shipDamages[key].pos.y, shipDamages[key].width, shipDamages[key].height), shipDic1[ship].rect):
             delShipDamages.append(key)
     # deleting damage sprites of sunken ship
     for ish in delShipDamages:
@@ -1271,8 +1257,8 @@ def sink(ship):
 def isWin():
     global run
     tot = 0
-    for key, val in shipDic.items():
-        tot += shipDic[key].health
+    for key, val in shipDic1.items():
+        tot += shipDic1[key].health
 
     if tot == 0:
         print("\n\n\n\t\t\t\t**********************")
@@ -1286,7 +1272,7 @@ def detectInputs(numShip):
     global isPress_LSHIFT
     global isPress_TAB
     global isPress_BACKQUOTE
-    global shipDic
+    global shipDic1
     global run
 
     key = pygame.key.get_pressed()
@@ -1298,9 +1284,11 @@ def detectInputs(numShip):
     # for test, generates new boats
     if key[pygame.K_TAB] and isPress_TAB == 0:
         isPress_TAB = 1
-        shipDic = createShip(numShip)
-        for i in range(len(shipDic)):
-            shipDic["ship%s" %i].cleanUpShip(shipDic)
+        shipDic1 = {}
+        for i in range(numShip):
+            shipDic1["ship%s" %i] = createShip(i)
+        for i in range(len(shipDic1)):
+            shipDic1["ship%s" %i].cleanUpShip(shipDic1)
     # anti repetition
     if not(key[pygame.K_TAB]):
         isPress_TAB = 0
@@ -1319,10 +1307,20 @@ def detectInputs(numShip):
 
 # number of ships on the water
 numShip = 5
-# create all ship's sizes and positions
-shipDic = createShip(numShip)
-for i in range(len(shipDic)):
-    shipDic["ship%s" %i].cleanUpShip(shipDic)
+# create all ship's sizes and positions for player 1
+shipDic1 = {}
+for i in range(numShip):
+    shipDic1["ship%s" %i] = createShip(i)
+for i in range(len(shipDic1)):
+    shipDic1["ship%s" %i].cleanUpShip(shipDic1)
+
+##create all ship's sizes and positions for player 2
+#shipDic2 = {}
+#for i in range(numShip):
+#    shipDic1["ship%s" %i] = createShip(i)
+#for i in range(len(shipDic1)):
+#    shipDic1["ship%s" %i].cleanUpShip(shipDic1)
+
 # ship damage sprites
 shipDamages = {}
 
