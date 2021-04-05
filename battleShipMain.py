@@ -107,15 +107,28 @@ class Line():
 
 # class for each sonar beam
 class Sonar():
-    def __init__(self, color, x1, y1, x2, y2):
+    def __init__(self, color, x1, y1, x2, y2, angle):
         self.color = color
         self.end1 = vec(x1,y1)
         self.end2 = vec(x2,y2)
+        self.angle = angle
         self.length = 0
 
     # this fn is call everytime the display is updated for every line
     def draw(self):
         pygame.draw.line(win, self.color, self.end1, self.end2, width = 1)
+
+    def drawSonarMap(self):
+        if self == sonarDisplay1[0]:
+            pygame.draw.line(win, sonarDisplay1[0].color, sonarDisplay1[0].end1, sonarDisplay1[0].end2, width = 5)
+            if len(sonarDisplay1) == 2:
+                pygame.draw.line(win, sonarDisplay1[1].color, sonarDisplay1[1].end1, sonarDisplay1[1].end2, width = 5)
+                pygame.draw.arc(win, sonarDisplay1[0].color, pygame.Rect(sonarPos1.x - sonarRange1 + playScreenWidth, sonarPos1.y - sonarRange1 - playScreenHeight, sonarRange1*2, sonarRange1*2), sonarDisplay1[0].angle, sonarDisplay1[1].angle, width=5)
+        if self == sonarDisplay2[0]:
+            pygame.draw.line(win, sonarDisplay2[0].color, sonarDisplay2[0].end1, sonarDisplay2[0].end2, width = 5)
+            if len(sonarDisplay2) == 2:
+                pygame.draw.line(win, sonarDisplay2[1].color, sonarDisplay2[1].end1, sonarDisplay2[1].end2, width = 5)
+                pygame.draw.arc(win, sonarDisplay2[0].color, pygame.Rect(sonarPos2.x - sonarRange2 - playScreenWidth, sonarPos2.y - sonarRange2 - playScreenHeight, sonarRange2*2, sonarRange2*2), sonarDisplay2[0].angle, sonarDisplay2[1].angle, width=5)
 
 # class for rectangles that mainly create the hitbox
 class Rectangle():
@@ -1551,6 +1564,9 @@ def update():
     for key, value in sonarDic2.items():
         sonarDic2[key].draw()
 
+    sonarDisplay1[0].drawSonarMap()
+    sonarDisplay2[0].drawSonarMap()
+
 
     # updates screen
     pygame.display.update()
@@ -1573,9 +1589,12 @@ def averageDist():
 
 # aims, widens, and extense the sonar
 def sonarAim(playerTurn):
-    global sonarRange
-    global sonarWidth
-    global sonarStartAngle
+    global sonarRange1
+    global sonarWidth1
+    global sonarStartAngle1
+    global sonarRange2
+    global sonarWidth2
+    global sonarStartAngle2
     global sonarPos1
     global isPress_LEFT
     global isPress_RIGHT
@@ -1587,7 +1606,7 @@ def sonarAim(playerTurn):
     mouse = pygame.mouse.get_pressed(num_buttons=5)
 
     # sonar center position
-    if playerTurn == 1:
+    if playerTurn == 2:
         # right bound detection and left movement
         if sonarPos1.x > sideMargin + tile and keys[pygame.K_LEFT] and isPress_LEFT == 0:
             isPress_LEFT = 1
@@ -1622,32 +1641,32 @@ def sonarAim(playerTurn):
     
         # controls
         # rotate counter-clockwise
-        if mouse[0] or keys[pygame.K_SEMICOLON]:
-            sonarStartAngle += 5
+        if mouse[0] or keys[pygame.K_LEFTBRACKET]:
+            sonarStartAngle1 += 5
  
         # rotate clockwise
-        if mouse[2] or keys[pygame.K_BACKSLASH]:
-            sonarStartAngle -= 5
+        if mouse[2] or keys[pygame.K_RIGHTBRACKET]:
+            sonarStartAngle1 -= 5
 
-        # increase range
+        # increase power level
+        if (keys[pygame.K_EQUALS] or (mouse[3] and mouse[1])) and sonarWidth1 >= 1:
+            sonarWidth1 -= 1
+            sonarRange1 += 5
+            # make the sonar power grow and shrink smoother
+            if sonarWidth1%2:
+                sonarStartAngle1 += 1
+        # decrease power level
+        if (keys[pygame.K_MINUS] or (mouse[4] and mouse[1])) and sonarWidth1 <= 135:
+            sonarWidth1 += 1
+            sonarRange1 -= 5
+            # make the sonar power grow and shrink smoother
+            if sonarWidth1%2:
+                sonarStartAngle1 -= 1
 
-        if (keys[pygame.K_EQUALS] or (mouse[4] and not(mouse[1]))) and sonarRange <= math.sqrt((playScreen/2)**2 + (playScreen/2)**2):
-            sonarRange += 5
-
-        # decrease range
-        if (keys[pygame.K_MINUS] or (mouse[3] and not(mouse[1]))) and sonarRange >= 50:
-            sonarRange -= 5
-
-        # increase width
-        if (keys[pygame.K_RIGHTBRACKET] or (mouse[4] and mouse[1])) and sonarWidth <= 358:
-            sonarWidth += 1
-        # decrease width
-        if (keys[pygame.K_LEFTBRACKET] or (mouse[3] and mouse[1])) and sonarWidth >= 1:
-            sonarWidth -= 1
 
 
     # sonar center position
-    if playerTurn == 2:
+    if playerTurn == 1:
         # right bound detection and left movement
         if sonarPos2.x > sideMargin + tile + playScreenWidth and keys[pygame.K_LEFT] and isPress_LEFT == 0:
             isPress_LEFT = 1
@@ -1682,56 +1701,63 @@ def sonarAim(playerTurn):
     
         # controls
         # rotate counter-clockwise
-        if mouse[0] or keys[pygame.K_SEMICOLON]:
-            sonarStartAngle += 5
+        if mouse[0] or keys[pygame.K_LEFTBRACKET]:
+            sonarStartAngle2 += 5
  
         # rotate clockwise
-        if mouse[2] or keys[pygame.K_BACKSLASH]:
-            sonarStartAngle -= 5
+        if mouse[2] or keys[pygame.K_RIGHTBRACKET]:
+            sonarStartAngle2 -= 5
 
-        # increase range
-
-        if (keys[pygame.K_EQUALS] or (mouse[4] and not(mouse[1]))) and sonarRange <= math.sqrt((playScreen/2)**2 + (playScreen/2)**2):
-            sonarRange += 5
-
-        # decrease range
-        if (keys[pygame.K_MINUS] or (mouse[3] and not(mouse[1]))) and sonarRange >= 50:
-            sonarRange -= 5
-
-        # increase width
-        if (keys[pygame.K_RIGHTBRACKET] or (mouse[4] and mouse[1])) and sonarWidth <= 358:
-            sonarWidth += 1
-        # decrease width
-        if (keys[pygame.K_LEFTBRACKET] or (mouse[3] and mouse[1])) and sonarWidth >= 1:
-            sonarWidth -= 1
+        # increase power level
+        if (keys[pygame.K_EQUALS] or (mouse[3] and mouse[1])) and sonarWidth2 >= 1:
+            sonarWidth2 -= 1
+            sonarRange2 += 5
+            # make the sonar power grow and shrink smoother
+            if sonarWidth2%2:
+                sonarStartAngle2 += 1
+        # decrease power level
+        if (keys[pygame.K_MINUS] or (mouse[4] and mouse[1])) and sonarWidth2 <= 135:
+            sonarWidth2 += 1
+            sonarRange2 -= 5
+            # make the sonar power grow and shrink smoother
+            if sonarWidth2%2:
+                sonarStartAngle2 -= 1
 
 # creates sonar array
 def createSonar(playerTurn):
     global sonarPos1
     global sonarPos2
+    global sonarDisplay1
+    global sonarDisplay2
     # reset sonar dictionary
     sonarDic1 = {}
     sonarDic2 = {}
+    sonarDisplay1 = []
+    sonarDisplay2 = []
 
     # get the aim of the sonar
     sonarAim(playerTurn)
 
     # create each beam of the sonar
-    for i in range(sonarStartAngle, sonarStartAngle + sonarWidth + 1):
+    for i in range(sonarStartAngle1, sonarStartAngle1 + sonarWidth1 + 1):
         # gives the beams a radius of influence
-        x2 = sonarPos1.x + math.cos(-math.radians(i)) * sonarRange 
-        y2 = sonarPos1.y + math.sin(-math.radians(i)) * sonarRange 
+        x2 = sonarPos1.x + math.cos(-math.radians(i)) * sonarRange1 
+        y2 = sonarPos1.y + math.sin(-math.radians(i)) * sonarRange1 
         # creates first case line for collision function to use
-        sonarDic1["beam%s" %i] = Sonar((255,0,255), sonarPos1.x , sonarPos1.y , x2, y2)
+        sonarDic1["beam%s" %i] = Sonar((255,0,255), sonarPos1.x, sonarPos1.y, x2, y2, math.radians(i))
+        if i == sonarStartAngle1 or i == sonarStartAngle1 + sonarWidth1:
+            sonarDisplay1.append(Sonar((215,25,45), sonarPos1.x + playScreenWidth, sonarPos1.y - playScreenHeight, x2 + playScreenWidth, y2 - playScreenHeight, math.radians(i)))
         # modifies beam to new length depending on if it collided
         sonarDic1["beam%s" %i] = isCollideSonar(i, sonarDic1, sonarDic2, x2, y2, 1)
 
-    for i in range(sonarStartAngle, sonarStartAngle + sonarWidth + 1):
+    for i in range(sonarStartAngle2, sonarStartAngle2 + sonarWidth2 + 1):
         # gives the beams a radius of influence
-        x2 = sonarPos2.x + math.cos(-math.radians(i)) * sonarRange 
-        y2 = sonarPos2.y + math.sin(-math.radians(i)) * sonarRange 
+        x2 = sonarPos2.x + math.cos(-math.radians(i)) * sonarRange2 
+        y2 = sonarPos2.y + math.sin(-math.radians(i)) * sonarRange2
         # creates first case line for collision function to use
-        sonarDic2["beam%s" %i] = Sonar((255,0,255), sonarPos2.x , sonarPos2.y , x2, y2)
+        sonarDic2["beam%s" %i] = Sonar((255,0,255), sonarPos2.x, sonarPos2.y, x2, y2, math.radians(i))
+        if i == sonarStartAngle2 or i == sonarStartAngle2 + sonarWidth2:
+            sonarDisplay2.append(Sonar((215,25,45), sonarPos2.x - playScreenWidth, sonarPos2.y - playScreenHeight, x2 - playScreenWidth, y2 - playScreenHeight, math.radians(i)))
         # modifies beam to new length depending on if it collided
         sonarDic2["beam%s" %i] = isCollideSonar(i, sonarDic1, sonarDic2, x2, y2, 2)
     # returns dictionary of all the lines
@@ -1766,6 +1792,7 @@ def isCollideSonar(beamnum, sonarDic1, sonarDic2, x2, y2, playerNum):
                     # saves the coords of the entrance point to the dictionary
                     tempCollDic[key] = item
 
+
         # calcs the distances of each entrance coord and the sonars origin
             # then saves in another dictionary
         for key, value in tempCollDic.items():
@@ -1773,7 +1800,7 @@ def isCollideSonar(beamnum, sonarDic1, sonarDic2, x2, y2, playerNum):
         # if the dictionary is empty then there was no collision so return the same line
         if tempCollDic == {}:
             # screen bounds
-            return Sonar((255,0,255), sonarPos1.x , sonarPos1.y , x2, y2)
+            return Sonar((255,0,255), sonarPos1.x , sonarPos1.y , x2, y2, sonarDic1["beam%s" %beamnum].angle)
         else:
             # if not, then update line
             collideShip = min(minCalcDic, key = minCalcDic.get)
@@ -1786,7 +1813,7 @@ def isCollideSonar(beamnum, sonarDic1, sonarDic2, x2, y2, playerNum):
             except:
                 pass
 
-            return Sonar((255,0,255), sonarPos1.x , sonarPos1.y , newEnd[0], newEnd[1])
+            return Sonar((255,0,255), sonarPos1.x , sonarPos1.y , newEnd[0], newEnd[1], sonarDic1["beam%s" %beamnum].angle)
 
     if playerNum == 2:
         # runs through each ship for player 2
@@ -1808,7 +1835,7 @@ def isCollideSonar(beamnum, sonarDic1, sonarDic2, x2, y2, playerNum):
         # if the dictionary is empty then there was no collision so return the same line
         if tempCollDic == {}:
             # screen bounds
-            return Sonar((255,0,255), sonarPos2.x , sonarPos2.y , x2, y2)
+            return Sonar((255,0,255), sonarPos2.x , sonarPos2.y , x2, y2, sonarDic2["beam%s" %beamnum].angle)
         else:
             # if not, then update line
             collideShip = min(minCalcDic, key = minCalcDic.get)
@@ -1821,7 +1848,7 @@ def isCollideSonar(beamnum, sonarDic1, sonarDic2, x2, y2, playerNum):
             except:
                 pass
 
-            return Sonar((255,0,255), sonarPos2.x , sonarPos2.y , newEnd[0], newEnd[1])
+            return Sonar((255,0,255), sonarPos2.x , sonarPos2.y , newEnd[0], newEnd[1], sonarDic2["beam%s" %beamnum].angle)
 
 # decides legnth and direction of ship
 def lengthDirect(shipNum):
@@ -2034,6 +2061,7 @@ def isWin():
         run = False
 
 def detectInputs(numShip):
+
     global isPress_SPACE
     global isPress_RETURN
     global isPress_LSHIFT
@@ -2116,11 +2144,11 @@ missMarkers = {}
 hitMarkers = {}
 
 # Default sonar 
-sonarRange = 200
-sonarWidth = 45
-sonarStartAngle = 0
-sonarRange2 = 200 ##############################################################################################################
-sonarWidth2 = 45
+sonarRange1 = tile
+sonarWidth1 = 135
+sonarStartAngle1 = 0
+sonarRange2 = tile
+sonarWidth2 = 135
 sonarStartAngle2 = 0
 sonarPos1 = vec(sideMargin + tile/2, topBotMargin + tile/2 + playScreenHeight)
 sonarPos2 = vec(sideMargin + tile/2 + playScreenWidth, topBotMargin + tile/2 + playScreenHeight)
