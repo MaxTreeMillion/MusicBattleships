@@ -1476,7 +1476,7 @@ class Sprite():
     sonarBackground = pygame.transform.smoothscale(pygame.image.load('Sprites/sonarBackground.png'), (playScreen, playScreen))
     grid = pygame.transform.smoothscale(pygame.image.load('Sprites/grid.png'), (playScreen + 2, playScreen + 2))
     gridSonar = pygame.transform.smoothscale(pygame.image.load('Sprites/gridSonar.png'), (playScreen + 2, playScreen + 2))
-    backGround = pygame.transform.smoothscale(pygame.image.load('Sprites/subControls.jpg'), (doubleScreenWidth, screenHeight))
+    backGround = pygame.transform.smoothscale(pygame.image.load('Sprites/mainbackground.png'), (doubleScreenWidth, screenHeight))
     sub = pygame.transform.smoothscale(pygame.image.load('Sprites/Sub.png'), (int(tile), int(tile)))
     hitSprite = pygame.transform.smoothscale(pygame.image.load('Sprites/hitTile.png'), (int(tile), int(tile)))
     missSprite = pygame.transform.smoothscale(pygame.image.load('Sprites/missTile.png'), (int(tile), int(tile)))
@@ -1485,9 +1485,6 @@ class Sprite():
 
 # updates image/screen
 def update():
-    # adds background
-    win.blit(Sprite.backGround, (0,0))
-
     # behind the grids image
     win.blit(Sprite.sonarBackground, (sideMargin, topBotMargin))
     win.blit(Sprite.ocean, (sideMargin, topBotMargin + playScreenHeight))
@@ -1567,7 +1564,8 @@ def update():
     sonarDisplay1[0].drawSonarMap()
     sonarDisplay2[0].drawSonarMap()
 
-
+    # adds background
+    win.blit(Sprite.backGround, (0,0))
     # updates screen
     pygame.display.update()
 
