@@ -12,7 +12,7 @@ import pygame
 import math
 from random import randint
 
-# screen deminsions
+# screen deminsions stuff
 screenHeight = 1280
 screenWidth = 720
 doubleScreenWidth = screenWidth*2
@@ -22,6 +22,8 @@ playScreen = int(playScreenHeight*0.9)
 topBotMargin = (playScreenHeight - playScreen)/2
 sideMargin = (playScreenWidth - playScreen)/2
 tile = int(playScreen/10) + 0.75
+# for scaling certain things to different sizes
+scalingFactor = screenHeight/1280
 
 # initialize
 pygame.init()
@@ -46,6 +48,7 @@ isPress_RETURN = 0
 isPress_LSHIFT = 0
 isPress_TAB = 0
 isPress_BACKQUOTE = 0
+isPress_COMMA = 0
 isPress_w = 0
 isPress_a = 0
 isPress_s = 0
@@ -1454,6 +1457,14 @@ class ShipDamage(Rectangle):
     def draw(self):
         win.blit(pygame.transform.smoothscale(pygame.image.load('Sprites/bulletHole.png'), (int(tile), int(tile))), (self.pos.x, self.pos.y))
 
+# class for distress calls
+class distressCall(Rectangle):
+    def __init__(self, color, x, y, width, height):
+        Rectangle.__init__(self, color, x, y, width, height)
+
+    def draw(self):
+        win.blit(pygame.transform.smoothscale(pygame.image.load('Sprites/distressSignal.png'), (int(tile), int(tile))), (self.pos.x, self.pos.y))
+
 # class for hit markers
 class HitMarker:
     def __init__(self, color, x, y, width, height):
@@ -1472,8 +1483,8 @@ class MissMarker:
 
 # class to hold misc sprites
 class Sprite():
-    ocean = pygame.transform.smoothscale(pygame.image.load('Sprites/Ocean.jpg'), (playScreen, playScreen))
     sonarBackground = pygame.transform.smoothscale(pygame.image.load('Sprites/sonarBackground.png'), (playScreen, playScreen))
+    waitingScreen = pygame.transform.smoothscale(pygame.image.load('Sprites/waitingScreen.png'), (screenWidth, screenHeight))
     grid = pygame.transform.smoothscale(pygame.image.load('Sprites/grid.png'), (playScreen + 2, playScreen + 2))
     gridSonar = pygame.transform.smoothscale(pygame.image.load('Sprites/gridSonar.png'), (playScreen + 2, playScreen + 2))
     backGround = pygame.transform.smoothscale(pygame.image.load('Sprites/mainbackground.png'), (doubleScreenWidth, screenHeight))
@@ -1481,21 +1492,75 @@ class Sprite():
     hitSprite = pygame.transform.smoothscale(pygame.image.load('Sprites/hitTile.png'), (int(tile), int(tile)))
     missSprite = pygame.transform.smoothscale(pygame.image.load('Sprites/missTile.png'), (int(tile), int(tile)))
 
+    # animation sprites
+    oceanAniCount = 0
+    oceanAni = [pygame.transform.smoothscale(pygame.image.load('Sprites/Ocean/WaterCaustics 01.png'), (playScreen, playScreen)),
+                pygame.transform.smoothscale(pygame.image.load('Sprites/Ocean/WaterCaustics 02.png'), (playScreen, playScreen)),
+                pygame.transform.smoothscale(pygame.image.load('Sprites/Ocean/WaterCaustics 03.png'), (playScreen, playScreen)),
+                pygame.transform.smoothscale(pygame.image.load('Sprites/Ocean/WaterCaustics 04.png'), (playScreen, playScreen)),
+                pygame.transform.smoothscale(pygame.image.load('Sprites/Ocean/WaterCaustics 05.png'), (playScreen, playScreen)),
+                pygame.transform.smoothscale(pygame.image.load('Sprites/Ocean/WaterCaustics 06.png'), (playScreen, playScreen)),
+                pygame.transform.smoothscale(pygame.image.load('Sprites/Ocean/WaterCaustics 07.png'), (playScreen, playScreen)),
+                pygame.transform.smoothscale(pygame.image.load('Sprites/Ocean/WaterCaustics 08.png'), (playScreen, playScreen)),
+                pygame.transform.smoothscale(pygame.image.load('Sprites/Ocean/WaterCaustics 09.png'), (playScreen, playScreen)),
+                pygame.transform.smoothscale(pygame.image.load('Sprites/Ocean/WaterCaustics 10.png'), (playScreen, playScreen)),
+                pygame.transform.smoothscale(pygame.image.load('Sprites/Ocean/WaterCaustics 11.png'), (playScreen, playScreen)),
+                pygame.transform.smoothscale(pygame.image.load('Sprites/Ocean/WaterCaustics 12.png'), (playScreen, playScreen)),
+                pygame.transform.smoothscale(pygame.image.load('Sprites/Ocean/WaterCaustics 13.png'), (playScreen, playScreen)),
+                pygame.transform.smoothscale(pygame.image.load('Sprites/Ocean/WaterCaustics 14.png'), (playScreen, playScreen)),
+                pygame.transform.smoothscale(pygame.image.load('Sprites/Ocean/WaterCaustics 15.png'), (playScreen, playScreen)),
+                pygame.transform.smoothscale(pygame.image.load('Sprites/Ocean/WaterCaustics 16.png'), (playScreen, playScreen)),
+                pygame.transform.smoothscale(pygame.image.load('Sprites/Ocean/WaterCaustics 17.png'), (playScreen, playScreen)),
+                pygame.transform.smoothscale(pygame.image.load('Sprites/Ocean/WaterCaustics 18.png'), (playScreen, playScreen)),
+                pygame.transform.smoothscale(pygame.image.load('Sprites/Ocean/WaterCaustics 19.png'), (playScreen, playScreen)),
+                pygame.transform.smoothscale(pygame.image.load('Sprites/Ocean/WaterCaustics 20.png'), (playScreen, playScreen)),
+                pygame.transform.smoothscale(pygame.image.load('Sprites/Ocean/WaterCaustics 21.png'), (playScreen, playScreen)),
+                pygame.transform.smoothscale(pygame.image.load('Sprites/Ocean/WaterCaustics 22.png'), (playScreen, playScreen)),
+                pygame.transform.smoothscale(pygame.image.load('Sprites/Ocean/WaterCaustics 23.png'), (playScreen, playScreen)),
+                pygame.transform.smoothscale(pygame.image.load('Sprites/Ocean/WaterCaustics 24.png'), (playScreen, playScreen)),
+                pygame.transform.smoothscale(pygame.image.load('Sprites/Ocean/WaterCaustics 25.png'), (playScreen, playScreen)),
+                pygame.transform.smoothscale(pygame.image.load('Sprites/Ocean/WaterCaustics 26.png'), (playScreen, playScreen)),
+                pygame.transform.smoothscale(pygame.image.load('Sprites/Ocean/WaterCaustics 27.png'), (playScreen, playScreen)),
+                pygame.transform.smoothscale(pygame.image.load('Sprites/Ocean/WaterCaustics 28.png'), (playScreen, playScreen)),
+                pygame.transform.smoothscale(pygame.image.load('Sprites/Ocean/WaterCaustics 29.png'), (playScreen, playScreen)),
+                pygame.transform.smoothscale(pygame.image.load('Sprites/Ocean/WaterCaustics 30.png'), (playScreen, playScreen)),
+                pygame.transform.smoothscale(pygame.image.load('Sprites/Ocean/WaterCaustics 31.png'), (playScreen, playScreen)),
+                pygame.transform.smoothscale(pygame.image.load('Sprites/Ocean/WaterCaustics 32.png'), (playScreen, playScreen)),
+                pygame.transform.smoothscale(pygame.image.load('Sprites/Ocean/WaterCaustics 33.png'), (playScreen, playScreen)),
+                pygame.transform.smoothscale(pygame.image.load('Sprites/Ocean/WaterCaustics 34.png'), (playScreen, playScreen)),
+                pygame.transform.smoothscale(pygame.image.load('Sprites/Ocean/WaterCaustics 35.png'), (playScreen, playScreen)),
+                pygame.transform.smoothscale(pygame.image.load('Sprites/Ocean/WaterCaustics 36.png'), (playScreen, playScreen))]
+
+    explosionAniCount = 0
+    isExplode = 0
+    explosionAni = [pygame.transform.smoothscale(pygame.image.load('Sprites/explosion/exp1.png'), (int(tile), int(tile))),
+                    pygame.transform.smoothscale(pygame.image.load('Sprites/explosion/exp2.png'), (int(tile), int(tile))),
+                    pygame.transform.smoothscale(pygame.image.load('Sprites/explosion/exp3.png'), (int(tile), int(tile))),
+                    pygame.transform.smoothscale(pygame.image.load('Sprites/explosion/exp4.png'), (int(tile), int(tile))),
+                    pygame.transform.smoothscale(pygame.image.load('Sprites/explosion/exp5.png'), (int(tile), int(tile)))]
 ####### Functions ########
 
 # updates image/screen
 def update():
-    # behind the grids image
+    # draws sonar background
     win.blit(Sprite.sonarBackground, (sideMargin, topBotMargin))
-    win.blit(Sprite.ocean, (sideMargin, topBotMargin + playScreenHeight))
     win.blit(Sprite.sonarBackground, (sideMargin + playScreenWidth, topBotMargin))
-    win.blit(Sprite.ocean, (sideMargin + playScreenWidth, topBotMargin + playScreenHeight))
-    # draws grid
+    # draws distress calls
+    for key, val in distressCalls.items():
+        distressCalls[key].draw()
+
     win.blit(Sprite.gridSonar, (sideMargin - 1, topBotMargin - 1))
-    win.blit(Sprite.grid, (sideMargin - 1, topBotMargin + playScreenHeight - 1))
     win.blit(Sprite.gridSonar, (sideMargin + playScreenWidth - 1, topBotMargin - 1))
+
+    # draws red sonar before the ocean map, so you can't see it one the ocean
+    sonarDisplay1[0].drawSonarMap()
+    sonarDisplay2[0].drawSonarMap()
+
+    # draws ocean background
+    oceanAnimation()
+    win.blit(Sprite.grid, (sideMargin - 1, topBotMargin + playScreenHeight - 1))
     win.blit(Sprite.grid, (sideMargin + playScreenWidth - 1, topBotMargin + playScreenHeight - 1))
-    
+
     # gets the average distance from sonar orgin to ship
     averageDist()
 
@@ -1551,6 +1616,10 @@ def update():
     for key, val in missMarkers.items():
         missMarkers[key].draw()
 
+    # draw explosion animation if needed
+    if Sprite.isExplode == 1:
+        explosionAnimation()
+
     # draws curser1 in new position
     curser1.drawCurser1()
     curser2.drawCurser2()
@@ -1561,13 +1630,46 @@ def update():
     for key, value in sonarDic2.items():
         sonarDic2[key].draw()
 
-    sonarDisplay1[0].drawSonarMap()
-    sonarDisplay2[0].drawSonarMap()
-
     # adds background
     win.blit(Sprite.backGround, (0,0))
+
+    # draws waiting screen
+    if player2End:
+        win.blit(Sprite.waitingScreen, (screenWidth, 0))
+    if player1End:
+        win.blit(Sprite.waitingScreen, (0, 0))
+
     # updates screen
     pygame.display.update()
+
+# animates ocean
+def oceanAnimation():
+    if Sprite.oceanAniCount + 1 >= 138:
+        Sprite.oceanAniCount = 0
+
+    if Sprite.oceanAniCount + 1 <= 72:
+        win.blit(Sprite.oceanAni[Sprite.oceanAniCount // 2], (sideMargin, topBotMargin + playScreenHeight))
+        win.blit(Sprite.oceanAni[Sprite.oceanAniCount // 2], (sideMargin + playScreenWidth, topBotMargin + playScreenHeight))
+
+    if Sprite.oceanAniCount + 1 > 72:
+        win.blit(Sprite.oceanAni[(143 - Sprite.oceanAniCount) // 2], (sideMargin, topBotMargin + playScreenHeight))
+        win.blit(Sprite.oceanAni[(143 - Sprite.oceanAniCount)  // 2], (sideMargin + playScreenWidth, topBotMargin + playScreenHeight))
+
+    Sprite.oceanAniCount += 1
+
+# animates explosions
+def explosionAnimation():
+
+    if playerTurn == 1:
+        win.blit(Sprite.explosionAni[Sprite.explosionAniCount // 2], (curser1.pos.x, curser1.pos.y))
+    if playerTurn == 2:
+        win.blit(Sprite.explosionAni[Sprite.explosionAniCount // 2], (curser2.pos.x, curser2.pos.y))
+
+    if Sprite.explosionAniCount + 1 >= 10:
+        Sprite.explosionAniCount = 0
+        Sprite.isExplode = 0
+
+    Sprite.explosionAniCount += 1
 
 # takes the average length of all beams colliding with a ship
 def averageDist():
@@ -1647,16 +1749,16 @@ def sonarAim(playerTurn):
             sonarStartAngle1 -= 5
 
         # increase power level
-        if (keys[pygame.K_EQUALS] or (mouse[3] and mouse[1])) and sonarWidth1 >= 1:
-            sonarWidth1 -= 1
-            sonarRange1 += 5
+        if (keys[pygame.K_EQUALS] or (mouse[3] and mouse[1])) and sonarWidth1 >= 2:
+            sonarWidth1 -= 2
+            sonarRange1 += int(10 * scalingFactor)
             # make the sonar power grow and shrink smoother
             if sonarWidth1%2:
                 sonarStartAngle1 += 1
         # decrease power level
         if (keys[pygame.K_MINUS] or (mouse[4] and mouse[1])) and sonarWidth1 <= 135:
-            sonarWidth1 += 1
-            sonarRange1 -= 5
+            sonarWidth1 += 2
+            sonarRange1 -= int(10 * scalingFactor)
             # make the sonar power grow and shrink smoother
             if sonarWidth1%2:
                 sonarStartAngle1 -= 1
@@ -1707,16 +1809,16 @@ def sonarAim(playerTurn):
             sonarStartAngle2 -= 5
 
         # increase power level
-        if (keys[pygame.K_EQUALS] or (mouse[3] and mouse[1])) and sonarWidth2 >= 1:
-            sonarWidth2 -= 1
-            sonarRange2 += 5
+        if (keys[pygame.K_EQUALS] or (mouse[3] and mouse[1])) and sonarWidth2 >= 2:
+            sonarWidth2 -= 2
+            sonarRange2 += int(8 * scalingFactor)
             # make the sonar power grow and shrink smoother
             if sonarWidth2%2:
                 sonarStartAngle2 += 1
         # decrease power level
         if (keys[pygame.K_MINUS] or (mouse[4] and mouse[1])) and sonarWidth2 <= 135:
-            sonarWidth2 += 1
-            sonarRange2 -= 5
+            sonarWidth2 += 2
+            sonarRange2 -= int(8 * scalingFactor)
             # make the sonar power grow and shrink smoother
             if sonarWidth2%2:
                 sonarStartAngle2 -= 1
@@ -1737,24 +1839,24 @@ def createSonar(playerTurn):
     sonarAim(playerTurn)
 
     # create each beam of the sonar
-    for i in range(sonarStartAngle1, sonarStartAngle1 + sonarWidth1 + 1):
+    for i in range(sonarStartAngle1, sonarStartAngle1 + sonarWidth1 + 1, sonarDensity):
         # gives the beams a radius of influence
         x2 = sonarPos1.x + math.cos(-math.radians(i)) * sonarRange1 
         y2 = sonarPos1.y + math.sin(-math.radians(i)) * sonarRange1 
         # creates first case line for collision function to use
         sonarDic1["beam%s" %i] = Sonar((255,0,255), sonarPos1.x, sonarPos1.y, x2, y2, math.radians(i))
-        if i == sonarStartAngle1 or i == sonarStartAngle1 + sonarWidth1:
+        if i == sonarStartAngle1 or i == sonarStartAngle1 + sonarWidth1 - 1:
             sonarDisplay1.append(Sonar((215,25,45), sonarPos1.x + playScreenWidth, sonarPos1.y - playScreenHeight, x2 + playScreenWidth, y2 - playScreenHeight, math.radians(i)))
         # modifies beam to new length depending on if it collided
         sonarDic1["beam%s" %i] = isCollideSonar(i, sonarDic1, sonarDic2, x2, y2, 1)
 
-    for i in range(sonarStartAngle2, sonarStartAngle2 + sonarWidth2 + 1):
+    for i in range(sonarStartAngle2, sonarStartAngle2 + sonarWidth2 + 1, sonarDensity):
         # gives the beams a radius of influence
         x2 = sonarPos2.x + math.cos(-math.radians(i)) * sonarRange2 
         y2 = sonarPos2.y + math.sin(-math.radians(i)) * sonarRange2
         # creates first case line for collision function to use
         sonarDic2["beam%s" %i] = Sonar((255,0,255), sonarPos2.x, sonarPos2.y, x2, y2, math.radians(i))
-        if i == sonarStartAngle2 or i == sonarStartAngle2 + sonarWidth2:
+        if i == sonarStartAngle2 or i == sonarStartAngle2 + sonarWidth2 - 1:
             sonarDisplay2.append(Sonar((215,25,45), sonarPos2.x - playScreenWidth, sonarPos2.y - playScreenHeight, x2 - playScreenWidth, y2 - playScreenHeight, math.radians(i)))
         # modifies beam to new length depending on if it collided
         sonarDic2["beam%s" %i] = isCollideSonar(i, sonarDic1, sonarDic2, x2, y2, 2)
@@ -1936,7 +2038,16 @@ def isCollide():
 def shootMissile():
     global shipDamages
     global playerTurn
+    global player1End
+    global player2End    
+    global isExplode
+    global playerTrigger
+
+    player1End = False
+    player2End = False
+    Sprite.isExplode = 1
     damageTest = 1
+    playerTrigger = 1
     # so the user cant shoot the same spot and do more damage
     for i in range(len(shipDamages)):
         # crashes if i dont do the try/except -/(-.-)\-
@@ -1958,6 +2069,7 @@ def shootMissile():
     isCollides = isCollide()
     # did it hit
     if playerTurn == 1:
+        player1End = True
         if isCollides[0] and damageTest:
             print("You hit {}!!". format(isCollides[1]))
             print("~~~~~~~~")
@@ -1979,6 +2091,7 @@ def shootMissile():
                 print("~~~~~~~~")
 
     if playerTurn == 2:
+        player2End = True
         if isCollides[0] and damageTest:
             print("You hit {}!!". format(isCollides[1]))
             print("~~~~~~~~")
@@ -1990,9 +2103,9 @@ def shootMissile():
             if shipDic1[isCollides[1]].health > 0:
                 shipDic1[isCollides[1]].health -= 1
         else:
-            # miss marker for player 2 sonar
-            missMarkers["miss%s" %len(missMarkers)] = MissMarker((255,0,0), curser2.pos.x + playScreenWidth, curser2.pos.y - playScreenHeight, tile, tile)
             if damageTest:
+                # miss marker for player 2 sonar
+                missMarkers["miss%s" %len(missMarkers)] = MissMarker((255,0,0), curser2.pos.x + playScreenWidth, curser2.pos.y - playScreenHeight, tile, tile)
                 print("All you shot was sea!")
                 print("~~~~~~~~")
             else:
@@ -2048,16 +2161,47 @@ def sink(ship):
 # detects if game has been won
 def isWin():
     global run
-    tot = 0
+    tot1 = 0
+    tot2 = 0
     for key, val in shipDic1.items():
-        tot += shipDic1[key].health
+        tot1 += shipDic1[key].health
 
-    if tot == 0:
-        print("\n\n\n\t\t\t\t**********************")
-        print("\t\t\t\t*****  You Win!  *****")
-        print("\t\t\t\t**********************")
+    if tot1 == 0:
+        print("\n\n\n\t\t\t\t      **********************")
+        print("\t\t\t\t*****  Player 2 Wins!  *****")
+        print("\t\t\t\t      **********************")
         run = False
 
+    for key, val in shipDic2.items():
+        tot2 += shipDic2[key].health
+
+    if tot2 == 0:
+        print("\n\n\n\t\t\t\t      **********************")
+        print("\t\t\t\t*****  Player 1 Wins!  *****")
+        print("\t\t\t\t      **********************")
+        run = False
+
+# distress mode for certain ship
+def isDistress(shipName):
+    global playerTurn
+    global shipDic1
+    global shipDic2
+    global tile
+    global distressCalls
+
+    distressCalls = {}
+
+    distressCalls["ontarget%s"] = distressCall((255,255,0), shipDic1[shipName].pos.x + playScreenWidth, shipDic1[shipName].pos.y, tile, tile)
+    # need to make random cloud so other player can guess where ship is
+    for k in range(randint(5,15)):
+        for i in range(0, randint(0,3)):
+            shipLength = shipDic1[shipName].health + shipDic1[shipName].damage
+            if shipDic1[shipName].width < shipDic1[shipName].height:
+                distressCalls["distress%s" %len(distressCalls)] = distressCall((255,255,0), shipDic1[shipName].pos.x + tile*randint(-i,i) + playScreenWidth, shipDic1[shipName].pos.y + tile*randint(-i,i) + int(0.5 * shipLength)*tile - playScreenHeight, tile, tile)
+            else:
+                distressCalls["distress%s" %len(distressCalls)] = distressCall((255,255,0), shipDic1[shipName].pos.x + tile*randint(-i,i) + int(0.5 * shipLength)*tile + playScreenWidth, shipDic1[shipName].pos.y + tile*randint(-i,i) - playScreenHeight, tile, tile)
+
+# detects if key is pressed
 def detectInputs(numShip):
 
     global isPress_SPACE
@@ -2065,6 +2209,7 @@ def detectInputs(numShip):
     global isPress_LSHIFT
     global isPress_TAB
     global isPress_BACKQUOTE
+    global isPress_COMMA
     global shipDic1
     global shipDic2
     global run
@@ -2110,15 +2255,43 @@ def detectInputs(numShip):
         isPress_SPACE = 0
    
     # shooting missle
-    if key[pygame.K_COMMA]:
-        playerTurn = 1
+    if key[pygame.K_COMMA] and isPress_COMMA == 0:
+        isPress_COMMA = 1
+        isDistress("ship4")
+        #playerTurn = 1
+    if not(key[pygame.K_COMMA]):
+        isPress_COMMA = 0
     if key[pygame.K_PERIOD]:
-        playerTurn = 2
+        pass
+        #playerTurn = 2
     # curser1 movement is in it's own class function
     curser1.move()
  
+# desided when players turns are
+def isPlayerTurn():
+    global playerTurn
+    global player1End
+    global player2End
+    global playerCount
+
+    playerTrigger = 0
+
+    if playerCount + 1 >= 20:
+        playerCount = 0 
+        if player1End:
+            playerTurn = 2
+    
+        if player2End:
+            playerTurn = 1
+
+    playerCount += 1
+
 # default first player to get to control
 playerTurn = 1
+player1End = False
+player2End = True
+playerCount = 0
+playerTrigger = 0
 
 # number of ships on the water
 numShip = 5
@@ -2148,11 +2321,15 @@ sonarStartAngle1 = 0
 sonarRange2 = tile
 sonarWidth2 = 135
 sonarStartAngle2 = 0
+sonarDensity = 2
 sonarPos1 = vec(sideMargin + tile/2, topBotMargin + tile/2 + playScreenHeight)
 sonarPos2 = vec(sideMargin + tile/2 + playScreenWidth, topBotMargin + tile/2 + playScreenHeight)
 
 # for calculating average distance
 averageLength = {}
+
+# for distress location
+distressCalls = {}
 
 # create target curser1
 curser1 = Target((150,150,150), sideMargin + tile + playScreenWidth, topBotMargin + tile + playScreenHeight, tile, tile)
@@ -2182,6 +2359,9 @@ while run:
     isSunk()
     # updates screen
     update()
+    # desides player turn
+    if playerTrigger:
+        isPlayerTurn()
     # did win
     isWin()
 
