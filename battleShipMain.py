@@ -49,10 +49,13 @@ isPress_LSHIFT = 0
 isPress_TAB = 0
 isPress_BACKQUOTE = 0
 isPress_COMMA = 0
+isPress_PERIOD = 0
 isPress_w = 0
 isPress_a = 0
 isPress_s = 0
 isPress_d = 0
+isPress_p = 0
+isDisplayingDistress = 0
 coord_1 = 0
 coord_2 = 0
 coord_3 = 0
@@ -1543,19 +1546,24 @@ class Sprite():
 
 # updates image/screen
 def update():
+    win.fill((0,0,0))
+
     # draws sonar background
     win.blit(Sprite.sonarBackground, (sideMargin, topBotMargin))
     win.blit(Sprite.sonarBackground, (sideMargin + playScreenWidth, topBotMargin))
     # draws distress calls
-    for key, val in distressCalls.items():
-        distressCalls[key].draw()
+    if (myClock//5)% 5:
+        for key, val in distressCalls.items():
+            distressCalls[key].draw()
 
     win.blit(Sprite.gridSonar, (sideMargin - 1, topBotMargin - 1))
     win.blit(Sprite.gridSonar, (sideMargin + playScreenWidth - 1, topBotMargin - 1))
 
     # draws red sonar before the ocean map, so you can't see it one the ocean
-    sonarDisplay1[0].drawSonarMap()
-    sonarDisplay2[0].drawSonarMap()
+    if not(playerTurn == 1):
+        sonarDisplay1[0].drawSonarMap()
+    if not(playerTurn == 2):
+        sonarDisplay2[0].drawSonarMap()
 
     # draws ocean background
     oceanAnimation()
@@ -1634,8 +1642,13 @@ def update():
     win.blit(Sprite.sonarPowerMeter, (playScreen + 1.1*sideMargin, topBotMargin*1.5))
     win.blit(Sprite.sonarPowerMeter, (playScreen + 1.1*sideMargin + playScreenWidth, topBotMargin*1.5))
 
+
     sonarMeter1.draw()
     sonarMeter2.draw()
+
+    sonarChargeMeter1.draw()
+    sonarChargeMeter2.draw()
+
 
     # adds background
     win.blit(Sprite.backGround, (0,0))
@@ -1840,15 +1853,16 @@ def createSonar(playerTurn):
     global sonarPos2
     global sonarDisplay1
     global sonarDisplay2
+    global sonarRange1
+    global sonarRange2
+
     # reset sonar dictionary
     sonarDic1 = {}
     sonarDic2 = {}
     sonarDisplay1 = []
     sonarDisplay2 = []
-
     # get the aim of the sonar
     sonarAim(playerTurn)
-
     # create each beam of the sonar
     for i in range(sonarStartAngle1, sonarStartAngle1 + sonarWidth1 + 1, sonarDensity):
         # gives the beams a radius of influence
@@ -1882,6 +1896,36 @@ def createSonarPowerMeter(sonarRange1, sonarRange2):
     global sonarMeter2
     sonarMeter1 = Rectangle((0,0,0), playScreen + 1.1*sideMargin, topBotMargin*2, 0.8*sideMargin, playScreen*0.9 - sonarRange2*scalingFactor*0.875)
     sonarMeter2 = Rectangle((0,0,0), playScreen + 1.1*sideMargin + playScreenWidth, topBotMargin*2, 0.8*sideMargin, playScreen*0.9 - sonarRange1*scalingFactor*0.875)
+
+# pulse sonar to give game sense of ships around
+def pulseSonar():
+    global sonarRange1
+    global sonarRange2
+    global sonarCharge1
+    global sonarCharge2
+    # i guess put sounds here or maybe in a seperate function
+    # implement sonar charge
+    if playerTurn == 1:
+        sonarCharge1 -= sonarRange2     # sonarRange# are switch to fixed some previous swap
+        if sonarCharge1 < 0:
+            sonarCharge1 = 0
+    if playerTurn == 2:
+        sonarCharge2 -= sonarRange1
+        if sonarCharge2 < 0:
+            sonarCharge2 = 0
+    # update sonar charge meter
+    createSonarChargeMeter()
+
+# creates and updates sonar charge meter
+def createSonarChargeMeter():
+    global sonarCharge1
+    global sonarCharge2
+    global sonarChargeMeter1
+    global sonarChargeMeter2
+    sonarCharge1_scaled = (sonarCharge1/MAXSONARCHARGE)
+    sonarCharge2_scaled = (sonarCharge2/MAXSONARCHARGE)
+    sonarChargeMeter1 = Rectangle((0,155,0), playScreen + 1.05*sideMargin, topBotMargin*2 + playScreenHeight + playScreen*0.235, 0.7*sideMargin, playScreen*0.66*sonarCharge1_scaled)  
+    sonarChargeMeter2 = Rectangle((0,155,0), playScreen + 1.05*sideMargin + playScreenWidth, topBotMargin*2 + playScreenHeight + playScreen*0.235, 0.7*sideMargin, playScreen*0.66*sonarCharge2_scaled)
 
 # sonar collision
 def isCollideSonar(beamnum, sonarDic1, sonarDic2, x2, y2, playerNum):
@@ -2064,7 +2108,9 @@ def shootMissile():
     global playerTrigger
     global playerShot1
     global playerShot2
+    global shoooted
 
+    shoooted = True
     player1End = False
     player2End = False
     Sprite.isExplode = 1
@@ -2210,33 +2256,85 @@ def isWin():
         print("\t\t\t\t      **********************")
         run = False
 
+# detects if ship is in distress
+def isDistressed():
+    global isDisplayingDistress
+    global sonarCharge1
+    global sonarCharge2
+    global distressCalls
+    global tempPlayerTurn
+    global shoooted
+
+    print(shoooted)
+    print(sonarCharge1)
+    if not(sonarCharge1) and isDisplayingDistress == 0 and tempPlayerTurn != playerTurn and playerTurn != 0:
+        print('frog')
+        isDisplayingDistress = 1
+        shipDistress(1)
+    if not(sonarCharge2) and isDisplayingDistress == 0 and tempPlayerTurn != playerTurn and playerTurn != 0:
+        print('frog')
+        isDisplayingDistress = 1
+        shipDistress(2)
+
+    if tempPlayerTurn != playerTurn and shoooted:
+        shoooted = False
+        distressCalls = {}
+        isDisplayingDistress = 0
+        if not(sonarCharge1):
+            sonarCharge1 = MAXSONARCHARGE
+        if not(sonarCharge2):
+            sonarCharge2 = MAXSONARCHARGE
+
+    tempPlayerTurn = playerTurn
+
 # distress mode for certain ship
-def isDistress(shipName):
+def shipDistress(playerInDistress):
     global playerTurn
     global shipDic1
     global shipDic2
     global tile
     global distressCalls
 
-    shipLength = shipDic1[shipName].health + shipDic1[shipName].damage
-
-    distressCalls = {}
-
-    if shipDic1[shipName].width < shipDic1[shipName].height:
-        distressCalls["ontarget"] = distressCall((255,255,0), shipDic1[shipName].pos.x + playScreenWidth, shipDic1[shipName].pos.y + randint(0, shipLength - 1)*tile - playScreenHeight, tile, tile)
-    else:
-        distressCalls["ontarget"] = distressCall((255,255,0), shipDic1[shipName].pos.x + randint(0, shipLength - 1)*tile + playScreenWidth, shipDic1[shipName].pos.y - playScreenHeight, tile, tile)
+    shipName = "ship%s" %randint(0,4)
 
     # need to make random cloud so other player can guess where ship is
     distressDensity = 2
     distressRange = 1
     distressOffset = randint(-1,1)
-    for k in range(randint(distressDensity, distressDensity + 3)):
-        for i in range(0, randint(distressRange, distressRange + 2)):
-            if shipDic1[shipName].width < shipDic1[shipName].height:
-                distressCalls["distress%s" %len(distressCalls)] = distressCall((255,255,0), shipDic1[shipName].pos.x + tile*randint(-i,i) + distressOffset*tile + playScreenWidth, shipDic1[shipName].pos.y + tile*randint(-i,i) + int(0.5 * shipLength)*tile + distressOffset*tile - playScreenHeight, tile, tile)
-            else:
-                distressCalls["distress%s" %len(distressCalls)] = distressCall((255,255,0), shipDic1[shipName].pos.x + tile*randint(-i,i) + distressOffset*tile + int(0.5 * shipLength)*tile + playScreenWidth, shipDic1[shipName].pos.y + tile*randint(-i,i) + distressOffset*tile - playScreenHeight, tile, tile)
+
+    shipLength = shipDic1[shipName].health + shipDic1[shipName].damage
+
+    distressCalls = {}
+
+    if playerInDistress == 1:
+        # guarantees that atleast one part of the ship will be lit
+        if shipDic1[shipName].width < shipDic1[shipName].height:
+            distressCalls["ontarget"] = distressCall((255,255,0), shipDic1[shipName].pos.x + playScreenWidth, shipDic1[shipName].pos.y + randint(0, shipLength - 1)*tile - playScreenHeight, tile, tile)
+        else:
+            distressCalls["ontarget"] = distressCall((255,255,0), shipDic1[shipName].pos.x + randint(0, shipLength - 1)*tile + playScreenWidth, shipDic1[shipName].pos.y - playScreenHeight, tile, tile)
+
+        # need to make random cloud so other player can guess where ship is
+        for k in range(randint(distressDensity, distressDensity + 3)):
+            for i in range(0, randint(distressRange, distressRange + 2)):
+                if shipDic1[shipName].width < shipDic1[shipName].height:
+                    distressCalls["distress%s" %len(distressCalls)] = distressCall((255,255,0), shipDic1[shipName].pos.x + tile*randint(-i,i) + distressOffset*tile + playScreenWidth, shipDic1[shipName].pos.y + tile*randint(-i,i) + int(0.5 * shipLength)*tile + distressOffset*tile - playScreenHeight, tile, tile)
+                else:
+                    distressCalls["distress%s" %len(distressCalls)] = distressCall((255,255,0), shipDic1[shipName].pos.x + tile*randint(-i,i) + distressOffset*tile + int(0.5 * shipLength)*tile + playScreenWidth, shipDic1[shipName].pos.y + tile*randint(-i,i) + distressOffset*tile - playScreenHeight, tile, tile)
+
+    if playerInDistress == 2:
+        # guarantees that atleast one part of the ship will be lit
+        if shipDic2[shipName].width < shipDic2[shipName].height:
+            distressCalls["ontarget"] = distressCall((255,255,0), shipDic2[shipName].pos.x + playScreenWidth, shipDic2[shipName].pos.y + randint(0, shipLength - 1)*tile - playScreenHeight, tile, tile)
+        else:
+            distressCalls["ontarget"] = distressCall((255,255,0), shipDic2[shipName].pos.x + randint(0, shipLength - 1)*tile + playScreenWidth, shipDic2[shipName].pos.y - playScreenHeight, tile, tile)
+
+        # need to make random cloud so other player can guess where ship is
+        for k in range(randint(distressDensity, distressDensity + 3)):
+            for i in range(0, randint(distressRange, distressRange + 2)):
+                if shipDic2[shipName].width < shipDic2[shipName].height:
+                    distressCalls["distress%s" %len(distressCalls)] = distressCall((255,255,0), shipDic2[shipName].pos.x + tile*randint(-i,i) + distressOffset*tile - playScreenWidth, shipDic2[shipName].pos.y + tile*randint(-i,i) + int(0.5 * shipLength)*tile + distressOffset*tile - playScreenHeight, tile, tile)
+                else:
+                    distressCalls["distress%s" %len(distressCalls)] = distressCall((255,255,0), shipDic2[shipName].pos.x + tile*randint(-i,i) + distressOffset*tile + int(0.5 * shipLength)*tile - playScreenWidth, shipDic2[shipName].pos.y + tile*randint(-i,i) + distressOffset*tile - playScreenHeight, tile, tile)
 
 # detects if key is pressed
 def detectInputs(numShip):
@@ -2247,6 +2345,8 @@ def detectInputs(numShip):
     global isPress_TAB
     global isPress_BACKQUOTE
     global isPress_COMMA
+    global isPress_PERIOD
+    global isPress_p
     global shipDic1
     global shipDic2
     global run
@@ -2254,6 +2354,7 @@ def detectInputs(numShip):
     global missMarkers
     global hitMarkers
     global shipDamages
+    global shoooted
 
     key = pygame.key.get_pressed()
     # detects if user wants to close the program
@@ -2290,16 +2391,28 @@ def detectInputs(numShip):
     # this just makes sure when space is pressed, it only inputs once
     if not(key[pygame.K_SPACE]):
         isPress_SPACE = 0
-   
+
+    # shoot sonar
+    if key[pygame.K_p] and isPress_p == 0:
+        pulseSonar()
+        isPress_p = 1
+    if not(key[pygame.K_p]):
+        isPress_p = 0
+
     # shooting missle
     if key[pygame.K_COMMA] and isPress_COMMA == 0:
         isPress_COMMA = 1
-        #isDistress("ship4")
-        playerTurn = 1
+        shipDistress(1)
+        #playerTurn = 1
     if not(key[pygame.K_COMMA]):
         isPress_COMMA = 0
-    if key[pygame.K_PERIOD]:
-        playerTurn = 2
+    if key[pygame.K_PERIOD] and isPress_PERIOD == 0:
+        isPress_PERIOD = 1
+        shipDistress(2)
+        #playerTurn = 2
+    if not(key[pygame.K_PERIOD]):
+        isPress_PERIOD = 0
+
     # curser1 movement is in it's own class function
     curser1.move()
  
@@ -2333,6 +2446,8 @@ playerCount = 0
 playerTrigger = 0
 playerShot1 = False
 playerShot2 = False
+tempPlayerTurn = 0
+shoooted = False
 
 # number of ships on the water
 numShip = 5
@@ -2367,6 +2482,14 @@ sonarPos1 = vec(sideMargin + tile/2, topBotMargin + tile/2 + playScreenHeight)
 sonarPos2 = vec(sideMargin + tile/2 + playScreenWidth, topBotMargin + tile/2 + playScreenHeight)
 sonarMeter1 = 0
 sonarMeter2 = 0
+sonarChargeMeter1 = 0
+sonarChargeMeter2 = 0
+# default sonar charge amount
+MAXSONARCHARGE = 500
+sonarCharge1 = MAXSONARCHARGE
+sonarCharge2 = MAXSONARCHARGE
+# create default sonar charge mater
+createSonarChargeMeter()
 
 # for calculating average distance
 averageLength = {}
@@ -2378,10 +2501,12 @@ distressCalls = {}
 curser1 = Target((150,150,150), sideMargin + tile + playScreenWidth, topBotMargin + tile + playScreenHeight, tile, tile)
 curser2 = Target((150,150,150), sideMargin + tile, topBotMargin + tile + playScreenHeight, tile, tile)
 
+
 # framerate of the game
 frameRate = 60
 
-
+# to keep time and for blinking animations
+myClock = 0
 
 # gameplay timing (the pacing of the game)
 afterShotTime = 60  # time after shot
@@ -2396,6 +2521,9 @@ targetCoords = []
 
 run = True
 while run:
+    if myClock == 1000:
+        myClock = 0
+    myClock += 1
     # controls rate of the game
     clock.tick(frameRate)
     # dectects inputs from all sources
@@ -2404,6 +2532,8 @@ while run:
     sonarDicUnpacker = createSonar(playerTurn)
     sonarDic1 = sonarDicUnpacker[0]
     sonarDic2 = sonarDicUnpacker[1]
+    #ship distress detection
+    isDistressed()
     # is there a sunken ship
     isSunk()
     # updates screen
