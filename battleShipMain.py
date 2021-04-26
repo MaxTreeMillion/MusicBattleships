@@ -11,6 +11,7 @@
 import pygame
 import math
 from random import randint
+import os
 
 # screen deminsions stuff
 screenHeight = 1280
@@ -20,10 +21,11 @@ playScreenHeight = int(screenHeight/2)
 playScreenWidth = screenWidth
 playScreen = int(playScreenHeight*0.9)
 topBotMargin = (playScreenHeight - playScreen)/2
-sideMargin = (playScreenWidth - playScreen)/2
+sideMargin = (playScreenWidth - playScreen)/2 
 tile = int(playScreen/10) + 0.75
 # for scaling certain things to different sizes
 scalingFactor = screenHeight/1280
+powerMeterScalingFactor = 0.875
 
 # initialize
 pygame.init()
@@ -31,6 +33,30 @@ win = pygame.display.set_mode((doubleScreenWidth, screenHeight))
 pygame.display.set_caption("Battleships the Musical")
 # clock
 clock = pygame.time.Clock()
+
+# # sounds
+pygame.mixer.init()
+# ##############################
+# #   -Channels
+ch_water = pygame.mixer.Channel(0)
+ch_shipTheme0 = pygame.mixer.Channel(1)
+ch_shipTheme1 = pygame.mixer.Channel(2)
+ch_shipTheme2 = pygame.mixer.Channel(3)
+ch_shipTheme3 = pygame.mixer.Channel(4)
+ch_shipTheme4 = pygame.mixer.Channel(5)
+ch_waterBuffer = pygame.mixer.Channel(6)
+#   -Water Sounds
+#all water sounds are 5400 frames long (at 60FPS)
+
+#boost below sounds volume in logic
+water1 = pygame.mixer.Sound(os.path.join('Ship Themes (wav) copy', 'water1.wav'))
+water2 = pygame.mixer.Sound(os.path.join('Ship Themes (wav) copy', 'water2.wav'))
+water3 = pygame.mixer.Sound(os.path.join('Ship Themes (wav) copy', 'water3.wav'))
+waterS_array = [water1, water2, water3]
+#   -Ship Themes
+carrier_close = pygame.mixer.Sound(os.path.join('Ship Themes (wav) copy','Carrier - Close Range.wav'))
+carrier_mid = pygame.mixer.Sound(os.path.join('Ship Themes (wav) copy','Carrier - Mid Range.wav'))
+carrier_far = pygame.mixer.Sound(os.path.join('Ship Themes (wav) copy','Carrier - Long Range.wav'))
 
 # x/y vectors
 vec = pygame.math.Vector2
@@ -1486,62 +1512,62 @@ class MissMarker:
 
 # class to hold misc sprites
 class Sprite():
-    sonarBackground = pygame.transform.smoothscale(pygame.image.load('Sprites/sonarBackground.png'), (playScreen, playScreen))
-    waitingScreen = pygame.transform.smoothscale(pygame.image.load('Sprites/waitingScreen.png'), (screenWidth, screenHeight))
-    grid = pygame.transform.smoothscale(pygame.image.load('Sprites/grid.png'), (playScreen + 2, playScreen + 2))
-    gridSonar = pygame.transform.smoothscale(pygame.image.load('Sprites/gridSonar.png'), (playScreen + 2, playScreen + 2))
-    backGround = pygame.transform.smoothscale(pygame.image.load('Sprites/mainbackground.png'), (doubleScreenWidth, screenHeight))
-    sub = pygame.transform.smoothscale(pygame.image.load('Sprites/Sub.png'), (int(tile), int(tile)))
-    sonarPowerMeter = pygame.transform.smoothscale(pygame.image.load('Sprites/SonarPowerMeter.png'), (int(0.8*sideMargin), int(0.95*playScreen)))
-    hitSprite = pygame.transform.smoothscale(pygame.image.load('Sprites/hitTile.png'), (int(tile), int(tile)))
-    missSprite = pygame.transform.smoothscale(pygame.image.load('Sprites/missTile.png'), (int(tile), int(tile)))
+    sonarBackground = pygame.transform.smoothscale(pygame.image.load(os.path.join('Sprites','sonarBackground.png')), (playScreen, playScreen))
+    waitingScreen = pygame.transform.smoothscale(pygame.image.load(os.path.join('Sprites','waitingScreen.png')), (screenWidth, screenHeight))
+    grid = pygame.transform.smoothscale(pygame.image.load(os.path.join('Sprites','grid.png')), (playScreen + 2, playScreen + 2))
+    gridSonar = pygame.transform.smoothscale(pygame.image.load(os.path.join('Sprites','gridSonar.png')), (playScreen + 2, playScreen + 2))
+    backGround = pygame.transform.smoothscale(pygame.image.load(os.path.join('Sprites','mainbackground.png')), (doubleScreenWidth, screenHeight))
+    sub = pygame.transform.smoothscale(pygame.image.load(os.path.join('Sprites','Sub.png')), (int(tile), int(tile)))
+    sonarPowerMeter = pygame.transform.smoothscale(pygame.image.load(os.path.join('Sprites','SonarPowerMeter.png')), (int(0.8*sideMargin), int(0.95*playScreen)))
+    hitSprite = pygame.transform.smoothscale(pygame.image.load(os.path.join('Sprites','hitTile.png')), (int(tile), int(tile)))
+    missSprite = pygame.transform.smoothscale(pygame.image.load(os.path.join('Sprites','missTile.png')), (int(tile), int(tile)))
 
     # animation sprites
     oceanAniCount = 0
-    oceanAni = [pygame.transform.smoothscale(pygame.image.load('Sprites/Ocean/WaterCaustics 01.png'), (playScreen, playScreen)),
-                pygame.transform.smoothscale(pygame.image.load('Sprites/Ocean/WaterCaustics 02.png'), (playScreen, playScreen)),
-                pygame.transform.smoothscale(pygame.image.load('Sprites/Ocean/WaterCaustics 03.png'), (playScreen, playScreen)),
-                pygame.transform.smoothscale(pygame.image.load('Sprites/Ocean/WaterCaustics 04.png'), (playScreen, playScreen)),
-                pygame.transform.smoothscale(pygame.image.load('Sprites/Ocean/WaterCaustics 05.png'), (playScreen, playScreen)),
-                pygame.transform.smoothscale(pygame.image.load('Sprites/Ocean/WaterCaustics 06.png'), (playScreen, playScreen)),
-                pygame.transform.smoothscale(pygame.image.load('Sprites/Ocean/WaterCaustics 07.png'), (playScreen, playScreen)),
-                pygame.transform.smoothscale(pygame.image.load('Sprites/Ocean/WaterCaustics 08.png'), (playScreen, playScreen)),
-                pygame.transform.smoothscale(pygame.image.load('Sprites/Ocean/WaterCaustics 09.png'), (playScreen, playScreen)),
-                pygame.transform.smoothscale(pygame.image.load('Sprites/Ocean/WaterCaustics 10.png'), (playScreen, playScreen)),
-                pygame.transform.smoothscale(pygame.image.load('Sprites/Ocean/WaterCaustics 11.png'), (playScreen, playScreen)),
-                pygame.transform.smoothscale(pygame.image.load('Sprites/Ocean/WaterCaustics 12.png'), (playScreen, playScreen)),
-                pygame.transform.smoothscale(pygame.image.load('Sprites/Ocean/WaterCaustics 13.png'), (playScreen, playScreen)),
-                pygame.transform.smoothscale(pygame.image.load('Sprites/Ocean/WaterCaustics 14.png'), (playScreen, playScreen)),
-                pygame.transform.smoothscale(pygame.image.load('Sprites/Ocean/WaterCaustics 15.png'), (playScreen, playScreen)),
-                pygame.transform.smoothscale(pygame.image.load('Sprites/Ocean/WaterCaustics 16.png'), (playScreen, playScreen)),
-                pygame.transform.smoothscale(pygame.image.load('Sprites/Ocean/WaterCaustics 17.png'), (playScreen, playScreen)),
-                pygame.transform.smoothscale(pygame.image.load('Sprites/Ocean/WaterCaustics 18.png'), (playScreen, playScreen)),
-                pygame.transform.smoothscale(pygame.image.load('Sprites/Ocean/WaterCaustics 19.png'), (playScreen, playScreen)),
-                pygame.transform.smoothscale(pygame.image.load('Sprites/Ocean/WaterCaustics 20.png'), (playScreen, playScreen)),
-                pygame.transform.smoothscale(pygame.image.load('Sprites/Ocean/WaterCaustics 21.png'), (playScreen, playScreen)),
-                pygame.transform.smoothscale(pygame.image.load('Sprites/Ocean/WaterCaustics 22.png'), (playScreen, playScreen)),
-                pygame.transform.smoothscale(pygame.image.load('Sprites/Ocean/WaterCaustics 23.png'), (playScreen, playScreen)),
-                pygame.transform.smoothscale(pygame.image.load('Sprites/Ocean/WaterCaustics 24.png'), (playScreen, playScreen)),
-                pygame.transform.smoothscale(pygame.image.load('Sprites/Ocean/WaterCaustics 25.png'), (playScreen, playScreen)),
-                pygame.transform.smoothscale(pygame.image.load('Sprites/Ocean/WaterCaustics 26.png'), (playScreen, playScreen)),
-                pygame.transform.smoothscale(pygame.image.load('Sprites/Ocean/WaterCaustics 27.png'), (playScreen, playScreen)),
-                pygame.transform.smoothscale(pygame.image.load('Sprites/Ocean/WaterCaustics 28.png'), (playScreen, playScreen)),
-                pygame.transform.smoothscale(pygame.image.load('Sprites/Ocean/WaterCaustics 29.png'), (playScreen, playScreen)),
-                pygame.transform.smoothscale(pygame.image.load('Sprites/Ocean/WaterCaustics 30.png'), (playScreen, playScreen)),
-                pygame.transform.smoothscale(pygame.image.load('Sprites/Ocean/WaterCaustics 31.png'), (playScreen, playScreen)),
-                pygame.transform.smoothscale(pygame.image.load('Sprites/Ocean/WaterCaustics 32.png'), (playScreen, playScreen)),
-                pygame.transform.smoothscale(pygame.image.load('Sprites/Ocean/WaterCaustics 33.png'), (playScreen, playScreen)),
-                pygame.transform.smoothscale(pygame.image.load('Sprites/Ocean/WaterCaustics 34.png'), (playScreen, playScreen)),
-                pygame.transform.smoothscale(pygame.image.load('Sprites/Ocean/WaterCaustics 35.png'), (playScreen, playScreen)),
-                pygame.transform.smoothscale(pygame.image.load('Sprites/Ocean/WaterCaustics 36.png'), (playScreen, playScreen))]
+    oceanAni = [pygame.transform.smoothscale(pygame.image.load(os.path.join('Sprites','Ocean','WaterCaustics 01.png')), (playScreen, playScreen)),
+                pygame.transform.smoothscale(pygame.image.load(os.path.join('Sprites','Ocean','WaterCaustics 02.png')), (playScreen, playScreen)),
+                pygame.transform.smoothscale(pygame.image.load(os.path.join('Sprites','Ocean','WaterCaustics 03.png')), (playScreen, playScreen)),
+                pygame.transform.smoothscale(pygame.image.load(os.path.join('Sprites','Ocean','WaterCaustics 04.png')), (playScreen, playScreen)),
+                pygame.transform.smoothscale(pygame.image.load(os.path.join('Sprites','Ocean','WaterCaustics 05.png')), (playScreen, playScreen)),
+                pygame.transform.smoothscale(pygame.image.load(os.path.join('Sprites','Ocean','WaterCaustics 06.png')), (playScreen, playScreen)),
+                pygame.transform.smoothscale(pygame.image.load(os.path.join('Sprites','Ocean','WaterCaustics 07.png')), (playScreen, playScreen)),
+                pygame.transform.smoothscale(pygame.image.load(os.path.join('Sprites','Ocean','WaterCaustics 08.png')), (playScreen, playScreen)),
+                pygame.transform.smoothscale(pygame.image.load(os.path.join('Sprites','Ocean','WaterCaustics 09.png')), (playScreen, playScreen)),
+                pygame.transform.smoothscale(pygame.image.load(os.path.join('Sprites','Ocean','WaterCaustics 10.png')), (playScreen, playScreen)),
+                pygame.transform.smoothscale(pygame.image.load(os.path.join('Sprites','Ocean','WaterCaustics 11.png')), (playScreen, playScreen)),
+                pygame.transform.smoothscale(pygame.image.load(os.path.join('Sprites','Ocean','WaterCaustics 12.png')), (playScreen, playScreen)),
+                pygame.transform.smoothscale(pygame.image.load(os.path.join('Sprites','Ocean','WaterCaustics 13.png')), (playScreen, playScreen)),
+                pygame.transform.smoothscale(pygame.image.load(os.path.join('Sprites','Ocean','WaterCaustics 14.png')), (playScreen, playScreen)),
+                pygame.transform.smoothscale(pygame.image.load(os.path.join('Sprites','Ocean','WaterCaustics 15.png')), (playScreen, playScreen)),
+                pygame.transform.smoothscale(pygame.image.load(os.path.join('Sprites','Ocean','WaterCaustics 16.png')), (playScreen, playScreen)),
+                pygame.transform.smoothscale(pygame.image.load(os.path.join('Sprites','Ocean','WaterCaustics 17.png')), (playScreen, playScreen)),
+                pygame.transform.smoothscale(pygame.image.load(os.path.join('Sprites','Ocean','WaterCaustics 18.png')), (playScreen, playScreen)),
+                pygame.transform.smoothscale(pygame.image.load(os.path.join('Sprites','Ocean','WaterCaustics 19.png')), (playScreen, playScreen)),
+                pygame.transform.smoothscale(pygame.image.load(os.path.join('Sprites','Ocean','WaterCaustics 20.png')), (playScreen, playScreen)),
+                pygame.transform.smoothscale(pygame.image.load(os.path.join('Sprites','Ocean','WaterCaustics 21.png')), (playScreen, playScreen)),
+                pygame.transform.smoothscale(pygame.image.load(os.path.join('Sprites','Ocean','WaterCaustics 22.png')), (playScreen, playScreen)),
+                pygame.transform.smoothscale(pygame.image.load(os.path.join('Sprites','Ocean','WaterCaustics 23.png')), (playScreen, playScreen)),
+                pygame.transform.smoothscale(pygame.image.load(os.path.join('Sprites','Ocean','WaterCaustics 24.png')), (playScreen, playScreen)),
+                pygame.transform.smoothscale(pygame.image.load(os.path.join('Sprites','Ocean','WaterCaustics 25.png')), (playScreen, playScreen)),
+                pygame.transform.smoothscale(pygame.image.load(os.path.join('Sprites','Ocean','WaterCaustics 26.png')), (playScreen, playScreen)),
+                pygame.transform.smoothscale(pygame.image.load(os.path.join('Sprites','Ocean','WaterCaustics 27.png')), (playScreen, playScreen)),
+                pygame.transform.smoothscale(pygame.image.load(os.path.join('Sprites','Ocean','WaterCaustics 28.png')), (playScreen, playScreen)),
+                pygame.transform.smoothscale(pygame.image.load(os.path.join('Sprites','Ocean','WaterCaustics 29.png')), (playScreen, playScreen)),
+                pygame.transform.smoothscale(pygame.image.load(os.path.join('Sprites','Ocean','WaterCaustics 30.png')), (playScreen, playScreen)),
+                pygame.transform.smoothscale(pygame.image.load(os.path.join('Sprites','Ocean','WaterCaustics 31.png')), (playScreen, playScreen)),
+                pygame.transform.smoothscale(pygame.image.load(os.path.join('Sprites','Ocean','WaterCaustics 32.png')), (playScreen, playScreen)),
+                pygame.transform.smoothscale(pygame.image.load(os.path.join('Sprites','Ocean','WaterCaustics 33.png')), (playScreen, playScreen)),
+                pygame.transform.smoothscale(pygame.image.load(os.path.join('Sprites','Ocean','WaterCaustics 34.png')), (playScreen, playScreen)),
+                pygame.transform.smoothscale(pygame.image.load(os.path.join('Sprites','Ocean','WaterCaustics 35.png')), (playScreen, playScreen)),
+                pygame.transform.smoothscale(pygame.image.load(os.path.join('Sprites','Ocean','WaterCaustics 36.png')), (playScreen, playScreen))]
 
     explosionAniCount = 0
     isExplode = 0
-    explosionAni = [pygame.transform.smoothscale(pygame.image.load('Sprites/explosion/exp1.png'), (int(tile), int(tile))),
-                    pygame.transform.smoothscale(pygame.image.load('Sprites/explosion/exp2.png'), (int(tile), int(tile))),
-                    pygame.transform.smoothscale(pygame.image.load('Sprites/explosion/exp3.png'), (int(tile), int(tile))),
-                    pygame.transform.smoothscale(pygame.image.load('Sprites/explosion/exp4.png'), (int(tile), int(tile))),
-                    pygame.transform.smoothscale(pygame.image.load('Sprites/explosion/exp5.png'), (int(tile), int(tile)))]
+    explosionAni = [pygame.transform.smoothscale(pygame.image.load(os.path.join('Sprites','explosion','exp1.png')), (int(tile), int(tile))),
+                    pygame.transform.smoothscale(pygame.image.load(os.path.join('Sprites','explosion','exp2.png')), (int(tile), int(tile))),
+                    pygame.transform.smoothscale(pygame.image.load(os.path.join('Sprites','explosion','exp3.png')), (int(tile), int(tile))),
+                    pygame.transform.smoothscale(pygame.image.load(os.path.join('Sprites','explosion','exp4.png')), (int(tile), int(tile))),
+                    pygame.transform.smoothscale(pygame.image.load(os.path.join('Sprites','explosion','exp5.png')), (int(tile), int(tile)))]
 ####### Functions ########
 
 # updates image/screen
@@ -1894,8 +1920,8 @@ def createSonar(playerTurn):
 def createSonarPowerMeter(sonarRange1, sonarRange2):
     global sonarMeter1
     global sonarMeter2
-    sonarMeter1 = Rectangle((0,0,0), playScreen + 1.1*sideMargin, topBotMargin*2, 0.8*sideMargin, playScreen*0.9 - sonarRange2*scalingFactor*0.875)
-    sonarMeter2 = Rectangle((0,0,0), playScreen + 1.1*sideMargin + playScreenWidth, topBotMargin*2, 0.8*sideMargin, playScreen*0.9 - sonarRange1*scalingFactor*0.875)
+    sonarMeter1 = Rectangle((0,0,0), playScreen + 1.1*sideMargin, topBotMargin*2, 0.8*sideMargin, playScreen*0.9 - sonarRange2*powerMeterScalingFactor)
+    sonarMeter2 = Rectangle((0,0,0), playScreen + 1.1*sideMargin + playScreenWidth, topBotMargin*2, 0.8*sideMargin, playScreen*0.9 - sonarRange1*powerMeterScalingFactor)
 
 # pulse sonar to give game sense of ships around
 def pulseSonar():
@@ -2265,26 +2291,31 @@ def isDistressed():
     global tempPlayerTurn
     global shoooted
 
-    print(shoooted)
-    print(sonarCharge1)
+    if playerTurn == 1:
+        otherPlayer = 2
+    elif playerTurn == 2:
+        otherPlayer = 1
+    else:
+        otherPlayer = 0
+
     if not(sonarCharge1) and isDisplayingDistress == 0 and tempPlayerTurn != playerTurn and playerTurn != 0:
-        print('frog')
         isDisplayingDistress = 1
         shipDistress(1)
     if not(sonarCharge2) and isDisplayingDistress == 0 and tempPlayerTurn != playerTurn and playerTurn != 0:
-        print('frog')
         isDisplayingDistress = 1
         shipDistress(2)
 
-    if tempPlayerTurn != playerTurn and shoooted:
-        shoooted = False
+    #print("OtherPLayer: {}\tShoooted: {}" .format(otherPlayer, shoooted))
+    if otherPlayer == 1 and shoooted:
+        sonarCharge1 = MAXSONARCHARGE
         distressCalls = {}
         isDisplayingDistress = 0
-        if not(sonarCharge1):
-            sonarCharge1 = MAXSONARCHARGE
-        if not(sonarCharge2):
-            sonarCharge2 = MAXSONARCHARGE
+    if otherPlayer == 2 and shoooted:
+        sonarCharge2 = MAXSONARCHARGE
+        distressCalls = {}
+        isDisplayingDistress = 0
 
+    shoooted = False
     tempPlayerTurn = playerTurn
 
 # distress mode for certain ship
@@ -2438,7 +2469,40 @@ def isPlayerTurn():
 
     playerCount += 1
 
-# default first player to get to control
+# plays background water sounds
+def waterSound(run, waterClock, waterSound, waterChannel, waterChannelBuffer):
+ #water sounds controlled by 2 channels. primary playback channel = waterChannel, secondary playback channel = waterChannelBuffer
+ #the buffer provides audio to sustain the water noises while the primary playback channel fades out and back in
+ #water clock tracks game ticks, these are used to represent time
+
+    waterSound = waterSound[randint(0,2)]
+
+ #begin playback on main water channel if the game is running and the channel is not currently being used
+    if run == True and waterChannel.get_busy() == False:
+        
+       #play the sound for the length of the duration (will not use the whole duration - could potentially use smaller sound files)
+       waterChannel.play(waterSound, maxtime=90000)
+       #setting volume (in stereo) to 1/2 of full volume 
+       waterChannel.set_volume(0.5,0.5)
+
+ #fade conditional - tracks duration of play length and fades accordingly
+ #if water clock number is a number near any number where % 650 = 0:
+ #fadeout the primary playback channel, and fade in the secondary playback channel
+    if waterChannel.get_busy() == True and waterClock % 3000 == 0:
+        waterChannel.fadeout(9000)
+        waterChannelBuffer.play(waterSound, maxtime=80000, fade_ms=9000)
+
+ #fades out the buffer channel once enough time has passed for the primary playback channel to fade back in
+    if waterChannelBuffer.get_busy() == True and waterChannel.get_busy() == True and waterClock % 3500 == 0:#615+35=685 (5 seconds after a fade occurs)
+        waterChannelBuffer.fadeout(5000)
+
+    #below measurements differ according to runtime, but fade works nonetheless (lol (optimize for pi))
+    #650 is the cutoff point for a fade
+    #~7 increments a second (5 seconds = 35 increments)
+    #fadeout should be % == 0 by (650-35= 615)
+    # default first player to get to control
+
+         
 playerTurn = 1
 player1End = False
 player2End = True
@@ -2507,6 +2571,8 @@ frameRate = 60
 
 # to keep time and for blinking animations
 myClock = 0
+#separate clock for water sound playback
+waterClock = 0
 
 # gameplay timing (the pacing of the game)
 afterShotTime = 60  # time after shot
@@ -2523,9 +2589,14 @@ run = True
 while run:
     if myClock == 1000:
         myClock = 0
+    if waterClock == 4000:
+        waterClock = 0
     myClock += 1
+    waterClock += 1
     # controls rate of the game
     clock.tick(frameRate)
+    #calls water sound playback and maintains fade loop
+    waterSound(run, waterClock, waterS_array, ch_water, ch_waterBuffer)
     # dectects inputs from all sources
     detectInputs(numShip)
     # sonar iteration
@@ -2547,3 +2618,5 @@ while run:
 
 # if main loop is broke then close program
 pygame.quit()
+
+
