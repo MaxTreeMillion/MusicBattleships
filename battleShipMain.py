@@ -14,8 +14,8 @@ from random import randint
 import os
 
 # screen deminsions stuff
-screenHeight = 1280
-screenWidth = 720
+screenHeight = 600
+screenWidth = 600
 doubleScreenWidth = screenWidth*2
 playScreenHeight = int(screenHeight/2)
 playScreenWidth = screenWidth
@@ -80,6 +80,7 @@ isPress_a = 0
 isPress_s = 0
 isPress_d = 0
 isPress_p = 0
+isPress_z = 0
 isDisplayingDistress = 0
 coord_1 = 0
 coord_2 = 0
@@ -1571,121 +1572,127 @@ class Sprite():
 
 # updates image/screen
 def update():
-    win.fill((0,0,0))
+    global isPress_p
 
-    # draws sonar background
-    win.blit(Sprite.sonarBackground, (sideMargin, topBotMargin))
-    win.blit(Sprite.sonarBackground, (sideMargin + playScreenWidth, topBotMargin))
-    # draws distress calls
-    if (myClock//5)% 5:
-        for key, val in distressCalls.items():
-            distressCalls[key].draw()
+    if isPress_p == 0:
+        win.fill((0,0,0))
 
-    win.blit(Sprite.gridSonar, (sideMargin - 1, topBotMargin - 1))
-    win.blit(Sprite.gridSonar, (sideMargin + playScreenWidth - 1, topBotMargin - 1))
+        # draws sonar background
+        win.blit(Sprite.sonarBackground, (sideMargin, topBotMargin))
+        win.blit(Sprite.sonarBackground, (sideMargin + playScreenWidth, topBotMargin))
+        # draws distress calls
+        if (myClock//5)% 5:
+            for key, val in distressCalls.items():
+                distressCalls[key].draw()
 
-    # draws red sonar before the ocean map, so you can't see it one the ocean
-    if not(playerTurn == 1):
-        sonarDisplay1[0].drawSonarMap()
-    if not(playerTurn == 2):
-        sonarDisplay2[0].drawSonarMap()
+        win.blit(Sprite.gridSonar, (sideMargin - 1, topBotMargin - 1))
+        win.blit(Sprite.gridSonar, (sideMargin + playScreenWidth - 1, topBotMargin - 1))
 
-    # draws ocean background
-    oceanAnimation()
-    win.blit(Sprite.grid, (sideMargin - 1, topBotMargin + playScreenHeight - 1))
-    win.blit(Sprite.grid, (sideMargin + playScreenWidth - 1, topBotMargin + playScreenHeight - 1))
+        # draws red sonar before the ocean map, so you can't see it one the ocean
+        if not(playerTurn == 1):
+            sonarDisplay1[0].drawSonarMap()
+        if not(playerTurn == 2):
+            sonarDisplay2[0].drawSonarMap()
 
-    # gets the average distance from sonar orgin to ship
-    averageDist()
+        # draws ocean background
+        oceanAnimation()
+        win.blit(Sprite.grid, (sideMargin - 1, topBotMargin + playScreenHeight - 1))
+        win.blit(Sprite.grid, (sideMargin + playScreenWidth - 1, topBotMargin + playScreenHeight - 1))
 
-    # draw submarine
-    # sub 1
-    win.blit(Sprite.sub, (sonarPos1.x - tile/2 + playScreenWidth, sonarPos1.y - tile/2 - playScreenHeight))
-    # sub 2
-    win.blit(Sprite.sub, (sonarPos2.x - tile/2 - playScreenWidth, sonarPos2.y - tile/2 - playScreenHeight))
+        # gets the average distance from sonar orgin to ship
+        averageDist()
 
-    # draws all ships
-    #print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~") 
-    for key, val in shipDic1.items():
-        shipDic1[key].draw()
-        #########################################################################################################################
-        ###       THIS IS WHERE THE OUTPUTS FOR WHAT SHIP IS BEING HIT BY SONAR AND HOW MANY SONAR BEANS ARE HITTING IT       ###
-        #                                                                                                                       #
-        #                                                                                                                       #
-        #print("{0:5}: {1:3}    Average Distance in Range:". format(key, shipDic1[key].sonarHitNum), shipDic1[key].averageDistance)#
-        #                                                                                                                       #
-        ###                                                                                                                   ###
-        #########################################################################################################################
+        # draw submarine
+        # sub 1
+        win.blit(Sprite.sub, (sonarPos1.x - tile/2 + playScreenWidth, sonarPos1.y - tile/2 - playScreenHeight))
+        # sub 2
+        win.blit(Sprite.sub, (sonarPos2.x - tile/2 - playScreenWidth, sonarPos2.y - tile/2 - playScreenHeight))
 
-        #reset sonar collide counters (how many beams are currently hitting a ship 
-        shipDic1[key].sonarHitNum = 0
-
+        # draws all ships
+        #print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~") 
         for key, val in shipDic1.items():
-            averageLength[key] = []
+            shipDic1[key].draw()
+            #########################################################################################################################
+            ###       THIS IS WHERE THE OUTPUTS FOR WHAT SHIP IS BEING HIT BY SONAR AND HOW MANY SONAR BEANS ARE HITTING IT       ###
+            #                                                                                                                       #
+            #                                                                                                                       #
+            #print("{0:5}: {1:3}    Average Distance in Range:". format(key, shipDic1[key].sonarHitNum), shipDic1[key].averageDistance)#
+            #                                                                                                                       #
+            ###                                                                                                                   ###
+            #########################################################################################################################
 
-    for key, val in shipDic2.items():
-        shipDic2[key].draw()
-        #########################################################################################################################
-        ###       THIS IS WHERE THE OUTPUTS FOR WHAT SHIP IS BEING HIT BY SONAR AND HOW MANY SONAR BEANS ARE HITTING IT       ###
-        #                                                                                                                       #
-        #                                                                                                                       #
-        #print("{0:5}: {1:3}    Average Distance in Range:". format(key, shipDic1[key].sonarHitNum), shipDic1[key].averageDistance)#
-        #                                                                                                                       #
-        ###                                                                                                                   ###
-        #########################################################################################################################
+            #reset sonar collide counters (how many beams are currently hitting a ship 
+            shipDic1[key].sonarHitNum = 0
 
-        #reset sonar collide counters (how many beams are currently hitting a ship 
-        shipDic2[key].sonarHitNum = 0
+            for key, val in shipDic1.items():
+                averageLength[key] = []
 
         for key, val in shipDic2.items():
-            averageLength[key] = []
+            shipDic2[key].draw()
+            #########################################################################################################################
+            ###       THIS IS WHERE THE OUTPUTS FOR WHAT SHIP IS BEING HIT BY SONAR AND HOW MANY SONAR BEANS ARE HITTING IT       ###
+            #                                                                                                                       #
+            #                                                                                                                       #
+            #print("{0:5}: {1:3}    Average Distance in Range:". format(key, shipDic1[key].sonarHitNum), shipDic1[key].averageDistance)#
+            #                                                                                                                       #
+            ###                                                                                                                   ###
+            #########################################################################################################################
 
-    # draws all ship damage sprites
-    for key, val in shipDamages.items():
-        shipDamages[key].draw()
-    # draws all hit sprites
-    for key, val in hitMarkers.items():
-        hitMarkers[key].draw()
-    # draws all miss sprites
-    for key, val in missMarkers.items():
-        missMarkers[key].draw()
+            #reset sonar collide counters (how many beams are currently hitting a ship 
+            shipDic2[key].sonarHitNum = 0
 
-    # draw explosion animation if needed
-    if Sprite.isExplode == 1:
-        explosionAnimation()
+            for key, val in shipDic2.items():
+                averageLength[key] = []
 
-    # draws curser1 in new position
-    curser1.drawCurser1()
-    curser2.drawCurser2()
+        # draws all ship damage sprites
+        for key, val in shipDamages.items():
+            shipDamages[key].draw()
+        # draws all hit sprites
+        for key, val in hitMarkers.items():
+            hitMarkers[key].draw()
+        # draws all miss sprites
+        for key, val in missMarkers.items():
+            missMarkers[key].draw()
 
-    # draws all sonar beams
-    for key, value in sonarDic1.items():
-        sonarDic1[key].draw()
-    for key, value in sonarDic2.items():
-        sonarDic2[key].draw()
+        # draw explosion animation if needed
+        if Sprite.isExplode == 1:
+            explosionAnimation()
 
-    win.blit(Sprite.sonarPowerMeter, (playScreen + 1.1*sideMargin, topBotMargin*1.5))
-    win.blit(Sprite.sonarPowerMeter, (playScreen + 1.1*sideMargin + playScreenWidth, topBotMargin*1.5))
+        # draws curser1 in new position
+        curser1.drawCurser1()
+        curser2.drawCurser2()
+
+        # draws all sonar beams
+        for key, value in sonarDic1.items():
+            sonarDic1[key].draw()
+        for key, value in sonarDic2.items():
+            sonarDic2[key].draw()
+
+        win.blit(Sprite.sonarPowerMeter, (playScreen + 1.1*sideMargin, topBotMargin*1.5))
+        win.blit(Sprite.sonarPowerMeter, (playScreen + 1.1*sideMargin + playScreenWidth, topBotMargin*1.5))
 
 
-    sonarMeter1.draw()
-    sonarMeter2.draw()
+        sonarMeter1.draw()
+        sonarMeter2.draw()
 
-    sonarChargeMeter1.draw()
-    sonarChargeMeter2.draw()
+        sonarChargeMeter1.draw()
+        sonarChargeMeter2.draw()
 
 
-    # adds background
-    win.blit(Sprite.backGround, (0,0))
+        # adds background
+        win.blit(Sprite.backGround, (0,0))
 
-    # draws waiting screen
-    #if player2End and not(Sprite.explosionAniCount):
-    #    win.blit(Sprite.waitingScreen, (screenWidth, 0))
-    #if player1End and not(Sprite.explosionAniCount):
-    #    win.blit(Sprite.waitingScreen, (0, 0))
+        # draws waiting screen
+        #if player2End and not(Sprite.explosionAniCount):
+        #    win.blit(Sprite.waitingScreen, (screenWidth, 0))
+        #if player1End and not(Sprite.explosionAniCount):
+        #    win.blit(Sprite.waitingScreen, (0, 0))
 
-    # updates screen
-    pygame.display.update()
+        # updates screen
+        pygame.display.update()
+        
+    elif isPress_p == 1:
+        pass
 
 # animates ocean
 def oceanAnimation():
@@ -1880,6 +1887,9 @@ def createSonar(playerTurn):
     global sonarDisplay2
     global sonarRange1
     global sonarRange2
+    global isPress_p
+    global shipDic1
+    global shipDic2
 
     # reset sonar dictionary
     sonarDic1 = {}
@@ -1899,7 +1909,7 @@ def createSonar(playerTurn):
             sonarDisplay1.append(Sonar((215,25,45), sonarPos1.x + playScreenWidth, sonarPos1.y - playScreenHeight, x2 + playScreenWidth, y2 - playScreenHeight, math.radians(i)))
         # modifies beam to new length depending on if it collided
         sonarDic1["beam%s" %i] = isCollideSonar(i, sonarDic1, sonarDic2, x2, y2, 1)
-    
+
     for i in range(sonarStartAngle2, sonarStartAngle2 + sonarWidth2 + 1, sonarDensity):
         # gives the beams a radius of influence
         x2 = sonarPos2.x + math.cos(-math.radians(i)) * sonarRange2 
@@ -1911,7 +1921,42 @@ def createSonar(playerTurn):
         # modifies beam to new length depending on if it collided
         sonarDic2["beam%s" %i] = isCollideSonar(i, sonarDic1, sonarDic2, x2, y2, 2)
 
-    createSonarPowerMeter(sonarRange1, sonarRange2)
+    #createSonarPowerMeter(sonarRange1, sonarRange2)
+
+    #coupling good times
+    #making a list of ships hit by sonar if in sonar stage
+    #player 1 and player 2
+    
+    if isPress_p == 1:
+        sonar_hitShips = {}
+        #beamHitNumList = {}
+        #print(shipDic1)
+        if playerTurn == 1:
+            for key, val in shipDic1.items():
+                ship = val
+                if ship.sonarHitNum > 0:
+                    sonar_hitShips[key] = val
+                    print('ship added')
+                    #beamHitNumList.append(ship.sonarHitNum)
+                    #1st item in beamHitNum list will be the first item in sonar_hitShi[s]
+    
+            #print('beamHitNumList: {}'.format(beamHitNumList))
+            print('(1)sonar_hitShips: {}'.format(sonar_hitShips))
+        elif playerTurn == 2:
+            for key, val in shipDic2.items():
+                ship = val
+                if ship.sonarHitNum > 0:
+                    sonar_hitShips[key] = val
+                    print('ship added')
+                    #beamHitNumList.append(ship.sonarHitNum)
+            print('(2)sonar_hitShips: {}'.format(sonar_hitShips))
+        # calls ship sounds,
+        shipTheme_playback(sonar_hitShips)
+        
+        #TO BREAK THE LOOP
+        isPress_p = 0
+
+
     # returns dictionary of all the lines
     return sonarDic1, sonarDic2
 
@@ -2290,14 +2335,14 @@ def isDistressed():
     global tempPlayerTurn
     global shoooted
 
-    print(shoooted)
-    print(sonarCharge1)
+    #print(shoooted)
+    #print(sonarCharge1)
     if not(sonarCharge1) and isDisplayingDistress == 0 and tempPlayerTurn != playerTurn and playerTurn != 0:
-        print('frog')
+        #print('frog')
         isDisplayingDistress = 1
         shipDistress(1)
     if not(sonarCharge2) and isDisplayingDistress == 0 and tempPlayerTurn != playerTurn and playerTurn != 0:
-        print('frog')
+        #print('frog')
         isDisplayingDistress = 1
         shipDistress(2)
 
@@ -2372,6 +2417,7 @@ def detectInputs(numShip):
     global isPress_COMMA
     global isPress_PERIOD
     global isPress_p
+    global isPress_z
     global shipDic1
     global shipDic2
     global run
@@ -2419,10 +2465,12 @@ def detectInputs(numShip):
 
     # shoot sonar
     if key[pygame.K_p] and isPress_p == 0:
-        pulseSonar()
         isPress_p = 1
-    if not(key[pygame.K_p]):
-        isPress_p = 0
+        pulseSonar()
+        
+        
+    #if not(key[pygame.K_p]):
+        #isPress_p = 0
 
     # shooting missle
     if key[pygame.K_COMMA] and isPress_COMMA == 0:
@@ -2437,6 +2485,9 @@ def detectInputs(numShip):
         #playerTurn = 2
     if not(key[pygame.K_PERIOD]):
         isPress_PERIOD = 0
+
+    if key[pygame.K_z] and isPress_z == 0:
+        isPress_z = 1
 
     # curser1 movement is in it's own class function
     curser1.move()
@@ -2462,6 +2513,129 @@ def isPlayerTurn():
             playerTurn = 1
 
     playerCount += 1
+
+#function for playback of ship themes
+#set up for 2 players pulling from their respective collections
+def shipTheme_playback(sonar_hitShips):
+    global shipDic1
+    global shipDic2
+    global playerTurn
+    #3 volume settings based on amt of beams hitting ship
+    ##TO BE REWORKED
+        
+    for val in sonar_hitShips.values(): 
+        #print(sonar_hitShips)
+        
+        
+        #for i in beamHitNumList
+        if ch_shipTheme0.get_busy() == False:
+            if val.sonarHitNum < 10:
+                ch_shipTheme0.set_volume(0.3, 0.3)
+            elif val.sonarHitNum > 10 and val.sonarHitNum < 20:
+                ch_shipTheme0.set_volume(0.6,0.6)
+            else:
+                ch_shipTheme0.set_volume(0.9,0.9)
+
+        elif ch_shipTheme1.get_busy() == False:
+            if val.sonarHitNum < 10:
+                ch_shipTheme1.set_volume(0.3, 0.3)
+            elif val.sonarHitNum > 10 and val.sonarHitNum < 20:
+                ch_shipTheme1.set_volume(0.6,0.6)
+            else:
+                ch_shipTheme1.set_volume(0.9,0.9)
+        
+        elif ch_shipTheme2.get_busy() == False:
+            if val.sonarHitNum < 10:
+                ch_shipTheme2.set_volume(0.3, 0.3)
+            elif val.sonarHitNum > 10 and val.sonarHitNum < 20:
+                ch_shipTheme2.set_volume(0.6,0.6)
+            else:
+                ch_shipTheme2.set_volume(0.9,0.9)
+        
+        elif ch_shipTheme3.get_busy() == False:
+            if val.sonarHitNum < 10:
+                ch_shipTheme3.set_volume(0.3, 0.3)
+            elif val.sonarHitNum > 10 and val.sonarHitNum < 20:
+                ch_shipTheme3.set_volume(0.6,0.6)
+            else:
+                ch_shipTheme3.set_volume(0.9,0.9)
+        
+        elif ch_shipTheme4.get_busy() == False:
+            if val.sonarHitNum < 10:
+                ch_shipTheme4.set_volume(0.3, 0.3)
+            elif val.sonarHitNum > 10 and val.sonarHitNum < 20:
+                ch_shipTheme4.set_volume(0.6,0.6)
+            else:
+                ch_shipTheme4.set_volume(0.9,0.9)
+        
+        
+        #playback options based on distance the beam is from sub and what ship is being hit
+        if playerTurn == 1:
+            if val == shipDic1['ship0']:
+                if ch_shipTheme0.get_busy() == False:
+                    #if ship.averageDistance < 80:
+                    ch_shipTheme0.play(carrier_close)
+                    print('ship0 channel busy: {} '.format(ch_shipTheme0.get_busy()))
+            elif val == shipDic1['ship1']:
+                if ch_shipTheme1.get_busy() == False:
+                    #if ship.averageDistance < 80:
+                    ch_shipTheme1.play(carrier_far)
+                    print('ship1 channel busy: {} '.format(ch_shipTheme1.get_busy()))
+            elif val == shipDic1['ship2']:
+                if ch_shipTheme2.get_busy() == False:
+                    #if ship.averageDistance < 80:
+                    ch_shipTheme2.play(carrier_mid)
+                    print('ship2 channel busy: {} '.format(ch_shipTheme2.get_busy()))
+            elif val == shipDic1['ship3']:
+                if ch_shipTheme3.get_busy() == False:
+                    #if ship.averageDistance < 80:
+                    ch_shipTheme3.play(carrier_close)
+                    print('ship3 channel busy: {} '.format(ch_shipTheme3.get_busy()))
+            elif val == shipDic1['ship4']:
+                if ch_shipTheme4.get_busy() == False:
+                    #if ship.averageDistance < 80:
+                    ch_shipTheme4.play(carrier_far)
+                    print('ship4 channel busy: {} '.format(ch_shipTheme4.get_busy()))
+                    #elif ship.averageDistance > 80 and ship.averageDistance < 130:
+                        #ch_shipTheme.play(carrier_mid)
+                    #else:
+                        #ch_shipTheme.play(carrier_far)
+
+        if playerTurn == 2:
+            if val == shipDic2['ship0']:
+                if ch_shipTheme0.get_busy() == False:
+                    #if ship.averageDistance < 80:
+                    ch_shipTheme0.play(carrier_close)
+                    print('ship0 channel busy: {} '.format(ch_shipTheme0.get_busy()))
+            elif val == shipDic2['ship1']:
+                if ch_shipTheme1.get_busy() == False:
+                    #if ship.averageDistance < 80:
+                    ch_shipTheme1.play(carrier_far)
+                    print('ship1 channel busy: {} '.format(ch_shipTheme1.get_busy()))
+            elif val == shipDic2['ship2']:
+                if ch_shipTheme2.get_busy() == False:
+                    #if ship.averageDistance < 80:
+                    ch_shipTheme2.play(carrier_mid)
+                    print('ship2 channel busy: {} '.format(ch_shipTheme2.get_busy()))
+            elif val == shipDic2['ship3']:
+                if ch_shipTheme3.get_busy() == False:
+                    #if ship.averageDistance < 80:
+                    ch_shipTheme3.play(carrier_close)
+                    print('ship3 channel busy: {} '.format(ch_shipTheme3.get_busy()))
+            elif val == shipDic2['ship4']:
+                if ch_shipTheme4.get_busy() == False:
+                    #if ship.averageDistance < 80:
+                    ch_shipTheme4.play(carrier_far)
+                    print('ship4 channel busy: {} '.format(ch_shipTheme4.get_busy()))
+                    #elif ship.averageDistance > 80 and ship.averageDistance < 130:
+                        #ch_shipTheme.play(carrier_mid)
+                    #else:
+                        #ch_shipTheme.play(carrier_far)
+            
+    
+    return
+
+
 
 def waterSound(run, waterClock, waterSound, waterChannel, waterChannelBuffer):
  #water sounds controlled by 2 channels. primary playback channel = waterChannel, secondary playback channel = waterChannelBuffer
@@ -2600,6 +2774,8 @@ while run:
     isDistressed()
     # is there a sunken ship
     isSunk()
+    #
+    createSonarPowerMeter(sonarRange1, sonarRange2)
     # updates screen
     update()
     # desides player turn
