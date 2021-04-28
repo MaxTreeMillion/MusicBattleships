@@ -16,6 +16,8 @@ import os
 # screen deminsions stuff
 screenHeight = 1280
 screenWidth = 720
+#screenHeight = 896
+#screenWidth = 504
 doubleScreenWidth = screenWidth*2
 playScreenHeight = int(screenHeight/2)
 playScreenWidth = screenWidth
@@ -81,6 +83,8 @@ isPress_a = 0
 isPress_s = 0
 isPress_d = 0
 isPress_p = 0
+isTargetSub1 = 0
+isTargetSub2 = 0
 isDisplayingDistress = 0
 coord_1 = 0
 coord_2 = 0
@@ -237,9 +241,9 @@ class Target(Rectangle):
         Rectangle.__init__(self, color, x, y, width, height)
 
     def drawCurser1(self):
-        win.blit(pygame.transform.smoothscale(pygame.image.load('Sprites/crosshair.png'), (int(tile), int(tile))), (self.pos.x - playScreenWidth, self.pos.y - playScreenHeight))
+        win.blit(pygame.transform.smoothscale(pygame.image.load(os.path.join('Sprites','crosshair.png')), (int(tile), int(tile))), (self.pos.x - playScreenWidth, self.pos.y - playScreenHeight))
     def drawCurser2(self):
-        win.blit(pygame.transform.smoothscale(pygame.image.load('Sprites/crosshair.png'), (int(tile), int(tile))), (self.pos.x + playScreenWidth, self.pos.y - playScreenHeight))
+        win.blit(pygame.transform.smoothscale(pygame.image.load(os.path.join('Sprites','crosshair.png')), (int(tile), int(tile))), (self.pos.x + playScreenWidth, self.pos.y - playScreenHeight))
 
     def move(self):
         global targetCoords
@@ -1484,7 +1488,7 @@ class ShipDamage(Rectangle):
         Rectangle.__init__(self, color, x, y, width, height)
 
     def draw(self):
-        win.blit(pygame.transform.smoothscale(pygame.image.load('Sprites/bulletHole.png'), (int(tile), int(tile))), (self.pos.x, self.pos.y))
+        win.blit(pygame.transform.smoothscale(pygame.image.load(os.path.join('Sprites','bulletHole.png')), (int(tile), int(tile))), (self.pos.x, self.pos.y))
 
 # class for distress calls
 class distressCall(Rectangle):
@@ -1492,7 +1496,7 @@ class distressCall(Rectangle):
         Rectangle.__init__(self, color, x, y, width, height)
 
     def draw(self):
-        win.blit(pygame.transform.smoothscale(pygame.image.load('Sprites/distressSignal.png'), (int(tile), int(tile))), (self.pos.x, self.pos.y))
+        win.blit(pygame.transform.smoothscale(pygame.image.load(os.path.join('Sprites','distressSignal.png')), (int(tile), int(tile))), (self.pos.x, self.pos.y))
 
 # class for hit markers
 class HitMarker:
@@ -1500,7 +1504,7 @@ class HitMarker:
         Rectangle.__init__(self, color, x, y, width, height)
 
     def draw(self):
-        win.blit(pygame.transform.smoothscale(pygame.image.load('Sprites/missTile.png'), (int(tile), int(tile))), (self.pos.x, self.pos.y))
+        win.blit(pygame.transform.smoothscale(pygame.image.load(os.path.join('Sprites','missTile.png')), (int(tile), int(tile))), (self.pos.x, self.pos.y))
 
 # class for miss markers
 class MissMarker:
@@ -1508,7 +1512,15 @@ class MissMarker:
         Rectangle.__init__(self, color, x, y, width, height)
 
     def draw(self):
-        win.blit(pygame.transform.smoothscale(pygame.image.load('Sprites/hitTile.png'), (int(tile), int(tile))), (self.pos.x, self.pos.y))
+        win.blit(pygame.transform.smoothscale(pygame.image.load(os.path.join('Sprites','hitTile.png')), (int(tile), int(tile))), (self.pos.x, self.pos.y))
+
+# class for miss markers
+class HighLight:
+    def __init__(self, color, x, y, width, height):
+        Rectangle.__init__(self, color, x, y, width, height)
+
+    def draw(self):
+        win.blit(pygame.transform.smoothscale(pygame.image.load(os.path.join('Sprites','highlightTile.png')), (int(tile), int(tile))), (self.pos.x, self.pos.y))
 
 # class to hold misc sprites
 class Sprite():
@@ -1521,6 +1533,15 @@ class Sprite():
     sonarPowerMeter = pygame.transform.smoothscale(pygame.image.load(os.path.join('Sprites','SonarPowerMeter.png')), (int(0.8*sideMargin), int(0.95*playScreen)))
     hitSprite = pygame.transform.smoothscale(pygame.image.load(os.path.join('Sprites','hitTile.png')), (int(tile), int(tile)))
     missSprite = pygame.transform.smoothscale(pygame.image.load(os.path.join('Sprites','missTile.png')), (int(tile), int(tile)))
+    highLightSprite = pygame.transform.smoothscale(pygame.image.load(os.path.join('Sprites','highlightTile.png')), (int(tile), int(tile)))
+    warningSub = pygame.transform.smoothscale(pygame.image.load(os.path.join('Sprites','SubWarning.png')), (int(tile*8 + 12), int(tile*4 + 12)))
+    hitMessage = pygame.transform.smoothscale(pygame.image.load(os.path.join('Sprites','YouHitAShip.png')), (int(tile*8 + 12), int(tile*4 + 12)))
+    missMessage = pygame.transform.smoothscale(pygame.image.load(os.path.join('Sprites','YouMissedAShip.png')), (int(tile*8 + 12), int(tile*4 + 12)))
+    alreadyHitMessage = pygame.transform.smoothscale(pygame.image.load(os.path.join('Sprites','AlreadyHitThat.png')), (int(tile*8 + 12), int(tile*4 + 12)))
+    subDestroyedMessage = pygame.transform.smoothscale(pygame.image.load(os.path.join('Sprites','SubWasDestroyed.png')), (int(tile*8 + 12), int(tile*4 + 12)))
+    subUnderShip = pygame.transform.smoothscale(pygame.image.load(os.path.join('Sprites','SubUnderShip.png')), (int(tile*8 + 12), int(tile*4 + 12)))
+    luckyUsMessage = pygame.transform.smoothscale(pygame.image.load(os.path.join('Sprites','justEnoughCharge.png')), (int(tile*8 + 12), int(tile*4 + 12)))
+    notEnoughMessage = pygame.transform.smoothscale(pygame.image.load(os.path.join('Sprites','notEnoughCharge.png')), (int(tile*8 + 12), int(tile*4 + 12)))
 
     # animation sprites
     oceanAniCount = 0
@@ -1568,6 +1589,38 @@ class Sprite():
                     pygame.transform.smoothscale(pygame.image.load(os.path.join('Sprites','explosion','exp3.png')), (int(tile), int(tile))),
                     pygame.transform.smoothscale(pygame.image.load(os.path.join('Sprites','explosion','exp4.png')), (int(tile), int(tile))),
                     pygame.transform.smoothscale(pygame.image.load(os.path.join('Sprites','explosion','exp5.png')), (int(tile), int(tile)))]
+
+    warningCounter1 = 0
+    warningCounter2 = 0
+
+    hitMessage1 = False
+    hitMessage2 = False
+
+    missMessage1 = False
+    missMessage2 = False
+
+    alreadyHitMessage1 = False
+    alreadyHitMessage2 = False
+
+    subDestroyedMessage1 = False
+    subDestroyedMessage2 = False
+
+    subUnderShip1 = False
+    subUnderShip2 = False
+    subUnderShipCounter1 = 0
+    subUnderShipCounter2 = 0
+
+    luckyUsMessage1 = False
+    luckyUsMessage2 = False
+    luckyUsMessageCounter1 = 0
+    luckyUsMessageCounter2 = 0
+
+    notEnoughMessage1 = False
+    notEnoughMessage2 = False
+    notEnoughMessageCounter1 = 0
+    notEnoughMessageCounter2 = 0
+
+
 ####### Functions ########
 
 # updates image/screen
@@ -1582,13 +1635,22 @@ def update():
         for key, val in distressCalls.items():
             distressCalls[key].draw()
 
+    #if pinPointPulse1:
+    #    win.blit(pygame.transform.smoothscale(pygame.image.load(os.path.join('Sprites','distressSignal.png')), (int(tile), int(tile))), (shipDic1[pinPointPulse1].pos.x, shipDic1[pinPointPulse1].pos.y))
+    #if pinPointPulse2:
+    #    win.blit(pygame.transform.smoothscale(pygame.image.load(os.path.join('Sprites','distressSignal.png')), (int(tile), int(tile))), (shipDic1[pinPointPulse2].pos.x, shipDic1[pinPointPulse2].pos.y))
+
     win.blit(Sprite.gridSonar, (sideMargin - 1, topBotMargin - 1))
     win.blit(Sprite.gridSonar, (sideMargin + playScreenWidth - 1, topBotMargin - 1))
 
+    # draws all ship damage sprites
+    for key, val in highLightMarkers.items():
+        highLightMarkers[key].draw()
+
     # draws red sonar before the ocean map, so you can't see it one the ocean
-    if not(playerTurn == 1):
+    if not(playerTurn == 1) and not(subSink2):
         sonarDisplay1[0].drawSonarMap()
-    if not(playerTurn == 2):
+    if not(playerTurn == 2) and not(subSink1):
         sonarDisplay2[0].drawSonarMap()
 
     # draws ocean background
@@ -1601,9 +1663,11 @@ def update():
 
     # draw submarine
     # sub 1
-    win.blit(Sprite.sub, (sonarPos1.x - tile/2 + playScreenWidth, sonarPos1.y - tile/2 - playScreenHeight))
+    if subSink2 == False:
+        win.blit(Sprite.sub, (sonarPos1.x - tile/2 + playScreenWidth, sonarPos1.y - tile/2 - playScreenHeight))
     # sub 2
-    win.blit(Sprite.sub, (sonarPos2.x - tile/2 - playScreenWidth, sonarPos2.y - tile/2 - playScreenHeight))
+    if subSink1 == False:
+        win.blit(Sprite.sub, (sonarPos2.x - tile/2 - playScreenWidth, sonarPos2.y - tile/2 - playScreenHeight))
 
     # draws all ships
     #print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~") 
@@ -1623,7 +1687,6 @@ def update():
 
         for key, val in shipDic1.items():
             averageLength[key] = []
-
     for key, val in shipDic2.items():
         shipDic2[key].draw()
         #########################################################################################################################
@@ -1659,22 +1722,113 @@ def update():
     curser1.drawCurser1()
     curser2.drawCurser2()
 
+    # draws warning message for sonar targeting
+    if isTargetSub1 and (myClock//5)%5:
+        Sprite.warningCounter1 += 1
+        if Sprite.warningCounter1 < 50:
+            win.blit(Sprite.warningSub, (sideMargin + tile - 6, topBotMargin + tile - 6))
+    if isTargetSub2 and (myClock//5)%5:
+        Sprite.warningCounter2 += 1
+        if Sprite.warningCounter2 < 50:
+            win.blit(Sprite.warningSub, (sideMargin + tile - 6 + playScreenWidth, topBotMargin + tile - 6))
+    
+    # draws ship hit message
+    if Sprite.hitMessage1 and not(playerTurn):
+        win.blit(Sprite.hitMessage, (sideMargin + tile - 6, topBotMargin + tile - 6))
+    if whatOtherPlayer() == 1:
+        Sprite.hitMessage1 = False
+    if Sprite.hitMessage2 and not(playerTurn):
+        win.blit(Sprite.hitMessage, (sideMargin + tile - 6 + playScreenWidth, topBotMargin + tile - 6))
+    if whatOtherPlayer() == 2:
+        Sprite.hitMessage2 = False
+
+    # draws ship miss message
+    if Sprite.missMessage1 and not(playerTurn):
+        win.blit(Sprite.missMessage, (sideMargin + tile - 6, topBotMargin + tile - 6))
+    if whatOtherPlayer() == 1:
+        Sprite.missMessage1 = False
+    if Sprite.missMessage2 and not(playerTurn):
+        win.blit(Sprite.missMessage, (sideMargin + tile - 6 + playScreenWidth, topBotMargin + tile - 6))
+    if whatOtherPlayer() == 2:
+        Sprite.missMessage2 = False
+
+    # draws ship already hit message
+    if Sprite.alreadyHitMessage1 and not(playerTurn):
+        win.blit(Sprite.alreadyHitMessage, (sideMargin + tile - 6, topBotMargin + tile - 6))
+    if whatOtherPlayer() == 1:
+        Sprite.alreadyHitMessage1 = False
+    if Sprite.alreadyHitMessage2 and not(playerTurn):
+        win.blit(Sprite.alreadyHitMessage, (sideMargin + tile - 6 + playScreenWidth, topBotMargin + tile - 6))
+    if whatOtherPlayer() == 2:
+        Sprite.alreadyHitMessage2 = False
+
+    # draws ship already hit message
+    if Sprite.subDestroyedMessage1 and not(playerTurn):
+        win.blit(Sprite.subDestroyedMessage, (sideMargin + tile - 6, topBotMargin + tile - 6))
+    if whatOtherPlayer() == 2:
+        Sprite.subDestroyedMessage1 = False
+    if Sprite.subDestroyedMessage2 and not(playerTurn):
+        win.blit(Sprite.subDestroyedMessage, (sideMargin + tile - 6 + playScreenWidth, topBotMargin + tile - 6))
+    if whatOtherPlayer() == 1:
+        Sprite.subDestroyedMessage2 = False
+
+    # draws warning message for sub under ship targeting
+    if Sprite.subUnderShip1:
+        win.blit(Sprite.highLightSprite, (sonarPos2.x - tile/2 - playScreenWidth, sonarPos2.y - tile/2 - playScreenHeight))
+        Sprite.subUnderShipCounter1 += 1
+        if Sprite.subUnderShipCounter1 < 50:
+            win.blit(Sprite.subUnderShip, (sideMargin + tile - 6, topBotMargin + tile - 6))
+    if Sprite.subUnderShip2:
+        win.blit(Sprite.highLightSprite, (sonarPos1.x - tile/2 + playScreenWidth, sonarPos1.y - tile/2 - playScreenHeight))
+        Sprite.subUnderShipCounter2 += 1
+        if Sprite.subUnderShipCounter2 < 50:
+            win.blit(Sprite.subUnderShip, (sideMargin + tile - 6 + playScreenWidth, topBotMargin + tile - 6))
+
+    # draws 'lucky us' message
+    if Sprite.luckyUsMessage1:
+        win.blit(Sprite.luckyUsMessage, (sideMargin + tile - 6, topBotMargin + tile - 6))
+        Sprite.luckyUsMessageCounter1 += 1
+        if Sprite.luckyUsMessageCounter1 > 50:
+            Sprite.luckyUsMessageCounter1 = 0
+            Sprite.luckyUsMessage1 = False
+    if Sprite.luckyUsMessage2:
+        win.blit(Sprite.luckyUsMessage, (sideMargin + tile - 6 + playScreenWidth, topBotMargin + tile - 6))
+        Sprite.luckyUsMessageCounter2 += 1
+        if Sprite.luckyUsMessageCounter2 > 50:
+            Sprite.luckyUsMessageCounter2 = 0
+            Sprite.luckyUsMessage2 = False
+    
+    # draws 'not enough sonar charge' message
+    if Sprite.notEnoughMessage1:
+        win.blit(Sprite.notEnoughMessage, (sideMargin + tile - 6, topBotMargin + tile - 6))
+        Sprite.notEnoughMessageCounter1 += 1
+        if Sprite.notEnoughMessageCounter1 > 50:
+            Sprite.notEnoughMessageCounter1 = 0
+            Sprite.notEnoughMessage1 = False
+    if Sprite.notEnoughMessage2:
+        win.blit(Sprite.notEnoughMessage, (sideMargin + tile - 6 + playScreenWidth, topBotMargin + tile - 6))
+        Sprite.notEnoughMessageCounter2 += 1
+        if Sprite.notEnoughMessageCounter2 > 50:
+            Sprite.notEnoughMessageCounter2 = 0
+            Sprite.notEnoughMessage2 = False
+
     # draws all sonar beams
     for key, value in sonarDic1.items():
         sonarDic1[key].draw()
     for key, value in sonarDic2.items():
         sonarDic2[key].draw()
 
+    # draws the sonar power meter
+    # background of meter
     win.blit(Sprite.sonarPowerMeter, (playScreen + 1.1*sideMargin, topBotMargin*1.5))
     win.blit(Sprite.sonarPowerMeter, (playScreen + 1.1*sideMargin + playScreenWidth, topBotMargin*1.5))
-
-
+    # black bar that covers up background of meter
     sonarMeter1.draw()
     sonarMeter2.draw()
 
+    # draws the sonar charge/battery bar
     sonarChargeMeter1.draw()
     sonarChargeMeter2.draw()
-
 
     # adds background
     win.blit(Sprite.backGround, (0,0))
@@ -1881,6 +2035,9 @@ def createSonar(playerTurn):
     global sonarDisplay2
     global sonarRange1
     global sonarRange2
+    global gamePhase
+    global sonarDic1
+    global sonarDic2
 
     # reset sonar dictionary
     sonarDic1 = {}
@@ -1888,7 +2045,8 @@ def createSonar(playerTurn):
     sonarDisplay1 = []
     sonarDisplay2 = []
     # get the aim of the sonar
-    sonarAim(playerTurn)
+    if gamePhase == "sonar":
+        sonarAim(playerTurn)
     # create each beam of the sonar
     for i in range(sonarStartAngle1, sonarStartAngle1 + sonarWidth1 + 1, sonarDensity):
         # gives the beams a radius of influence
@@ -1929,18 +2087,59 @@ def pulseSonar():
     global sonarRange2
     global sonarCharge1
     global sonarCharge2
+    global gamePhase
+    global pinPointPulse1
+    global pinPointPulse2
+
+    # check it under ship
+    isSubUnderShip()
     # i guess put sounds here or maybe in a seperate function
     # implement sonar charge
     if playerTurn == 1:
-        sonarCharge1 -= sonarRange2     # sonarRange# are switch to fixed some previous swap
-        if sonarCharge1 < 0:
+        tempSonarCharge1 = sonarCharge1
+        tempSonarCharge1 -= sonarRange2     # sonarRange# are switch to fixed some previous swap
+        if tempSonarCharge1 >= 0:
+            sonarCharge1 = tempSonarCharge1
+        elif sonarRange2 < tile and tempSonarCharge1 < 0:
+            Sprite.luckyUsMessage1 = True
+            print("Low on charge, but I'll give you this one!")
             sonarCharge1 = 0
+        elif tempSonarCharge1 < 0:
+            Sprite.notEnoughMessage1 = True
+            Sprite.subUnderShip1 = False
+            print("Not Enough Sonar Charge")
+            gamePhase = "sonar"
+
+
     if playerTurn == 2:
-        sonarCharge2 -= sonarRange1
-        if sonarCharge2 < 0:
+        tempSonarCharge2 = sonarCharge2
+        tempSonarCharge2 -= sonarRange1     # sonarRange# are switch to fixed some previous swap
+        if tempSonarCharge2 >= 0:
+            sonarCharge2 = tempSonarCharge2
+        elif sonarRange1 < tile and tempSonarCharge2 < 0:
+            Sprite.luckyUsMessage2 = True
+            print("Low on charge, but I'll give you this one!")
             sonarCharge2 = 0
+        elif tempSonarCharge2 < 0:
+            Sprite.notEnoughMessage2 = True
+            Sprite.subUnderShip2 = False
+            print("Not Enough Sonar Charge")
+            gamePhase = "sonar"
+
     # update sonar charge meter
     createSonarChargeMeter()
+
+    #if len(sonarDic1) == 1:                          #######################################################
+    #    for key, item in shipDic1.items():
+    #        print(shipDic1[key].sonarHitNum)
+    #        if shipDic1[key].sonarHitNum:
+    #            print("frog")
+    #            pinPointPulse1 = key
+    #if len(sonarDic2) == 1:
+    #    for key, item in shipDic2.items():
+    #        if shipDic2[key].sonarHitNum:
+    #            print("frog")
+    #            pinPointPulse2 = key
 
 # creates and updates sonar charge meter
 def createSonarChargeMeter():
@@ -1948,6 +2147,11 @@ def createSonarChargeMeter():
     global sonarCharge2
     global sonarChargeMeter1
     global sonarChargeMeter2
+    # doesn't let sonarCharge get above the max sonar charge
+    if sonarCharge1 > MAXSONARCHARGE:
+        sonarCharge1 = MAXSONARCHARGE
+    if sonarCharge2 > MAXSONARCHARGE:
+        sonarCharge1 = MAXSONARCHARGE
     sonarCharge1_scaled = (sonarCharge1/MAXSONARCHARGE)
     sonarCharge2_scaled = (sonarCharge2/MAXSONARCHARGE)
     sonarChargeMeter1 = Rectangle((0,155,0), playScreen + 1.05*sideMargin, topBotMargin*2 + playScreenHeight + playScreen*0.235, 0.7*sideMargin, playScreen*0.66*sonarCharge1_scaled)  
@@ -2135,10 +2339,16 @@ def shootMissile():
     global playerShot1
     global playerShot2
     global shoooted
+    global subSink1
+    global subSink2
+    global sonarCharge1
+    global sonarCharge2
 
     shoooted = True
     player1End = False
     player2End = False
+    Sprite.subUnderShip1 = False
+    Sprite.subUnderShip2 = False
     Sprite.isExplode = 1
     damageTest1 = 1
     damageTest2 = 1
@@ -2169,6 +2379,8 @@ def shootMissile():
         # end turn
         player1End = True
         if isCollides[0] and damageTest1:
+            Sprite.hitMessage1 = True
+            sonarCharge1 += MAXSONARCHARGE/rechargePercent
             print("You hit {}!!". format(isCollides[1]))
             print("~~~~~~~~")
             # hit marker for player 1 sonar
@@ -2182,9 +2394,11 @@ def shootMissile():
             # miss marker for player 1 sonar
             missMarkers["miss%s" %len(missMarkers)] = MissMarker((255,0,0), curser1.pos.x - playScreenWidth, curser1.pos.y - playScreenHeight, tile, tile)
             if damageTest1:
+                Sprite.missMessage1 = True
                 print("All you shot was sea!")
                 print("~~~~~~~~")
             else:
+                Sprite.alreadyHitMessage1 = True
                 print("Player 1, you already damaged that part!")
                 print("~~~~~~~~")
 
@@ -2194,6 +2408,8 @@ def shootMissile():
         # end turn
         player2End = True
         if isCollides[0] and damageTest2:
+            sonarCharge2 += MAXSONARCHARGE/rechargePercent
+            Sprite.hitMessage2 = True
             print("You hit {}!!". format(isCollides[1]))
             print("~~~~~~~~")
             # hit marker for player 2 sonar
@@ -2204,14 +2420,26 @@ def shootMissile():
             if shipDic1[isCollides[1]].health > 0:
                 shipDic1[isCollides[1]].health -= 1
         else:
+            # miss marker for player 2 sonar
+            missMarkers["miss%s" %len(missMarkers)] = MissMarker((255,0,0), curser2.pos.x + playScreenWidth, curser2.pos.y - playScreenHeight, tile, tile)
             if damageTest2:
-                # miss marker for player 2 sonar
-                missMarkers["miss%s" %len(missMarkers)] = MissMarker((255,0,0), curser2.pos.x + playScreenWidth, curser2.pos.y - playScreenHeight, tile, tile)
+                Sprite.missMessage2 = True
                 print("All you shot was sea!")
                 print("~~~~~~~~")
             else:
+                Sprite.alreadyHitMessage2 = True
                 print("Player 2, you already damaged that part!")
                 print("~~~~~~~~")
+
+    # is a sub sunk
+    isSubSunk()
+    # sub hit causation
+    if isTargetSub1:
+        print("frog1")
+        subSink1 = True
+    if isTargetSub2:
+        print("frog2")
+        subSink2 = True
 
 # detects if any sunken ships
 def isSunk():
@@ -2224,14 +2452,14 @@ def isSunk():
         if not(shipDic1[key].health):
             print("You got one!!")
             print("~~~~~~~~")
-            sink(key)
+            sink(key , 1)
             deadShip1 = key
 
     for key, items in shipDic2.items():
         if not(shipDic2[key].health):
             print("You got one!!")
             print("~~~~~~~~")
-            sink(key)
+            sink(key , 2)
             deadShip2 = key
     # deletes ship thats been sunk
     if deadShip1:
@@ -2241,20 +2469,27 @@ def isSunk():
         del shipDic2[deadShip2]
 
 # is ship is sunken, then remove it and the shipDamage
-def sink(ship):
+def sink(ship, shipsPlayer):
     global shipDic1
     global shipDic2
     global shipDamages
+    global highLightMarkers
+
     delShipDamages = []
 
     # deletes shipDamage sprites that are on sunken ship
-    for key, val in shipDamages.items():
-        if pygame.Rect.colliderect(pygame.Rect(shipDamages[key].pos.x, shipDamages[key].pos.y, shipDamages[key].width, shipDamages[key].height), shipDic1[ship].rect):
-            delShipDamages.append(key)
+    if shipsPlayer == 1:
+        for key, val in shipDamages.items():
+            if pygame.Rect.colliderect(pygame.Rect(shipDamages[key].pos.x, shipDamages[key].pos.y, shipDamages[key].width, shipDamages[key].height), shipDic1[ship].rect):
+                highLightMarkers["highLight%s" %len(highLightMarkers)] = HighLight((0,255,0), shipDamages[key].pos.x + playScreenWidth, shipDamages[key].pos.y - playScreenHeight, tile, tile)
+                delShipDamages.append(key)
+    
+    if shipsPlayer == 2:
+        for key, val in shipDamages.items():
+            if pygame.Rect.colliderect(pygame.Rect(shipDamages[key].pos.x, shipDamages[key].pos.y, shipDamages[key].width, shipDamages[key].height), shipDic2[ship].rect):
+                highLightMarkers["highLight%s" %len(highLightMarkers)] = HighLight((0,255,0), shipDamages[key].pos.x - playScreenWidth, shipDamages[key].pos.y - playScreenHeight, tile, tile)
+                delShipDamages.append(key)
 
-    for key, val in shipDamages.items():
-        if pygame.Rect.colliderect(pygame.Rect(shipDamages[key].pos.x, shipDamages[key].pos.y, shipDamages[key].width, shipDamages[key].height), shipDic2[ship].rect):
-            delShipDamages.append(key)
     # deleting damage sprites of sunken ship
     for ish in delShipDamages:
         del shipDamages[ish]
@@ -2282,6 +2517,15 @@ def isWin():
         print("\t\t\t\t      **********************")
         run = False
 
+# gives other player
+def whatOtherPlayer():
+    if playerTurn == 1:
+        return 2
+    elif playerTurn == 2:
+        return 1
+    else:
+        return 0
+
 # detects if ship is in distress
 def isDistressed():
     global isDisplayingDistress
@@ -2291,12 +2535,7 @@ def isDistressed():
     global tempPlayerTurn
     global shoooted
 
-    if playerTurn == 1:
-        otherPlayer = 2
-    elif playerTurn == 2:
-        otherPlayer = 1
-    else:
-        otherPlayer = 0
+    otherPlayer = whatOtherPlayer()
 
     if not(sonarCharge1) and isDisplayingDistress == 0 and tempPlayerTurn != playerTurn and playerTurn != 0:
         isDisplayingDistress = 1
@@ -2306,11 +2545,11 @@ def isDistressed():
         shipDistress(2)
 
     #print("OtherPLayer: {}\tShoooted: {}" .format(otherPlayer, shoooted))
-    if otherPlayer == 1 and shoooted:
+    if otherPlayer == 1 and shoooted and sonarCharge1 == 0:
         sonarCharge1 = MAXSONARCHARGE
         distressCalls = {}
         isDisplayingDistress = 0
-    if otherPlayer == 2 and shoooted:
+    if otherPlayer == 2 and shoooted and sonarCharge2 == 0:#####################################
         sonarCharge2 = MAXSONARCHARGE
         distressCalls = {}
         isDisplayingDistress = 0
@@ -2386,6 +2625,7 @@ def detectInputs(numShip):
     global hitMarkers
     global shipDamages
     global shoooted
+    global gamePhase
 
     key = pygame.key.get_pressed()
     # detects if user wants to close the program
@@ -2416,7 +2656,8 @@ def detectInputs(numShip):
         isPress_TAB = 0
     
     # shooting missle
-    if key[pygame.K_SPACE] and isPress_SPACE == 0 and playerTurn:
+    if key[pygame.K_SPACE] and isPress_SPACE == 0 and playerTurn and gamePhase == "shoot":
+        gamePhase = "sonar"
         isPress_SPACE = 1
         shootMissile()
     # this just makes sure when space is pressed, it only inputs once
@@ -2424,7 +2665,8 @@ def detectInputs(numShip):
         isPress_SPACE = 0
 
     # shoot sonar
-    if key[pygame.K_p] and isPress_p == 0:
+    if key[pygame.K_p] and isPress_p == 0 and gamePhase == "sonar":
+        gamePhase = "shoot"
         pulseSonar()
         isPress_p = 1
     if not(key[pygame.K_p]):
@@ -2445,7 +2687,8 @@ def detectInputs(numShip):
         isPress_PERIOD = 0
 
     # curser1 movement is in it's own class function
-    curser1.move()
+    if gamePhase == "shoot":
+        curser1.move()
  
 # desided when players turns are
 def isPlayerTurn():
@@ -2468,6 +2711,72 @@ def isPlayerTurn():
             playerTurn = 1
 
     playerCount += 1
+
+# detects if sub is being targeted by curser and showing player that it's bad
+def isSubTargeted():
+    global isTargetSub1
+    global isTargetSub2
+    global gamePhase
+
+    if pygame.Rect.colliderect(pygame.Rect(curser1.pos.x, curser1.pos.y, curser1.width, curser1.height), pygame.Rect((sonarPos2.x - tile/2), (sonarPos2.y - tile/2), curser1.width, curser1.height)) and isTargetSub1 == 0:
+        isTargetSub1 = 1
+    if not(pygame.Rect.colliderect(pygame.Rect(curser1.pos.x, curser1.pos.y, curser1.width, curser1.height), pygame.Rect((sonarPos2.x - tile/2), (sonarPos2.y - tile/2), curser1.width, curser1.height))):
+        Sprite.warningCounter1 = 0
+        isTargetSub1 = 0
+
+    if pygame.Rect.colliderect(pygame.Rect(curser2.pos.x, curser2.pos.y, curser2.width, curser2.height), pygame.Rect((sonarPos1.x - tile/2), (sonarPos1.y - tile/2), curser2.width, curser2.height)) and isTargetSub2 == 0:
+        isTargetSub2 = 1
+    if not(pygame.Rect.colliderect(pygame.Rect(curser2.pos.x, curser2.pos.y, curser2.width, curser2.height), pygame.Rect((sonarPos1.x - tile/2), (sonarPos1.y - tile/2), curser2.width, curser2.height))):
+        Sprite.warningCounter2 = 0
+        isTargetSub2 = 0
+
+    if subSink1 and whatOtherPlayer() == 2 and playerTurn != tempPlayerTurn:
+        print("frogger1")
+        gamePhase = "shoot"
+    if subSink2 and whatOtherPlayer() == 1 and playerTurn != tempPlayerTurn:
+        print("frogger2")
+        gamePhase = "shoot"
+
+# detects if sub should be sunk and then punishes for it
+def isSubSunk():
+    global subSinkPunish1
+    global subSinkPunish2
+    global subSink1
+    global subSink2
+
+    if subSink1:
+        Sprite.subDestroyedMessage1 = True
+        subSinkPunish1 += 1
+    if subSink2:
+        Sprite.subDestroyedMessage2 = True
+        subSinkPunish2 += 1
+
+    if subSinkPunish1 >= subPunishLevel*2 and whatOtherPlayer() == 1:
+        Sprite.subDestroyedMessage1 = False
+        subSinkPunish1 = 0
+        subSink1 = False
+    if subSinkPunish2 >= subPunishLevel*2 and whatOtherPlayer() == 2:
+        Sprite.subDestroyedMessage2 = False
+        subSinkPunish2 = 0
+        subSink2 = False
+
+# checks if sub is under ship
+def isSubUnderShip():
+    if playerTurn == 1:
+        for key, val in shipDic2.items():
+            if pygame.Rect.colliderect(pygame.Rect((sonarPos2.x - tile/2), (sonarPos2.y - tile/2), curser1.width, curser1.height), shipDic2[key].rect):
+                Sprite.subUnderShip1 = True
+            else:
+                Sprite.subUnderShip1 = False
+                Sprite.subUnderShipCounter1 = 0
+
+    if playerTurn == 2:
+        for key, val in shipDic1.items():
+            if pygame.Rect.colliderect(pygame.Rect((sonarPos1.x - tile/2), (sonarPos1.y - tile/2), curser1.width, curser1.height), shipDic1[key].rect):
+                Sprite.subUnderShip2 = True
+            else:
+                Sprite.subUnderShip2 = False
+                Sprite.subUnderShipCounter2 = 0
 
 # plays background water sounds
 def waterSound(run, waterClock, waterSound, waterChannel, waterChannelBuffer):
@@ -2502,7 +2811,8 @@ def waterSound(run, waterClock, waterSound, waterChannel, waterChannelBuffer):
     #fadeout should be % == 0 by (650-35= 615)
     # default first player to get to control
 
-         
+      
+# default player stuff
 playerTurn = 1
 player1End = False
 player2End = True
@@ -2512,6 +2822,9 @@ playerShot1 = False
 playerShot2 = False
 tempPlayerTurn = 0
 shoooted = False
+pinPointPulse1 = 0
+pinPointPulse2 = 0
+gamePhase = "sonar"
 
 # number of ships on the water
 numShip = 5
@@ -2533,8 +2846,11 @@ for i in range(len(shipDic1)):
 shipDamages = {}
 missMarkers = {}
 hitMarkers = {}
+highLightMarkers = {}
 
 # Default sonar 
+sonarDic1 = {}
+sonarDic2 = {}
 sonarRange1 = tile
 sonarWidth1 = 135
 sonarStartAngle1 = 0
@@ -2548,10 +2864,18 @@ sonarMeter1 = 0
 sonarMeter2 = 0
 sonarChargeMeter1 = 0
 sonarChargeMeter2 = 0
+subSink1 = False
+subSink2 = False
+subSinkPunish1 = 0
+subSinkPunish2 = 0
+subPunishLevel = 1
+warningCounter1 = 0
+warningCounter2 = 0
 # default sonar charge amount
-MAXSONARCHARGE = 500
+MAXSONARCHARGE = 700
 sonarCharge1 = MAXSONARCHARGE
 sonarCharge2 = MAXSONARCHARGE
+rechargePercent = 0.25   # how much the sonar battery recharges when a ship is hit
 # create default sonar charge mater
 createSonarChargeMeter()
 
@@ -2599,7 +2923,10 @@ while run:
     waterSound(run, waterClock, waterS_array, ch_water, ch_waterBuffer)
     # dectects inputs from all sources
     detectInputs(numShip)
+    # sonar targeted?
+    isSubTargeted()
     # sonar iteration
+    createSonarChargeMeter()
     sonarDicUnpacker = createSonar(playerTurn)
     sonarDic1 = sonarDicUnpacker[0]
     sonarDic2 = sonarDicUnpacker[1]
