@@ -1542,6 +1542,9 @@ class Sprite():
     subUnderShip = pygame.transform.smoothscale(pygame.image.load(os.path.join('Sprites','SubUnderShip.png')), (int(tile*8 + 12), int(tile*4 + 12)))
     luckyUsMessage = pygame.transform.smoothscale(pygame.image.load(os.path.join('Sprites','justEnoughCharge.png')), (int(tile*8 + 12), int(tile*4 + 12)))
     notEnoughMessage = pygame.transform.smoothscale(pygame.image.load(os.path.join('Sprites','notEnoughCharge.png')), (int(tile*8 + 12), int(tile*4 + 12)))
+    destroyedShipMessage = pygame.transform.smoothscale(pygame.image.load(os.path.join('Sprites','destroyedShip.png')), (int(tile*8 + 12), int(tile*4 + 12)))
+    missilePhaseMessage = pygame.transform.smoothscale(pygame.image.load(os.path.join('Sprites','missilePhase.png')), (int(tile*8 + 12), int(tile + 12)))
+    subPhaseMessage = pygame.transform.smoothscale(pygame.image.load(os.path.join('Sprites','subPhase.png')), (int(tile*8 + 12), int(tile + 12)))
 
     # animation sprites
     oceanAniCount = 0
@@ -1619,6 +1622,16 @@ class Sprite():
     notEnoughMessage2 = False
     notEnoughMessageCounter1 = 0
     notEnoughMessageCounter2 = 0
+
+    missilePhaseMessage1 = False
+    missilePhaseMessage2 = False
+    missilePhaseMessageCounter1 = 0
+    missilePhaseMessageCounter2 = 0
+
+    subPhaseMessage1 = False
+    subPhaseMessage2 = False
+    subPhaseMessageCounter1 = 0
+    subPhaseMessageCounter2 = 0
 
 
 ####### Functions ########
@@ -1722,6 +1735,34 @@ def update():
     curser1.drawCurser1()
     curser2.drawCurser2()
 
+    # draws 'subPhase' message
+    #if Sprite.subPhaseMessage1:
+    #    win.blit(Sprite.subPhaseMessage, (sideMargin + tile - 6, topBotMargin))
+    #    Sprite.subPhaseMessageCounter1 += 1
+    #    if Sprite.subPhaseMessageCounter1 > 30:
+    #        Sprite.subPhaseMessageCounter1 = 0
+    #        Sprite.subPhaseMessage1 = False
+    #if Sprite.subPhaseMessage2:
+    #    win.blit(Sprite.subPhaseMessage, (sideMargin + tile - 6 + playScreenWidth, topBotMargin))
+    #    Sprite.subPhaseMessageCounter2 += 1
+    #    if Sprite.subPhaseMessageCounter2 > 30:
+    #        Sprite.subPhaseMessageCounter2 = 0
+    #        Sprite.subPhaseMessage2 = False
+
+    # draws 'missilePhase' message
+    if Sprite.missilePhaseMessage1:
+        win.blit(Sprite.missilePhaseMessage, (sideMargin + tile - 6, topBotMargin - 6))
+        Sprite.missilePhaseMessageCounter1 += 1
+        if Sprite.missilePhaseMessageCounter1 > 30:
+            Sprite.missilePhaseMessageCounter1 = 0
+            Sprite.missilePhaseMessage1 = False
+    if Sprite.missilePhaseMessage2:
+        win.blit(Sprite.missilePhaseMessage, (sideMargin + tile - 6 + playScreenWidth, topBotMargin - 6))
+        Sprite.missilePhaseMessageCounter2 += 1
+        if Sprite.missilePhaseMessageCounter2 > 30:
+            Sprite.missilePhaseMessageCounter2 = 0
+            Sprite.missilePhaseMessage2 = False
+
     # draws warning message for sonar targeting
     if isTargetSub1 and (myClock//5)%5:
         Sprite.warningCounter1 += 1
@@ -1811,6 +1852,7 @@ def update():
         if Sprite.notEnoughMessageCounter2 > 50:
             Sprite.notEnoughMessageCounter2 = 0
             Sprite.notEnoughMessage2 = False
+
 
     # draws all sonar beams
     for key, value in sonarDic1.items():
@@ -2096,6 +2138,7 @@ def pulseSonar():
     # i guess put sounds here or maybe in a seperate function
     # implement sonar charge
     if playerTurn == 1:
+        Sprite.missilePhaseMessage1 = True
         tempSonarCharge1 = sonarCharge1
         tempSonarCharge1 -= sonarRange2     # sonarRange# are switch to fixed some previous swap
         if tempSonarCharge1 >= 0:
@@ -2112,6 +2155,7 @@ def pulseSonar():
 
 
     if playerTurn == 2:
+        Sprite.missilePhaseMessage2 = True
         tempSonarCharge2 = sonarCharge2
         tempSonarCharge2 -= sonarRange1     # sonarRange# are switch to fixed some previous swap
         if tempSonarCharge2 >= 0:
@@ -2378,6 +2422,8 @@ def shootMissile():
         playerShot1 = True
         # end turn
         player1End = True
+        # for phase message
+        Sprite.subPhaseMessage2 = True
         if isCollides[0] and damageTest1:
             Sprite.hitMessage1 = True
             sonarCharge1 += MAXSONARCHARGE/rechargePercent
@@ -2407,6 +2453,8 @@ def shootMissile():
         playerShot2 = True
         # end turn
         player2End = True
+        # for phase message
+        Sprite.subPhaseMessage1 = True
         if isCollides[0] and damageTest2:
             sonarCharge2 += MAXSONARCHARGE/rechargePercent
             Sprite.hitMessage2 = True
@@ -2766,6 +2814,7 @@ def isSubUnderShip():
         for key, val in shipDic2.items():
             if pygame.Rect.colliderect(pygame.Rect((sonarPos2.x - tile/2), (sonarPos2.y - tile/2), curser1.width, curser1.height), shipDic2[key].rect):
                 Sprite.subUnderShip1 = True
+                return
             else:
                 Sprite.subUnderShip1 = False
                 Sprite.subUnderShipCounter1 = 0
@@ -2774,6 +2823,7 @@ def isSubUnderShip():
         for key, val in shipDic1.items():
             if pygame.Rect.colliderect(pygame.Rect((sonarPos1.x - tile/2), (sonarPos1.y - tile/2), curser1.width, curser1.height), shipDic1[key].rect):
                 Sprite.subUnderShip2 = True
+                return
             else:
                 Sprite.subUnderShip2 = False
                 Sprite.subUnderShipCounter2 = 0
