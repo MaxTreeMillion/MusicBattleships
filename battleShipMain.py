@@ -488,6 +488,8 @@ class Target(Rectangle):
                 if 7 in targetCoords_cut:
                     coord_7 = True
                 if 8 in targetCoords_cut:
+                    coord_8 = True
+                if 9 in targetCoords_cut:
                     coord_9 = True
                 if 0 in targetCoords_cut:
                     coord_0 = True
@@ -2808,22 +2810,25 @@ def detectInputs(numShip):
     if not(key[pygame.K_TAB]):
         isPress_TAB = 0
     
-    # shooting missle
-    if key[pygame.K_SPACE] and isPress_SPACE == 0 and playerTurn and gamePhase == "shoot":
-        gamePhase = "sonar"
+    # shooting missle and sonar
+    # works the smae way that the space bar and p key worked seperately
+    # just put whatever you need the the correct if statement
+    toggleShoot = 0     # just so they dont both trigger
+    if key[pygame.K_SPACE] and isPress_SPACE == 0 and playerTurn:
+        # for missile shooting and explosion sound logic
+        if gamePhase == "shoot" and toggleShoot == 0:
+            gamePhase = "sonar"
+            toggleShoot = 1
+            shootMissile()
+        # for sonar pulse
+        if gamePhase == "sonar" and toggleShoot == 0:
+            gamePhase = "shoot"
+            toggleShoot = 1
+            pulseSonar()
         isPress_SPACE = 1
-        shootMissile()
     # this just makes sure when space is pressed, it only inputs once
     if not(key[pygame.K_SPACE]):
         isPress_SPACE = 0
-
-    # shoot sonar
-    if key[pygame.K_p] and isPress_p == 0 and gamePhase == "sonar":
-        gamePhase = "shoot"
-        pulseSonar()
-        isPress_p = 1
-    if not(key[pygame.K_p]):
-        isPress_p = 0
 
     # shooting missle
     if key[pygame.K_COMMA] and isPress_COMMA == 0:
