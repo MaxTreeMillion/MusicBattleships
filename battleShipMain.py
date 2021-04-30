@@ -2896,7 +2896,6 @@ def isPlayerTurn():
     global player2End
     global playerCount
     global playerTrigger
-    print("frog")
     # not inputs allowed from either player when this is 0
     playerTurn = 0
 
@@ -2904,11 +2903,9 @@ def isPlayerTurn():
         playerTrigger = 0
         playerCount = 0 
         if player1End:
-            print("frog2")
             playerTurn = 2
     
         if player2End:
-            print("frog1")
             playerTurn = 1
 
     playerCount += 1
@@ -2932,10 +2929,8 @@ def isSubTargeted():
         isTargetSub2 = 0
 
     if subSink1 and whatOtherPlayer() == 2 and playerTurn != tempPlayerTurn:
-        print("frogger1")
         gamePhase = "shoot"
     if subSink2 and whatOtherPlayer() == 1 and playerTurn != tempPlayerTurn:
-        print("frogger2")
         gamePhase = "shoot"
 
 # detects if sub should be sunk and then punishes for it
