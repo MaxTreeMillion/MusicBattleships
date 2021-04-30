@@ -14,10 +14,10 @@ from random import randint
 import os
 
 # screen deminsions stuff
-screenHeight = 1280
-screenWidth = 720
-#screenHeight = 896
-#screenWidth = 504
+#screenHeight = 1280
+#screenWidth = 720
+screenHeight = 896
+screenWidth = 504
 doubleScreenWidth = screenWidth*2
 playScreenHeight = int(screenHeight/2)
 playScreenWidth = screenWidth
@@ -59,6 +59,19 @@ waterS_array = [water1, water2, water3]
 carrier_close = pygame.mixer.Sound(os.path.join('Ship Themes (wav) copy','Carrier - Close Range.wav'))
 carrier_mid = pygame.mixer.Sound(os.path.join('Ship Themes (wav) copy','Carrier - Mid Range.wav'))
 carrier_far = pygame.mixer.Sound(os.path.join('Ship Themes (wav) copy','Carrier - Long Range.wav'))
+#   -test notes for modular music system
+note1 = pygame.mixer.Sound(os.path.join('Ship Themes (wav) copy', 'note1.wav'))
+note2 = pygame.mixer.Sound(os.path.join('Ship Themes (wav) copy', 'note2.wav'))
+note3 = pygame.mixer.Sound(os.path.join('Ship Themes (wav) copy', 'note3.wav'))
+note4 = pygame.mixer.Sound(os.path.join('Ship Themes (wav) copy', 'note4.wav'))
+note5 = pygame.mixer.Sound(os.path.join('Ship Themes (wav) copy', 'note5.wav'))
+note6 = pygame.mixer.Sound(os.path.join('Ship Themes (wav) copy', 'note6.wav'))
+note7 = pygame.mixer.Sound(os.path.join('Ship Themes (wav) copy', 'note7.wav'))
+note8 = pygame.mixer.Sound(os.path.join('Ship Themes (wav) copy', 'note8.wav'))
+note9 = pygame.mixer.Sound(os.path.join('Ship Themes (wav) copy', 'note9.wav'))
+note10 = pygame.mixer.Sound(os.path.join('Ship Themes (wav) copy', 'note10.wav'))
+
+
 
 # x/y vectors
 vec = pygame.math.Vector2
@@ -2111,6 +2124,7 @@ def createSonar(playerTurn):
     global gamePhase
     global sonarDic1
     global sonarDic2
+    global sonarController
 
     # reset sonar dictionary
     sonarDic1 = {}
@@ -2144,6 +2158,38 @@ def createSonar(playerTurn):
         sonarDic2["beam%s" %i] = isCollideSonar(i, sonarDic1, sonarDic2, x2, y2, 2)
 
     createSonarPowerMeter(sonarRange1, sonarRange2)
+
+    #coupling good times
+    #making a list of ships hit by sonar if in sonar stage
+    #player 1 and player 2
+    if sonarController == 1:
+        sonar_hitShips = {}
+        #beamHitNumList = {}
+        #print(shipDic1)
+        if playerTurn == 1:
+            for key, val in shipDic2.items():
+                ship = val
+                if ship.sonarHitNum > 0:
+                    sonar_hitShips[key] = val
+
+                    #beamHitNumList.append(ship.sonarHitNum)
+                    #1st item in beamHitNum list will be the first item in sonar_hitShi[s]
+    
+            #print('beamHitNumList: {}'.format(beamHitNumList))
+            #print('(shipDic2)sonar_hitShips: {}'.format(sonar_hitShips))
+        elif playerTurn == 2:
+            for key, val in shipDic1.items():
+                ship = val
+                if ship.sonarHitNum > 0:
+                    sonar_hitShips[key] = val
+                    #beamHitNumList.append(ship.sonarHitNum)
+            #print('(shipDic1)sonar_hitShips: {}'.format(sonar_hitShips))
+        # calls ship sounds,
+        shipTheme_playback(sonar_hitShips)
+        
+        #TO BREAK THE LOOP
+        sonarController = 0
+        
     # returns dictionary of all the lines
     return sonarDic1, sonarDic2
 
@@ -2815,6 +2861,7 @@ def detectInputs(numShip):
     global shipDamages
     global shoooted
     global gamePhase
+    global sonarController
 
     key = pygame.key.get_pressed()
     # detects if user wants to close the program
@@ -2854,12 +2901,15 @@ def detectInputs(numShip):
             gamePhase = "sonar"
             toggleShoot = 1
             shootMissile()
+            #explosion sound!
         # for sonar pulse
         if gamePhase == "sonar" and toggleShoot == 0:
             gamePhase = "shoot"
             toggleShoot = 1
             pulseSonar()
+            sonarController = 1
         isPress_SPACE = 1
+        
     # this just makes sure when space is pressed, it only inputs once
     if not(key[pygame.K_SPACE]):
         isPress_SPACE = 0
@@ -2976,11 +3026,270 @@ def isSubUnderShip():
                 Sprite.subUnderShip2 = False
                 Sprite.subUnderShipCounter2 = 0
 
+
+#function for playback of ship themes
+#set up for 2 players pulling from their respective collections
+def shipTheme_playback(sonar_hitShips):
+    #'importing' necessary globals
+    global shipDic1
+    global shipDic2
+    global playerTurn
+
+    
+    #list with all relevent ship objects
+    shipList = list(sonar_hitShips.values())
+    
+    #playback - player turn decides what ship dictionaries to pull from for ship values
+    if playerTurn == 1:
+        #checks for ship object in shipList - plays simple or complex theme, and adjusts volume/pans audio accordingly
+        #does this for each ship
+        #audio pan done by setting each channels volume w two parameters (0.0,0.0) or (L,R) where L and R are float representations of volume in the stereo field (<=1)
+        
+        #if enough time, a mixing step that makes volumes in balance with one another
+        
+        if shipDic2['ship0'] in shipList:
+            #volume_distanceRatio = current avg sonar distance / max sonar distance
+            #280 is what im working with for max sonar distance
+            volume_distanceRatio = shipDic2['ship0'].averageDistance/280
+
+            
+            #using vol dist ratioto select which theme plays (decided to pair the parameters - volume_distanceRatio isn't an accurate name for the variable but whateva)
+            if volume_distanceRatio <= 0.5:
+                #SUPPOSED TO BE COMPLEX THEME
+                ch_shipTheme0.play(note1)
+            elif volume_distanceRatio > 0.5:
+                ch_shipTheme0.play(note2)
+            
+            if volume_distanceRatio < 0.25:
+                ch_shipTheme0.set_volume(0.9,0.0)
+                    
+            elif volume_distanceRatio >= 0.25 and volume_distanceRatio < 0.50:
+                ch_shipTheme0.set_volume(0.4,0.0)
+                
+            elif volume_distanceRatio >= 0.50:
+                ch_shipTheme0.set_volume(0.2,0.0)
+                
+            #print("ship 0 hit, ship beam avg dist: {}, ship beam hit num: {}, volume_distanceRatio {}".format(shipDic2['ship0'].averageDistance,shipDic2['ship0'].sonarHitNum, volume_distanceRatio))
+            
+            
+            
+
+        if shipDic2['ship1'] in shipList:
+            volume_distanceRatio = shipDic2['ship1'].averageDistance/280
+
+            
+            if volume_distanceRatio <= 0.5:
+                #SUPPOSED TO BE COMPLEX THEME
+                ch_shipTheme1.play(note3)
+            elif volume_distanceRatio > 0.5:
+                ch_shipTheme1.play(note4)
+
+            
+            if volume_distanceRatio < 0.25:
+                ch_shipTheme1.set_volume(0.9,0.0)
+                    
+            elif volume_distanceRatio >= 0.25 and volume_distanceRatio < 0.50:
+                ch_shipTheme1.set_volume(0.4,0.0)
+                
+            elif volume_distanceRatio >= 0.50:
+                ch_shipTheme1.set_volume(0.2,0.0)
+
+            #print("ship 1 hit, ship beam avg dist: {}, ship beam hit num: {} volume_distanceRatio {}".format(shipDic2['ship1'].averageDistance,shipDic2['ship1'].sonarHitNum,volume_distanceRatio))
+
+        if shipDic2['ship2'] in shipList:
+            volume_distanceRatio = shipDic2['ship2'].averageDistance/280
+
+            
+            if volume_distanceRatio <= 0.5:
+                #SUPPOSED TO BE COMPLEX THEME
+                ch_shipTheme2.play(note5)
+            elif volume_distanceRatio > 0.5:
+                ch_shipTheme2.play(note6)
+
+            
+            if volume_distanceRatio < 0.25:
+                ch_shipTheme2.set_volume(0.9,0.0)
+                    
+            elif volume_distanceRatio >= 0.25 and volume_distanceRatio < 0.50:
+                ch_shipTheme2.set_volume(0.4,0.0)
+                
+            elif volume_distanceRatio >= 0.50:
+                ch_shipTheme2.set_volume(0.2,0.0)
+
+            #print("ship 2 hit, ship beam avg dist: {}, ship beam hit num: {} volume_distanceRatio {}".format(shipDic2['ship2'].averageDistance,shipDic2['ship2'].sonarHitNum, volume_distanceRatio))
+
+        if shipDic2['ship3'] in shipList:
+            volume_distanceRatio = shipDic2['ship3'].averageDistance/280
+
+            
+            if volume_distanceRatio <= 0.5:
+                #SUPPOSED TO BE COMPLEX THEME
+                ch_shipTheme3.play(note7)
+            elif volume_distanceRatio > 0.5:
+                ch_shipTheme3.play(note8)
+
+            
+            if volume_distanceRatio < 0.25:
+                ch_shipTheme3.set_volume(0.9,0.0)
+                    
+            elif volume_distanceRatio >= 0.25 and volume_distanceRatio < 0.50:
+                ch_shipTheme3.set_volume(0.4,0.0)
+                
+            elif volume_distanceRatio >= 0.50:
+                ch_shipTheme3.set_volume(0.2,0.0)
+
+            #print("ship 3 hit, ship beam avg dist: {}, ship beam hit num: {}, volume_distanceRatio {}".format(shipDic2['ship3'].averageDistance,shipDic2['ship3'].sonarHitNum,volume_distanceRatio))
+            
+        if shipDic2['ship4'] in shipList:
+            volume_distanceRatio = shipDic2['ship4'].averageDistance/280
+
+            
+            if volume_distanceRatio <= 0.5:
+                #SUPPOSED TO BE COMPLEX THEME
+                ch_shipTheme4.play(note9)
+            elif volume_distanceRatio > 0.5:
+                ch_shipTheme4.play(note10)
+
+            
+            if volume_distanceRatio < 0.25:
+                ch_shipTheme4.set_volume(0.9,0.0)
+                    
+            elif volume_distanceRatio >= 0.25 and volume_distanceRatio < 0.50:
+                ch_shipTheme4.set_volume(0.4,0.0)
+                
+            elif volume_distanceRatio >= 0.50:
+                ch_shipTheme4.set_volume(0.2,0.0)
+
+            #print("ship 4 hit, ship beam avg dist: {}, ship beam hit num: {} volume_distanceRatio {}".format(shipDic2['ship4'].averageDistance,shipDic2['ship4'].sonarHitNum, volume_distanceRatio))
+
+
+    if playerTurn == 2:
+        
+        if shipDic1['ship0'] in shipList:
+            #280 is what im working with for max distance
+            volume_distanceRatio = shipDic1['ship0'].averageDistance/280
+
+            
+            if volume_distanceRatio <= 0.5:
+                #SUPPOSED TO BE COMPLEX THEME
+                ch_shipTheme0.play(note1)
+            elif volume_distanceRatio > 0.5:
+                ch_shipTheme0.play(note2)
+            
+            if volume_distanceRatio < 0.25:
+                ch_shipTheme0.set_volume(0.0,0.9)
+                    
+            elif volume_distanceRatio >= 0.25 and volume_distanceRatio < 0.50:
+                ch_shipTheme0.set_volume(0.0,0.4)
+                
+            elif volume_distanceRatio >= 0.50:
+                ch_shipTheme0.set_volume(0.0,0.2)
+                
+            #print("ship 0 hit, ship beam avg dist: {}, ship beam hit num: {}, volume_distanceRatio {}".format(shipDic1['ship0'].averageDistance,shipDic1['ship0'].sonarHitNum, volume_distanceRatio))
+            
+            
+            
+
+        if shipDic1['ship1'] in shipList:
+            #280 is what im working with for max distance
+            volume_distanceRatio = shipDic1['ship1'].averageDistance/280
+
+            
+            if volume_distanceRatio <= 0.5:
+                #SUPPOSED TO BE COMPLEX THEME
+                ch_shipTheme1.play(note3)
+            elif volume_distanceRatio > 0.5:
+                ch_shipTheme1.play(note4)
+
+            
+            if volume_distanceRatio < 0.25:
+                ch_shipTheme1.set_volume(0.0,0.9)
+                    
+            elif volume_distanceRatio >= 0.25 and volume_distanceRatio < 0.50:
+                ch_shipTheme1.set_volume(0.0,0.4)
+                
+            elif volume_distanceRatio >= 0.50:
+                ch_shipTheme1.set_volume(0.0,0.2)
+
+            #print("ship 1 hit, ship beam avg dist: {}, ship beam hit num: {} volume_distanceRatio {}".format(shipDic1['ship1'].averageDistance,shipDic1['ship1'].sonarHitNum,volume_distanceRatio))
+
+        if shipDic1['ship2'] in shipList:
+            #280 is what im working with for max distance
+            volume_distanceRatio = shipDic1['ship2'].averageDistance/280
+
+            
+            if volume_distanceRatio <= 0.5:
+                #SUPPOSED TO BE COMPLEX THEME
+                ch_shipTheme2.play(note5)
+            elif volume_distanceRatio > 0.5:
+                ch_shipTheme2.play(note6)
+
+            
+            if volume_distanceRatio < 0.25:
+                ch_shipTheme2.set_volume(0.0,0.9)
+                    
+            elif volume_distanceRatio >= 0.25 and volume_distanceRatio < 0.50:
+                ch_shipTheme2.set_volume(0.0,0.4)
+                
+            elif volume_distanceRatio >= 0.50:
+                ch_shipTheme2.set_volume(0.0,0.2)
+
+            #print("ship 2 hit, ship beam avg dist: {}, ship beam hit num: {} volume_distanceRatio {}".format(shipDic1['ship2'].averageDistance,shipDic1['ship2'].sonarHitNum, volume_distanceRatio))
+
+        if shipDic1['ship3'] in shipList:
+            #280 is what im working with for max distance
+            volume_distanceRatio = shipDic1['ship3'].averageDistance/280
+
+            
+            if volume_distanceRatio <= 0.5:
+                #SUPPOSED TO BE COMPLEX THEME
+                ch_shipTheme3.play(note7)
+            elif volume_distanceRatio > 0.5:
+                ch_shipTheme3.play(note8)
+
+            
+            if volume_distanceRatio < 0.25:
+                ch_shipTheme3.set_volume(0.0,0.9)
+                    
+            elif volume_distanceRatio >= 0.25 and volume_distanceRatio < 0.50:
+                ch_shipTheme3.set_volume(0.0,0.4)
+                
+            elif volume_distanceRatio >= 0.50:
+                ch_shipTheme3.set_volume(0.0,0.2)
+
+            #print("ship 3 hit, ship beam avg dist: {}, ship beam hit num: {}, volume_distanceRatio {}".format(shipDic1['ship3'].averageDistance,shipDic1['ship3'].sonarHitNum,volume_distanceRatio))
+            
+        if shipDic1['ship4'] in shipList:
+            #280 is what im working with for max distance
+            volume_distanceRatio = shipDic1['ship4'].averageDistance/280
+
+            
+            if volume_distanceRatio <= 0.5:
+                #SUPPOSED TO BE COMPLEX THEME
+                ch_shipTheme4.play(note9)
+            elif volume_distanceRatio > 0.5:
+                ch_shipTheme4.play(note10)
+
+            
+            if volume_distanceRatio < 0.25:
+                ch_shipTheme4.set_volume(0.0,0.9)
+                    
+            elif volume_distanceRatio >= 0.25 and volume_distanceRatio < 0.50:
+                ch_shipTheme4.set_volume(0.0,0.4)
+                
+            elif volume_distanceRatio >= 0.50:
+                ch_shipTheme4.set_volume(0.0,0.2)
+
+            #print("ship 4 hit, ship beam avg dist: {}, ship beam hit num: {} volume_distanceRatio {}".format(shipDic1['ship4'].averageDistance,shipDic1['ship4'].sonarHitNum, volume_distanceRatio))
+    
+    return
+
+
 # plays background water sounds
 def waterSound(run, waterClock, waterSound, waterChannel, waterChannelBuffer):
- #water sounds controlled by 2 channels. primary playback channel = waterChannel, secondary playback channel = waterChannelBuffer
- #the buffer provides audio to sustain the water noises while the primary playback channel fades out and back in
- #water clock tracks game ticks, these are used to represent time
+    #water sounds controlled by 2 channels. primary playback channel = waterChannel, secondary playback channel = waterChannelBuffer
+    #the buffer provides audio to sustain the water noises while the primary playback channel fades out and back in
+    #water clock tracks game ticks, these are used to represent time
 
     waterSound = waterSound[randint(0,2)]
 
@@ -3063,6 +3372,7 @@ sonarMeter1 = 0
 sonarMeter2 = 0
 sonarChargeMeter1 = 0
 sonarChargeMeter2 = 0
+sonarController = 0
 subSink1 = False
 subSink2 = False
 subSinkPunish1 = 0
@@ -3100,7 +3410,6 @@ waterClock = 0
 
 # gameplay timing (the pacing of the game)
 afterShotTime = 60  # time after shot
-
 
 targetCoords = []
 #########################################################################################
