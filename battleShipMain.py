@@ -183,6 +183,7 @@ class Ship(Rectangle):
     def __init__(self, health, shipSprite, color, x, y, width, height):
         Rectangle.__init__(self, color, x, y, width, height)
         self.health = health
+        self.length = health
         self.damage = 0
         self.sonarHitNum = 0
         self.averageDistance = 0
@@ -267,7 +268,6 @@ class Target(Rectangle):
         global coord_H
         global coord_I
         global coord_J
-        global lock_in
         global isPress_coord_1
         global isPress_coord_2
         global isPress_coord_3
@@ -289,145 +289,127 @@ class Target(Rectangle):
         global isPress_coord_I
         global isPress_coord_J
         global isPress_displayCoords
+
+
         # detecting key presses
         keys = pygame.key.get_pressed()
 
         # sets trigger var to true
         if keys[pygame.K_1] and isPress_coord_1:
-            coord_1 = True
             isPress_coord_1 = 0
             isPress_displayCoords = 1
             targetCoords.append(1)
         if not(keys[pygame.K_1]):
             isPress_coord_1 = 1
         if keys[pygame.K_2] and isPress_coord_2:
-            coord_2 = True
             isPress_coord_2 = 0
             isPress_displayCoords = 1
             targetCoords.append(2)
         if not(keys[pygame.K_2]):
             isPress_coord_2 = 1
         if keys[pygame.K_3] and isPress_coord_3:
-            coord_3 = True
             isPress_coord_3 = 0
             isPress_displayCoords = 1
             targetCoords.append(3)
         if not(keys[pygame.K_3]):
             isPress_coord_3 = 1
         if keys[pygame.K_4] and isPress_coord_4:
-            coord_4 = True
             isPress_coord_4 = 0
             isPress_displayCoords = 1
             targetCoords.append(4)
         if not(keys[pygame.K_4]):
             isPress_coord_4 = 1
         if keys[pygame.K_5] and isPress_coord_5:
-            coord_5 = True
             isPress_coord_5 = 0
             isPress_displayCoords = 1
             targetCoords.append(5)
         if not(keys[pygame.K_5]):
             isPress_coord_5 = 1
         if keys[pygame.K_6] and isPress_coord_6:
-            coord_6 = True
             isPress_coord_6 = 0
             isPress_displayCoords = 1
             targetCoords.append(6)
         if not(keys[pygame.K_6]):
             isPress_coord_6 = 1
         if keys[pygame.K_7] and isPress_coord_7:
-            coord_7 = True
             isPress_coord_7 = 0
             isPress_displayCoords = 1
             targetCoords.append(7)
         if not(keys[pygame.K_7]):
             isPress_coord_7 = 1
         if keys[pygame.K_8] and isPress_coord_8:
-            coord_8 = True
             isPress_coord_8 = 0
             isPress_displayCoords = 1
             targetCoords.append(8)
         if not(keys[pygame.K_8]):
             isPress_coord_8 = 1
         if keys[pygame.K_9] and isPress_coord_9:
-            coord_9 = True
             isPress_coord_9 = 0
             isPress_displayCoords = 1
             targetCoords.append(9)
         if not(keys[pygame.K_9]):
             isPress_coord_9 = 1
         if keys[pygame.K_0] and isPress_coord_0:
-            coord_0 = True
             isPress_coord_0 = 0
             isPress_displayCoords = 1
             targetCoords.append(0)
         if not(keys[pygame.K_0]):
             isPress_coord_0 = 1
         if keys[pygame.K_a] and isPress_coord_A:
-            coord_A = True
             isPress_coord_A = 0
             isPress_displayCoords = 1
             targetCoords.append('A')
         if not(keys[pygame.K_a]):
             isPress_coord_A = 1
         if keys[pygame.K_b] and isPress_coord_B:
-            coord_B = True
             isPress_coord_B = 0
             isPress_displayCoords = 1
             targetCoords.append('B')
         if not(keys[pygame.K_b]):
             isPress_coord_B = 1
         if keys[pygame.K_c] and isPress_coord_C:
-            coord_C = True
             isPress_coord_C = 0
             isPress_displayCoords = 1
             targetCoords.append('C')
         if not(keys[pygame.K_c]):
             isPress_coord_C = 1
         if keys[pygame.K_d] and isPress_coord_D:
-            coord_D = True
             isPress_coord_D = 0
             isPress_displayCoords = 1
             targetCoords.append('D')
         if not(keys[pygame.K_d]):
             isPress_coord_D = 1
         if keys[pygame.K_e] and isPress_coord_E:
-            coord_E = True
             isPress_coord_E = 0
             isPress_displayCoords = 1
             targetCoords.append('E')
         if not(keys[pygame.K_e]):
             isPress_coord_E = 1
         if keys[pygame.K_f] and isPress_coord_F:
-            coord_F = True
             isPress_coord_F = 0
             isPress_displayCoords = 1
             targetCoords.append('F')
         if not(keys[pygame.K_f]):
             isPress_coord_F = 1
         if keys[pygame.K_g] and isPress_coord_G:
-            coord_G = True
             isPress_coord_G = 0
             isPress_displayCoords = 1
             targetCoords.append('G')
         if not(keys[pygame.K_g]):
             isPress_coord_G = 1
         if keys[pygame.K_h] and isPress_coord_H:
-            coord_H = True
             isPress_coord_H = 0
             isPress_displayCoords = 1
             targetCoords.append('H')
         if not(keys[pygame.K_h]):
             isPress_coord_H = 1
         if keys[pygame.K_i] and isPress_coord_I:
-            coord_I = True
             isPress_coord_I = 0
             isPress_displayCoords = 1
             targetCoords.append('I')
         if not(keys[pygame.K_i]):
             isPress_coord_I = 1
         if keys[pygame.K_j] and isPress_coord_J:
-            coord_J = True
             isPress_coord_J = 0
             isPress_displayCoords = 1
             targetCoords.append('J')
@@ -435,1052 +417,1145 @@ class Target(Rectangle):
             isPress_coord_J = 1
 
         targetCoords_cut = targetCoords[0:2]
-        # confirmation buttom
-        if keys[pygame.K_LSHIFT] and len(targetCoords_cut) == 2:
-            if isinstance(targetCoords_cut[0],str) and isinstance(targetCoords_cut[1],str):
-                print("You must enter coordinates in form: '(0,A)' or '(A,0)'")
-                isPress_displayCoords = 0
-            elif isinstance(targetCoords_cut[0],int) and isinstance(targetCoords_cut[1],int):
-                print("You must enter coordinates in form: '(0,A)' or '(A,0)'")
-                isPress_displayCoords = 0
-            else:
-                lock_in = True
-                isPress_displayCoords = 0
-                print("~~~~~~~~")
-                print("Ready...")
-                print("Aim...")
-            targetCoords = []
 
         if isPress_displayCoords:
             isPress_displayCoords = 0
             print(targetCoords_cut)
 
+        coordPass = False
+        # confirmation buttom
+        if len(targetCoords_cut) == 2:
+            if isinstance(targetCoords_cut[0],str) and isinstance(targetCoords_cut[1],str):
+                print("You must enter coordinates in form: '(0,A)' or '(A,0)'")
+                coord_1 = False
+                coord_2 = False
+                coord_3 = False
+                coord_4 = False
+                coord_5 = False
+                coord_6 = False
+                coord_7 = False
+                coord_8 = False
+                coord_9 = False
+                coord_0 = False
+                coord_A = False
+                coord_B = False
+                coord_C = False
+                coord_D = False
+                coord_E = False
+                coord_F = False
+                coord_G = False
+                coord_H = False
+                coord_I = False
+                coord_J = False
+                coordPass = False
+            elif isinstance(targetCoords_cut[0],int) and isinstance(targetCoords_cut[1],int):
+                print("You must enter coordinates in form: '(0,A)' or '(A,0)'")
+                coord_1 = False
+                coord_2 = False
+                coord_3 = False
+                coord_4 = False
+                coord_5 = False
+                coord_6 = False
+                coord_7 = False
+                coord_8 = False
+                coord_9 = False
+                coord_0 = False
+                coord_A = False
+                coord_B = False
+                coord_C = False
+                coord_D = False
+                coord_E = False
+                coord_F = False
+                coord_G = False
+                coord_H = False
+                coord_I = False
+                coord_J = False
+                coordPass = False
+            else:
+                print("Curser in position")
+                if 1 in targetCoords_cut:
+                    coord_1 = True
+                if 2 in targetCoords_cut:
+                    coord_2 = True
+                if 3 in targetCoords_cut:
+                    coord_3 = True
+                if 4 in targetCoords_cut:
+                    coord_4 = True
+                if 5 in targetCoords_cut:
+                    coord_5 = True
+                if 6 in targetCoords_cut:
+                    coord_6 = True
+                if 7 in targetCoords_cut:
+                    coord_7 = True
+                if 8 in targetCoords_cut:
+                    coord_9 = True
+                if 0 in targetCoords_cut:
+                    coord_0 = True
+                if 'A' in targetCoords_cut:
+                    coord_A = True
+                if 'B' in targetCoords_cut:
+                    coord_B = True
+                if 'C' in targetCoords_cut:
+                    coord_C = True
+                if 'D' in targetCoords_cut:
+                    coord_D = True
+                if 'E' in targetCoords_cut:
+                    coord_E = True
+                if 'F' in targetCoords_cut:
+                    coord_F = True
+                if 'G' in targetCoords_cut:
+                    coord_G = True
+                if 'H' in targetCoords_cut:
+                    coord_H = True
+                if 'I' in targetCoords_cut:
+                    coord_I = True
+                if 'J' in targetCoords_cut:
+                    coord_J = True
+                if 'K' in targetCoords_cut:
+                    coord_K = True
+                coordPass = True
+            targetCoords = []
+
         if playerTurn == 1:
             # moves curser1 to coords
             # row 1
-            if coord_1 and coord_A and lock_in:
-                curser1.pos.x = sideMargin + tile*0 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*0 + playScreenHeight
+            if coord_1 and coord_A:
+                mapPosx = sideMargin + tile*0 + playScreenWidth
+                mapPosy = topBotMargin + tile*0 + playScreenHeight
                 coord_1 = 0
                 coord_A = 0
-            if coord_1 and coord_B and lock_in:
-                curser1.pos.x = sideMargin + tile*0 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*1 + playScreenHeight
+            if coord_1 and coord_B:
+                mapPosx = sideMargin + tile*0 + playScreenWidth
+                mapPosy = topBotMargin + tile*1 + playScreenHeight
                 coord_1 = 0
                 coord_B = 0
-            if coord_1 and coord_C and lock_in:
-                curser1.pos.x = sideMargin + tile*0 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*2 + playScreenHeight
+            if coord_1 and coord_C:
+                mapPosx = sideMargin + tile*0 + playScreenWidth
+                mapPosy = topBotMargin + tile*2 + playScreenHeight
                 coord_1 = 0
                 coord_C = 0
-            if coord_1 and coord_D and lock_in:
-                curser1.pos.x = sideMargin + tile*0 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*3 + playScreenHeight
+            if coord_1 and coord_D:
+                mapPosx = sideMargin + tile*0 + playScreenWidth
+                mapPosy = topBotMargin + tile*3 + playScreenHeight
                 coord_1 = 0
                 coord_D = 0
-            if coord_1 and coord_E and lock_in:
-                curser1.pos.x = sideMargin + tile*0 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*4 + playScreenHeight
+            if coord_1 and coord_E:
+                mapPosx = sideMargin + tile*0 + playScreenWidth
+                mapPosy = topBotMargin + tile*4 + playScreenHeight
                 coord_1 = 0
                 coord_E = 0
-            if coord_1 and coord_F and lock_in:
-                curser1.pos.x = sideMargin + tile*0 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*5 + playScreenHeight
+            if coord_1 and coord_F:
+                mapPosx = sideMargin + tile*0 + playScreenWidth
+                mapPosy = topBotMargin + tile*5 + playScreenHeight
                 coord_1 = 0
                 coord_F = 0
-            if coord_1 and coord_G and lock_in:
-                curser1.pos.x = sideMargin + tile*0 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*6 + playScreenHeight
+            if coord_1 and coord_G:
+                mapPosx = sideMargin + tile*0 + playScreenWidth
+                mapPosy = topBotMargin + tile*6 + playScreenHeight
                 coord_1 = 0
                 coord_G = 0
-            if coord_1 and coord_H and lock_in:
-                curser1.pos.x = sideMargin + tile*0 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*7 + playScreenHeight
+            if coord_1 and coord_H:
+                mapPosx = sideMargin + tile*0 + playScreenWidth
+                mapPosy = topBotMargin + tile*7 + playScreenHeight
                 coord_1 = 0
                 coord_H = 0
-            if coord_1 and coord_I and lock_in:
-                curser1.pos.x = sideMargin + tile*0 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*8 + playScreenHeight
+            if coord_1 and coord_I:
+                mapPosx = sideMargin + tile*0 + playScreenWidth
+                mapPosy = topBotMargin + tile*8 + playScreenHeight
                 coord_1 = 0
                 coord_I = 0
-            if coord_1 and coord_J and lock_in:
-                curser1.pos.x = sideMargin + tile*0 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*9 + playScreenHeight
+            if coord_1 and coord_J:
+                mapPosx = sideMargin + tile*0 + playScreenWidth
+                mapPosy = topBotMargin + tile*9 + playScreenHeight
                 coord_1 = 0
                 coord_J = 0
             # row 2
-            if coord_2 and coord_A and lock_in:
-                curser1.pos.x = sideMargin + tile*1 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*0 + playScreenHeight
+            if coord_2 and coord_A:
+                mapPosx = sideMargin + tile*1 + playScreenWidth
+                mapPosy = topBotMargin + tile*0 + playScreenHeight
                 coord_2 = 0
                 coord_A = 0
-            if coord_2 and coord_B and lock_in:
-                curser1.pos.x = sideMargin + tile*1 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*1 + playScreenHeight
+            if coord_2 and coord_B:
+                mapPosx = sideMargin + tile*1 + playScreenWidth
+                mapPosy = topBotMargin + tile*1 + playScreenHeight
                 coord_2 = 0
                 coord_B = 0
-            if coord_2 and coord_C and lock_in:
-                curser1.pos.x = sideMargin + tile*1 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*2 + playScreenHeight
+            if coord_2 and coord_C:
+                mapPosx = sideMargin + tile*1 + playScreenWidth
+                mapPosy = topBotMargin + tile*2 + playScreenHeight
                 coord_2 = 0
                 coord_C = 0
-            if coord_2 and coord_D and lock_in:
-                curser1.pos.x = sideMargin + tile*1 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*3 + playScreenHeight
+            if coord_2 and coord_D:
+                mapPosx = sideMargin + tile*1 + playScreenWidth
+                mapPosy = topBotMargin + tile*3 + playScreenHeight
                 coord_2 = 0
                 coord_D = 0
-            if coord_2 and coord_E and lock_in:
-                curser1.pos.x = sideMargin + tile*1 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*4 + playScreenHeight
+            if coord_2 and coord_E:
+                mapPosx = sideMargin + tile*1 + playScreenWidth
+                mapPosy = topBotMargin + tile*4 + playScreenHeight
                 coord_2 = 0
                 coord_E = 0
-            if coord_2 and coord_F and lock_in:
-                curser1.pos.x = sideMargin + tile*1 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*5 + playScreenHeight
+            if coord_2 and coord_F:
+                mapPosx = sideMargin + tile*1 + playScreenWidth
+                mapPosy = topBotMargin + tile*5 + playScreenHeight
                 coord_2 = 0
                 coord_F = 0
-            if coord_2 and coord_G and lock_in:
-                curser1.pos.x = sideMargin + tile*1 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*6 + playScreenHeight
+            if coord_2 and coord_G:
+                mapPosx = sideMargin + tile*1 + playScreenWidth
+                mapPosy = topBotMargin + tile*6 + playScreenHeight
                 coord_2 = 0
                 coord_G = 0
-            if coord_2 and coord_H and lock_in:
-                curser1.pos.x = sideMargin + tile*1 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*7 + playScreenHeight
+            if coord_2 and coord_H:
+                mapPosx = sideMargin + tile*1 + playScreenWidth
+                mapPosy = topBotMargin + tile*7 + playScreenHeight
                 coord_2 = 0
                 coord_H = 0
-            if coord_2 and coord_I and lock_in:
-                curser1.pos.x = sideMargin + tile*1 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*8 + playScreenHeight
+            if coord_2 and coord_I:
+                mapPosx = sideMargin + tile*1 + playScreenWidth
+                mapPosy = topBotMargin + tile*8 + playScreenHeight
                 coord_2 = 0
                 coord_I = 0
-            if coord_2 and coord_J and lock_in:
-                curser1.pos.x = sideMargin + tile*1 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*9 + playScreenHeight
+            if coord_2 and coord_J:
+                mapPosx = sideMargin + tile*1 + playScreenWidth
+                mapPosy = topBotMargin + tile*9 + playScreenHeight
                 coord_2 = 0
                 coord_J = 0
             # row 3
-            if coord_3 and coord_A and lock_in:
-                curser1.pos.x = sideMargin + tile*2 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*0 + playScreenHeight
+            if coord_3 and coord_A:
+                mapPosx = sideMargin + tile*2 + playScreenWidth
+                mapPosy = topBotMargin + tile*0 + playScreenHeight
                 coord_3 = 0
                 coord_A = 0
-            if coord_3 and coord_B and lock_in:
-                curser1.pos.x = sideMargin + tile*2 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*1 + playScreenHeight
+            if coord_3 and coord_B:
+                mapPosx = sideMargin + tile*2 + playScreenWidth
+                mapPosy = topBotMargin + tile*1 + playScreenHeight
                 coord_3 = 0
                 coord_B = 0
-            if coord_3 and coord_C and lock_in:
-                curser1.pos.x = sideMargin + tile*2 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*2 + playScreenHeight
+            if coord_3 and coord_C:
+                mapPosx = sideMargin + tile*2 + playScreenWidth
+                mapPosy = topBotMargin + tile*2 + playScreenHeight
                 coord_3 = 0
                 coord_C = 0
-            if coord_3 and coord_D and lock_in:
-                curser1.pos.x = sideMargin + tile*2 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*3 + playScreenHeight
+            if coord_3 and coord_D:
+                mapPosx = sideMargin + tile*2 + playScreenWidth
+                mapPosy = topBotMargin + tile*3 + playScreenHeight
                 coord_3 = 0
                 coord_D = 0
-            if coord_3 and coord_E and lock_in:
-                curser1.pos.x = sideMargin + tile*2 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*4 + playScreenHeight
+            if coord_3 and coord_E:
+                mapPosx = sideMargin + tile*2 + playScreenWidth
+                mapPosy = topBotMargin + tile*4 + playScreenHeight
                 coord_3 = 0
                 coord_E = 0
-            if coord_3 and coord_F and lock_in:
-                curser1.pos.x = sideMargin + tile*2 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*5 + playScreenHeight
+            if coord_3 and coord_F:
+                mapPosx = sideMargin + tile*2 + playScreenWidth
+                mapPosy = topBotMargin + tile*5 + playScreenHeight
                 coord_3 = 0
                 coord_F = 0
-            if coord_3 and coord_G and lock_in:
-                curser1.pos.x = sideMargin + tile*2 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*6 + playScreenHeight
+            if coord_3 and coord_G:
+                mapPosx = sideMargin + tile*2 + playScreenWidth
+                mapPosy = topBotMargin + tile*6 + playScreenHeight
                 coord_3 = 0
                 coord_G = 0
-            if coord_3 and coord_H and lock_in:
-                curser1.pos.x = sideMargin + tile*2 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*7 + playScreenHeight
+            if coord_3 and coord_H:
+                mapPosx = sideMargin + tile*2 + playScreenWidth
+                mapPosy = topBotMargin + tile*7 + playScreenHeight
                 coord_3 = 0
                 coord_H = 0
-            if coord_3 and coord_I and lock_in:
-                curser1.pos.x = sideMargin + tile*2 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*8 + playScreenHeight
+            if coord_3 and coord_I:
+                mapPosx = sideMargin + tile*2 + playScreenWidth
+                mapPosy = topBotMargin + tile*8 + playScreenHeight
                 coord_3 = 0
                 coord_I = 0
-            if coord_3 and coord_J and lock_in:
-                curser1.pos.x = sideMargin + tile*2 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*9 + playScreenHeight
+            if coord_3 and coord_J:
+                mapPosx = sideMargin + tile*2 + playScreenWidth
+                mapPosy = topBotMargin + tile*9 + playScreenHeight
                 coord_3 = 0
                 coord_J = 0
             # row 4
-            if coord_4 and coord_A and lock_in:
-                curser1.pos.x = sideMargin + tile*3 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*0 + playScreenHeight
+            if coord_4 and coord_A:
+                mapPosx = sideMargin + tile*3 + playScreenWidth
+                mapPosy = topBotMargin + tile*0 + playScreenHeight
                 coord_4 = 0
                 coord_A = 0
-            if coord_4 and coord_B and lock_in:
-                curser1.pos.x = sideMargin + tile*3 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*1 + playScreenHeight
+            if coord_4 and coord_B:
+                mapPosx = sideMargin + tile*3 + playScreenWidth
+                mapPosy = topBotMargin + tile*1 + playScreenHeight
                 coord_4 = 0
                 coord_B = 0
-            if coord_4 and coord_C and lock_in:
-                curser1.pos.x = sideMargin + tile*3 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*2 + playScreenHeight
+            if coord_4 and coord_C:
+                mapPosx = sideMargin + tile*3 + playScreenWidth
+                mapPosy = topBotMargin + tile*2 + playScreenHeight
                 coord_4 = 0
                 coord_C = 0
-            if coord_4 and coord_D and lock_in:
-                curser1.pos.x = sideMargin + tile*3 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*3 + playScreenHeight
+            if coord_4 and coord_D:
+                mapPosx = sideMargin + tile*3 + playScreenWidth
+                mapPosy = topBotMargin + tile*3 + playScreenHeight
                 coord_4 = 0
                 coord_D = 0
-            if coord_4 and coord_E and lock_in:
-                curser1.pos.x = sideMargin + tile*3 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*4 + playScreenHeight
+            if coord_4 and coord_E:
+                mapPosx = sideMargin + tile*3 + playScreenWidth
+                mapPosy = topBotMargin + tile*4 + playScreenHeight
                 coord_4 = 0
                 coord_E = 0
-            if coord_4 and coord_F and lock_in:
-                curser1.pos.x = sideMargin + tile*3 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*5 + playScreenHeight
+            if coord_4 and coord_F:
+                mapPosx = sideMargin + tile*3 + playScreenWidth
+                mapPosy = topBotMargin + tile*5 + playScreenHeight
                 coord_4 = 0
                 coord_F = 0
-            if coord_4 and coord_G and lock_in:
-                curser1.pos.x = sideMargin + tile*3 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*6 + playScreenHeight
+            if coord_4 and coord_G:
+                mapPosx = sideMargin + tile*3 + playScreenWidth
+                mapPosy = topBotMargin + tile*6 + playScreenHeight
                 coord_4 = 0
                 coord_G = 0
-            if coord_4 and coord_H and lock_in:
-                curser1.pos.x = sideMargin + tile*3 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*7 + playScreenHeight
+            if coord_4 and coord_H:
+                mapPosx = sideMargin + tile*3 + playScreenWidth
+                mapPosy = topBotMargin + tile*7 + playScreenHeight
                 coord_4 = 0
                 coord_H = 0
-            if coord_4 and coord_I and lock_in:
-                curser1.pos.x = sideMargin + tile*3 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*8 + playScreenHeight
+            if coord_4 and coord_I:
+                mapPosx = sideMargin + tile*3 + playScreenWidth
+                mapPosy = topBotMargin + tile*8 + playScreenHeight
                 coord_4 = 0
                 coord_I = 0
-            if coord_4 and coord_J and lock_in:
-                curser1.pos.x = sideMargin + tile*3 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*9 + playScreenHeight
+            if coord_4 and coord_J:
+                mapPosx = sideMargin + tile*3 + playScreenWidth
+                mapPosy = topBotMargin + tile*9 + playScreenHeight
                 coord_4 = 0
                 coord_J = 0
             # row 5
-            if coord_5 and coord_A and lock_in:
-                curser1.pos.x = sideMargin + tile*4 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*0 + playScreenHeight
-                coord_1 = 0
+            if coord_5 and coord_A:
+                mapPosx = sideMargin + tile*4 + playScreenWidth
+                mapPosy = topBotMargin + tile*0 + playScreenHeight
+                coord_5 = 0
                 coord_A = 0
-            if coord_5 and coord_B and lock_in:
-                curser1.pos.x = sideMargin + tile*4 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*1 + playScreenHeight
-                coord_1 = 0
+            if coord_5 and coord_B:
+                mapPosx = sideMargin + tile*4 + playScreenWidth
+                mapPosy = topBotMargin + tile*1 + playScreenHeight
+                coord_5 = 0
                 coord_B = 0
-            if coord_5 and coord_C and lock_in:
-                curser1.pos.x = sideMargin + tile*4 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*2 + playScreenHeight
+            if coord_5 and coord_C:
+                mapPosx = sideMargin + tile*4 + playScreenWidth
+                mapPosy = topBotMargin + tile*2 + playScreenHeight
                 coord_5 = 0
                 coord_C = 0
-            if coord_5 and coord_D and lock_in:
-                curser1.pos.x = sideMargin + tile*4 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*3 + playScreenHeight
+            if coord_5 and coord_D:
+                mapPosx = sideMargin + tile*4 + playScreenWidth
+                mapPosy = topBotMargin + tile*3 + playScreenHeight
                 coord_5 = 0
                 coord_D = 0
-            if coord_5 and coord_E and lock_in:
-                curser1.pos.x = sideMargin + tile*4 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*4 + playScreenHeight
+            if coord_5 and coord_E:
+                mapPosx = sideMargin + tile*4 + playScreenWidth
+                mapPosy = topBotMargin + tile*4 + playScreenHeight
                 coord_5 = 0
                 coord_E = 0
-            if coord_5 and coord_F and lock_in:
-                curser1.pos.x = sideMargin + tile*4 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*5 + playScreenHeight
+            if coord_5 and coord_F:
+                mapPosx = sideMargin + tile*4 + playScreenWidth
+                mapPosy = topBotMargin + tile*5 + playScreenHeight
                 coord_5 = 0
                 coord_F = 0
-            if coord_5 and coord_G and lock_in:
-                curser1.pos.x = sideMargin + tile*4 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*6 + playScreenHeight
+            if coord_5 and coord_G:
+                mapPosx = sideMargin + tile*4 + playScreenWidth
+                mapPosy = topBotMargin + tile*6 + playScreenHeight
                 coord_5 = 0
                 coord_G = 0
-            if coord_5 and coord_H and lock_in:
-                curser1.pos.x = sideMargin + tile*4 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*7 + playScreenHeight
+            if coord_5 and coord_H:
+                mapPosx = sideMargin + tile*4 + playScreenWidth
+                mapPosy = topBotMargin + tile*7 + playScreenHeight
                 coord_5 = 0
                 coord_H = 0
-            if coord_5 and coord_I and lock_in:
-                curser1.pos.x = sideMargin + tile*4 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*8 + playScreenHeight
+            if coord_5 and coord_I:
+                mapPosx = sideMargin + tile*4 + playScreenWidth
+                mapPosy = topBotMargin + tile*8 + playScreenHeight
                 coord_5 = 0
                 coord_I = 0
-            if coord_5 and coord_J and lock_in:
-                curser1.pos.x = sideMargin + tile*4 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*9 + playScreenHeight
+            if coord_5 and coord_J:
+                mapPosx = sideMargin + tile*4 + playScreenWidth
+                mapPosy = topBotMargin + tile*9 + playScreenHeight
                 coord_5 = 0
                 coord_J = 0
             # row 6
-            if coord_6 and coord_A and lock_in:
-                curser1.pos.x = sideMargin + tile*5 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*0 + playScreenHeight
+            if coord_6 and coord_A:
+                mapPosx = sideMargin + tile*5 + playScreenWidth
+                mapPosy = topBotMargin + tile*0 + playScreenHeight
                 coord_6 = 0
                 coord_A = 0
-            if coord_6 and coord_B and lock_in:
-                curser1.pos.x = sideMargin + tile*5 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*1 + playScreenHeight
+            if coord_6 and coord_B:
+                mapPosx = sideMargin + tile*5 + playScreenWidth
+                mapPosy = topBotMargin + tile*1 + playScreenHeight
                 coord_6 = 0
                 coord_B = 0
-            if coord_6 and coord_C and lock_in:
-                curser1.pos.x = sideMargin + tile*5 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*2 + playScreenHeight
+            if coord_6 and coord_C:
+                mapPosx = sideMargin + tile*5 + playScreenWidth
+                mapPosy = topBotMargin + tile*2 + playScreenHeight
                 coord_6 = 0
                 coord_C = 0
-            if coord_6 and coord_D and lock_in:
-                curser1.pos.x = sideMargin + tile*5 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*3 + playScreenHeight
+            if coord_6 and coord_D:
+                mapPosx = sideMargin + tile*5 + playScreenWidth
+                mapPosy = topBotMargin + tile*3 + playScreenHeight
                 coord_6 = 0
                 coord_D = 0
-            if coord_6 and coord_E and lock_in:
-                curser1.pos.x = sideMargin + tile*5 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*4 + playScreenHeight
+            if coord_6 and coord_E:
+                mapPosx = sideMargin + tile*5 + playScreenWidth
+                mapPosy = topBotMargin + tile*4 + playScreenHeight
                 coord_6 = 0
                 coord_E = 0
-            if coord_6 and coord_F and lock_in:
-                curser1.pos.x = sideMargin + tile*5 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*5 + playScreenHeight
+            if coord_6 and coord_F:
+                mapPosx = sideMargin + tile*5 + playScreenWidth
+                mapPosy = topBotMargin + tile*5 + playScreenHeight
                 coord_6 = 0
                 coord_F = 0
-            if coord_6 and coord_G and lock_in:
-                curser1.pos.x = sideMargin + tile*5 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*6 + playScreenHeight
+            if coord_6 and coord_G:
+                mapPosx = sideMargin + tile*5 + playScreenWidth
+                mapPosy = topBotMargin + tile*6 + playScreenHeight
                 coord_6 = 0
                 coord_G = 0
-            if coord_6 and coord_H and lock_in:
-                curser1.pos.x = sideMargin + tile*5 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*7 + playScreenHeight
+            if coord_6 and coord_H:
+                mapPosx = sideMargin + tile*5 + playScreenWidth
+                mapPosy = topBotMargin + tile*7 + playScreenHeight
                 coord_6 = 0
                 coord_H = 0
-            if coord_6 and coord_I and lock_in:
-                curser1.pos.x = sideMargin + tile*5 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*8 + playScreenHeight
+            if coord_6 and coord_I:
+                mapPosx = sideMargin + tile*5 + playScreenWidth
+                mapPosy = topBotMargin + tile*8 + playScreenHeight
                 coord_6 = 0
                 coord_I = 0
-            if coord_6 and coord_J and lock_in:
-                curser1.pos.x = sideMargin + tile*5 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*9 + playScreenHeight
+            if coord_6 and coord_J:
+                mapPosx = sideMargin + tile*5 + playScreenWidth
+                mapPosy = topBotMargin + tile*9 + playScreenHeight
                 coord_6 = 0
                 coord_J = 0
             # row 7
-            if coord_7 and coord_A and lock_in:
-                curser1.pos.x = sideMargin + tile*6 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*0 + playScreenHeight
+            if coord_7 and coord_A:
+                mapPosx = sideMargin + tile*6 + playScreenWidth
+                mapPosy = topBotMargin + tile*0 + playScreenHeight
                 coord_7 = 0
                 coord_A = 0
-            if coord_7 and coord_B and lock_in:
-                curser1.pos.x = sideMargin + tile*6 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*1 + playScreenHeight
+            if coord_7 and coord_B:
+                mapPosx = sideMargin + tile*6 + playScreenWidth
+                mapPosy = topBotMargin + tile*1 + playScreenHeight
                 coord_7 = 0
                 coord_B = 0
-            if coord_7 and coord_C and lock_in:
-                curser1.pos.x = sideMargin + tile*6 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*2 + playScreenHeight
+            if coord_7 and coord_C:
+                mapPosx = sideMargin + tile*6 + playScreenWidth
+                mapPosy = topBotMargin + tile*2 + playScreenHeight
                 coord_7 = 0
                 coord_C = 0
-            if coord_7 and coord_D and lock_in:
-                curser1.pos.x = sideMargin + tile*6 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*3 + playScreenHeight
+            if coord_7 and coord_D:
+                mapPosx = sideMargin + tile*6 + playScreenWidth
+                mapPosy = topBotMargin + tile*3 + playScreenHeight
                 coord_7 = 0
                 coord_D = 0
-            if coord_7 and coord_E and lock_in:
-                curser1.pos.x = sideMargin + tile*6 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*4 + playScreenHeight
+            if coord_7 and coord_E:
+                mapPosx = sideMargin + tile*6 + playScreenWidth
+                mapPosy = topBotMargin + tile*4 + playScreenHeight
                 coord_7 = 0
                 coord_E = 0
-            if coord_7 and coord_F and lock_in:
-                curser1.pos.x = sideMargin + tile*6 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*5 + playScreenHeight
+            if coord_7 and coord_F:
+                mapPosx = sideMargin + tile*6 + playScreenWidth
+                mapPosy = topBotMargin + tile*5 + playScreenHeight
                 coord_7 = 0
                 coord_F = 0
-            if coord_7 and coord_G and lock_in:
-                curser1.pos.x = sideMargin + tile*6 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*6 + playScreenHeight
+            if coord_7 and coord_G:
+                mapPosx = sideMargin + tile*6 + playScreenWidth
+                mapPosy = topBotMargin + tile*6 + playScreenHeight
                 coord_7 = 0
                 coord_G = 0
-            if coord_7 and coord_H and lock_in:
-                curser1.pos.x = sideMargin + tile*6 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*7 + playScreenHeight
+            if coord_7 and coord_H:
+                mapPosx = sideMargin + tile*6 + playScreenWidth
+                mapPosy = topBotMargin + tile*7 + playScreenHeight
                 coord_7 = 0
                 coord_H = 0
-            if coord_7 and coord_I and lock_in:
-                curser1.pos.x = sideMargin + tile*6 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*8 + playScreenHeight
+            if coord_7 and coord_I:
+                mapPosx = sideMargin + tile*6 + playScreenWidth
+                mapPosy = topBotMargin + tile*8 + playScreenHeight
                 coord_7 = 0
                 coord_I = 0
-            if coord_7 and coord_J and lock_in:
-                curser1.pos.x = sideMargin + tile*6 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*9 + playScreenHeight
+            if coord_7 and coord_J:
+                mapPosx = sideMargin + tile*6 + playScreenWidth
+                mapPosy = topBotMargin + tile*9 + playScreenHeight
                 coord_7 = 0
                 coord_J = 0
             # row 8
-            if coord_8 and coord_A and lock_in:
-                curser1.pos.x = sideMargin + tile*7 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*0 + playScreenHeight
+            if coord_8 and coord_A:
+                mapPosx = sideMargin + tile*7 + playScreenWidth
+                mapPosy = topBotMargin + tile*0 + playScreenHeight
                 coord_8 = 0
                 coord_A = 0
-            if coord_8 and coord_B and lock_in:
-                curser1.pos.x = sideMargin + tile*7 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*1 + playScreenHeight
+            if coord_8 and coord_B:
+                mapPosx = sideMargin + tile*7 + playScreenWidth
+                mapPosy = topBotMargin + tile*1 + playScreenHeight
                 coord_8 = 0
                 coord_B = 0
-            if coord_8 and coord_C and lock_in:
-                curser1.pos.x = sideMargin + tile*7 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*2 + playScreenHeight
+            if coord_8 and coord_C:
+                mapPosx = sideMargin + tile*7 + playScreenWidth
+                mapPosy = topBotMargin + tile*2 + playScreenHeight
                 coord_8 = 0
                 coord_C = 0
-            if coord_8 and coord_D and lock_in:
-                curser1.pos.x = sideMargin + tile*7 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*3 + playScreenHeight
+            if coord_8 and coord_D:
+                mapPosx = sideMargin + tile*7 + playScreenWidth
+                mapPosy = topBotMargin + tile*3 + playScreenHeight
                 coord_8 = 0
                 coord_D = 0
-            if coord_8 and coord_E and lock_in:
-                curser1.pos.x = sideMargin + tile*7 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*4 + playScreenHeight
+            if coord_8 and coord_E:
+                mapPosx = sideMargin + tile*7 + playScreenWidth
+                mapPosy = topBotMargin + tile*4 + playScreenHeight
                 coord_8 = 0
                 coord_E = 0
-            if coord_8 and coord_F and lock_in:
-                curser1.pos.x = sideMargin + tile*7 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*5 + playScreenHeight
+            if coord_8 and coord_F:
+                mapPosx = sideMargin + tile*7 + playScreenWidth
+                mapPosy = topBotMargin + tile*5 + playScreenHeight
                 coord_8 = 0
                 coord_F = 0
-            if coord_8 and coord_G and lock_in:
-                curser1.pos.x = sideMargin + tile*7 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*6 + playScreenHeight
+            if coord_8 and coord_G:
+                mapPosx = sideMargin + tile*7 + playScreenWidth
+                mapPosy = topBotMargin + tile*6 + playScreenHeight
                 coord_8 = 0
                 coord_G = 0
-            if coord_8 and coord_H and lock_in:
-                curser1.pos.x = sideMargin + tile*7 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*7 + playScreenHeight
+            if coord_8 and coord_H:
+                mapPosx = sideMargin + tile*7 + playScreenWidth
+                mapPosy = topBotMargin + tile*7 + playScreenHeight
                 coord_8 = 0
                 coord_H = 0
-            if coord_8 and coord_I and lock_in:
-                curser1.pos.x = sideMargin + tile*7 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*8 + playScreenHeight
+            if coord_8 and coord_I:
+                mapPosx = sideMargin + tile*7 + playScreenWidth
+                mapPosy = topBotMargin + tile*8 + playScreenHeight
                 coord_8 = 0
                 coord_I = 0
-            if coord_8 and coord_J and lock_in:
-                curser1.pos.x = sideMargin + tile*7 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*9 + playScreenHeight
+            if coord_8 and coord_J:
+                mapPosx = sideMargin + tile*7 + playScreenWidth
+                mapPosy = topBotMargin + tile*9 + playScreenHeight
                 coord_8 = 0
                 coord_J = 0
             # row 9
-            if coord_9 and coord_A and lock_in:
-                curser1.pos.x = sideMargin + tile*8 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*0 + playScreenHeight
+            if coord_9 and coord_A:
+                mapPosx = sideMargin + tile*8 + playScreenWidth
+                mapPosy = topBotMargin + tile*0 + playScreenHeight
                 coord_9 = 0
                 coord_A = 0
-            if coord_9 and coord_B and lock_in:
-                curser1.pos.x = sideMargin + tile*8 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*1 + playScreenHeight
+            if coord_9 and coord_B:
+                mapPosx = sideMargin + tile*8 + playScreenWidth
+                mapPosy = topBotMargin + tile*1 + playScreenHeight
                 coord_9 = 0
                 coord_B = 0
-            if coord_9 and coord_C and lock_in:
-                curser1.pos.x = sideMargin + tile*8 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*2 + playScreenHeight
+            if coord_9 and coord_C:
+                mapPosx = sideMargin + tile*8 + playScreenWidth
+                mapPosy = topBotMargin + tile*2 + playScreenHeight
                 coord_9 = 0
                 coord_C = 0
-            if coord_9 and coord_D and lock_in:
-                curser1.pos.x = sideMargin + tile*8 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*3 + playScreenHeight
+            if coord_9 and coord_D:
+                mapPosx = sideMargin + tile*8 + playScreenWidth
+                mapPosy = topBotMargin + tile*3 + playScreenHeight
                 coord_9 = 0
                 coord_D = 0
-            if coord_9 and coord_E and lock_in:
-                curser1.pos.x = sideMargin + tile*8 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*4 + playScreenHeight
+            if coord_9 and coord_E:
+                mapPosx = sideMargin + tile*8 + playScreenWidth
+                mapPosy = topBotMargin + tile*4 + playScreenHeight
                 coord_9 = 0
                 coord_E = 0
-            if coord_9 and coord_F and lock_in:
-                curser1.pos.x = sideMargin + tile*8 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*5 + playScreenHeight
+            if coord_9 and coord_F:
+                mapPosx = sideMargin + tile*8 + playScreenWidth
+                mapPosy = topBotMargin + tile*5 + playScreenHeight
                 coord_9 = 0
                 coord_F = 0
-            if coord_9 and coord_G and lock_in:
-                curser1.pos.x = sideMargin + tile*8 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*6 + playScreenHeight
+            if coord_9 and coord_G:
+                mapPosx = sideMargin + tile*8 + playScreenWidth
+                mapPosy = topBotMargin + tile*6 + playScreenHeight
                 coord_9 = 0
                 coord_G = 0
-            if coord_9 and coord_H and lock_in:
-                curser1.pos.x = sideMargin + tile*8 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*7 + playScreenHeight
+            if coord_9 and coord_H:
+                mapPosx = sideMargin + tile*8 + playScreenWidth
+                mapPosy = topBotMargin + tile*7 + playScreenHeight
                 coord_9 = 0
                 coord_H = 0
-            if coord_9 and coord_I and lock_in:
-                curser1.pos.x = sideMargin + tile*8 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*8 + playScreenHeight
+            if coord_9 and coord_I:
+                mapPosx = sideMargin + tile*8 + playScreenWidth
+                mapPosy = topBotMargin + tile*8 + playScreenHeight
                 coord_9 = 0
                 coord_I = 0
-            if coord_9 and coord_J and lock_in:
-                curser1.pos.x = sideMargin + tile*8 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*9 + playScreenHeight
+            if coord_9 and coord_J:
+                mapPosx = sideMargin + tile*8 + playScreenWidth
+                mapPosy = topBotMargin + tile*9 + playScreenHeight
                 coord_9 = 0
                 coord_J = 0
             # row 10
-            if coord_0 and coord_A and lock_in:
-                curser1.pos.x = sideMargin + tile*9 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*0 + playScreenHeight
+            if coord_0 and coord_A:
+                mapPosx = sideMargin + tile*9 + playScreenWidth
+                mapPosy = topBotMargin + tile*0 + playScreenHeight
                 coord_0 = 0
                 coord_A = 0
-            if coord_0 and coord_B and lock_in:
-                curser1.pos.x = sideMargin + tile*9 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*1 + playScreenHeight
+            if coord_0 and coord_B:
+                mapPosx = sideMargin + tile*9 + playScreenWidth
+                mapPosy = topBotMargin + tile*1 + playScreenHeight
                 coord_0 = 0
                 coord_B = 0
-            if coord_0 and coord_C and lock_in:
-                curser1.pos.x = sideMargin + tile*9 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*2 + playScreenHeight
+            if coord_0 and coord_C:
+                mapPosx = sideMargin + tile*9 + playScreenWidth
+                mapPosy = topBotMargin + tile*2 + playScreenHeight
                 coord_0 = 0
                 coord_C = 0
-            if coord_0 and coord_D and lock_in:
-                curser1.pos.x = sideMargin + tile*9 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*3 + playScreenHeight
+            if coord_0 and coord_D:
+                mapPosx = sideMargin + tile*9 + playScreenWidth
+                mapPosy = topBotMargin + tile*3 + playScreenHeight
                 coord_0 = 0
                 coord_D = 0
-            if coord_0 and coord_E and lock_in:
-                curser1.pos.x = sideMargin + tile*9 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*4 + playScreenHeight
+            if coord_0 and coord_E:
+                mapPosx = sideMargin + tile*9 + playScreenWidth
+                mapPosy = topBotMargin + tile*4 + playScreenHeight
                 coord_0 = 0
                 coord_E = 0
-            if coord_0 and coord_F and lock_in:
-                curser1.pos.x = sideMargin + tile*9 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*5 + playScreenHeight
+            if coord_0 and coord_F:
+                mapPosx = sideMargin + tile*9 + playScreenWidth
+                mapPosy = topBotMargin + tile*5 + playScreenHeight
                 coord_0 = 0
                 coord_F = 0
-            if coord_0 and coord_G and lock_in:
-                curser1.pos.x = sideMargin + tile*9 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*6 + playScreenHeight
+            if coord_0 and coord_G:
+                mapPosx = sideMargin + tile*9 + playScreenWidth
+                mapPosy = topBotMargin + tile*6 + playScreenHeight
                 coord_0 = 0
                 coord_G = 0
-            if coord_0 and coord_H and lock_in:
-                curser1.pos.x = sideMargin + tile*9 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*7 + playScreenHeight
+            if coord_0 and coord_H:
+                mapPosx = sideMargin + tile*9 + playScreenWidth
+                mapPosy = topBotMargin + tile*7 + playScreenHeight
                 coord_0 = 0
                 coord_H = 0
-            if coord_0 and coord_I and lock_in:
-                curser1.pos.x = sideMargin + tile*9 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*8 + playScreenHeight
+            if coord_0 and coord_I:
+                mapPosx = sideMargin + tile*9 + playScreenWidth
+                mapPosy = topBotMargin + tile*8 + playScreenHeight
                 coord_0 = 0
                 coord_I = 0
-            if coord_0 and coord_J and lock_in:
-                curser1.pos.x = sideMargin + tile*9 + playScreenWidth
-                curser1.pos.y = topBotMargin + tile*9 + playScreenHeight
+            if coord_0 and coord_J:
+                mapPosx = sideMargin + tile*9 + playScreenWidth
+                mapPosy = topBotMargin + tile*9 + playScreenHeight
                 coord_0 = 0
                 coord_J = 0
+
+            # sets positions of sonar and target for player 1
+            if gamePhase == "shoot" and coordPass:
+                curser1.pos.x = mapPosx
+                curser1.pos.y = mapPosy
+            if gamePhase == "sonar" and coordPass:
+                sonarPos2.x = mapPosx + tile/2
+                sonarPos2.y = mapPosy + tile/2
 
         if playerTurn == 2:
             # moves curser2 to coords
             # row 1
-            if coord_1 and coord_A and lock_in:
-                curser2.pos.x = sideMargin + tile*0
-                curser2.pos.y = topBotMargin + tile*0 + playScreenHeight
+            if coord_1 and coord_A:
+                mapPosx = sideMargin + tile*0
+                mapPosy = topBotMargin + tile*0 + playScreenHeight
                 coord_1 = 0
                 coord_A = 0
-            if coord_1 and coord_B and lock_in:
-                curser2.pos.x = sideMargin + tile*0
-                curser2.pos.y = topBotMargin + tile*1 + playScreenHeight
+            if coord_1 and coord_B:
+                mapPosx = sideMargin + tile*0
+                mapPosy = topBotMargin + tile*1 + playScreenHeight
                 coord_1 = 0
                 coord_B = 0
-            if coord_1 and coord_C and lock_in:
-                curser2.pos.x = sideMargin + tile*0
-                curser2.pos.y = topBotMargin + tile*2 + playScreenHeight
+            if coord_1 and coord_C:
+                mapPosx = sideMargin + tile*0
+                mapPosy = topBotMargin + tile*2 + playScreenHeight
                 coord_1 = 0
                 coord_C = 0
-            if coord_1 and coord_D and lock_in:
-                curser2.pos.x = sideMargin + tile*0
-                curser2.pos.y = topBotMargin + tile*3 + playScreenHeight
+            if coord_1 and coord_D:
+                mapPosx = sideMargin + tile*0
+                mapPosy = topBotMargin + tile*3 + playScreenHeight
                 coord_1 = 0
                 coord_D = 0
-            if coord_1 and coord_E and lock_in:
-                curser2.pos.x = sideMargin + tile*0
-                curser2.pos.y = topBotMargin + tile*4 + playScreenHeight
+            if coord_1 and coord_E:
+                mapPosx = sideMargin + tile*0
+                mapPosy = topBotMargin + tile*4 + playScreenHeight
                 coord_1 = 0
                 coord_E = 0
-            if coord_1 and coord_F and lock_in:
-                curser2.pos.x = sideMargin + tile*0
-                curser2.pos.y = topBotMargin + tile*5 + playScreenHeight
+            if coord_1 and coord_F:
+                mapPosx = sideMargin + tile*0
+                mapPosy = topBotMargin + tile*5 + playScreenHeight
                 coord_1 = 0
                 coord_F = 0
-            if coord_1 and coord_G and lock_in:
-                curser2.pos.x = sideMargin + tile*0
-                curser2.pos.y = topBotMargin + tile*6 + playScreenHeight
+            if coord_1 and coord_G:
+                mapPosx = sideMargin + tile*0
+                mapPosy = topBotMargin + tile*6 + playScreenHeight
                 coord_1 = 0
                 coord_G = 0
-            if coord_1 and coord_H and lock_in:
-                curser2.pos.x = sideMargin + tile*0
-                curser2.pos.y = topBotMargin + tile*7 + playScreenHeight
+            if coord_1 and coord_H:
+                mapPosx = sideMargin + tile*0
+                mapPosy = topBotMargin + tile*7 + playScreenHeight
                 coord_1 = 0
                 coord_H = 0
-            if coord_1 and coord_I and lock_in:
-                curser2.pos.x = sideMargin + tile*0
-                curser2.pos.y = topBotMargin + tile*8 + playScreenHeight
+            if coord_1 and coord_I:
+                mapPosx = sideMargin + tile*0
+                mapPosy = topBotMargin + tile*8 + playScreenHeight
                 coord_1 = 0
                 coord_I = 0
-            if coord_1 and coord_J and lock_in:
-                curser2.pos.x = sideMargin + tile*0
-                curser2.pos.y = topBotMargin + tile*9 + playScreenHeight
+            if coord_1 and coord_J:
+                mapPosx = sideMargin + tile*0
+                mapPosy = topBotMargin + tile*9 + playScreenHeight
                 coord_1 = 0
                 coord_J = 0
             # row 2
-            if coord_2 and coord_A and lock_in:
-                curser2.pos.x = sideMargin + tile*1
-                curser2.pos.y = topBotMargin + tile*0 + playScreenHeight
+            if coord_2 and coord_A:
+                mapPosx = sideMargin + tile*1
+                mapPosy = topBotMargin + tile*0 + playScreenHeight
                 coord_2 = 0
                 coord_A = 0
-            if coord_2 and coord_B and lock_in:
-                curser2.pos.x = sideMargin + tile*1
-                curser2.pos.y = topBotMargin + tile*1 + playScreenHeight
+            if coord_2 and coord_B:
+                mapPosx = sideMargin + tile*1
+                mapPosy = topBotMargin + tile*1 + playScreenHeight
                 coord_2 = 0
                 coord_B = 0
-            if coord_2 and coord_C and lock_in:
-                curser2.pos.x = sideMargin + tile*1
-                curser2.pos.y = topBotMargin + tile*2 + playScreenHeight
+            if coord_2 and coord_C:
+                mapPosx = sideMargin + tile*1
+                mapPosy = topBotMargin + tile*2 + playScreenHeight
                 coord_2 = 0
                 coord_C = 0
-            if coord_2 and coord_D and lock_in:
-                curser2.pos.x = sideMargin + tile*1
-                curser2.pos.y = topBotMargin + tile*3 + playScreenHeight
+            if coord_2 and coord_D:
+                mapPosx = sideMargin + tile*1
+                mapPosy = topBotMargin + tile*3 + playScreenHeight
                 coord_2 = 0
                 coord_D = 0
-            if coord_2 and coord_E and lock_in:
-                curser2.pos.x = sideMargin + tile*1
-                curser2.pos.y = topBotMargin + tile*4 + playScreenHeight
+            if coord_2 and coord_E:
+                mapPosx = sideMargin + tile*1
+                mapPosy = topBotMargin + tile*4 + playScreenHeight
                 coord_2 = 0
                 coord_E = 0
-            if coord_2 and coord_F and lock_in:
-                curser2.pos.x = sideMargin + tile*1
-                curser2.pos.y = topBotMargin + tile*5 + playScreenHeight
+            if coord_2 and coord_F:
+                mapPosx = sideMargin + tile*1
+                mapPosy = topBotMargin + tile*5 + playScreenHeight
                 coord_2 = 0
                 coord_F = 0
-            if coord_2 and coord_G and lock_in:
-                curser2.pos.x = sideMargin + tile*1
-                curser2.pos.y = topBotMargin + tile*6 + playScreenHeight
+            if coord_2 and coord_G:
+                mapPosx = sideMargin + tile*1
+                mapPosy = topBotMargin + tile*6 + playScreenHeight
                 coord_2 = 0
                 coord_G = 0
-            if coord_2 and coord_H and lock_in:
-                curser2.pos.x = sideMargin + tile*1
-                curser2.pos.y = topBotMargin + tile*7 + playScreenHeight
+            if coord_2 and coord_H:
+                mapPosx = sideMargin + tile*1
+                mapPosy = topBotMargin + tile*7 + playScreenHeight
                 coord_2 = 0
                 coord_H = 0
-            if coord_2 and coord_I and lock_in:
-                curser2.pos.x = sideMargin + tile*1
-                curser2.pos.y = topBotMargin + tile*8 + playScreenHeight
+            if coord_2 and coord_I:
+                mapPosx = sideMargin + tile*1
+                mapPosy = topBotMargin + tile*8 + playScreenHeight
                 coord_2 = 0
                 coord_I = 0
-            if coord_2 and coord_J and lock_in:
-                curser2.pos.x = sideMargin + tile*1
-                curser2.pos.y = topBotMargin + tile*9 + playScreenHeight
+            if coord_2 and coord_J:
+                mapPosx = sideMargin + tile*1
+                mapPosy = topBotMargin + tile*9 + playScreenHeight
                 coord_2 = 0
                 coord_J = 0
             # row 3
-            if coord_3 and coord_A and lock_in:
-                curser2.pos.x = sideMargin + tile*2
-                curser2.pos.y = topBotMargin + tile*0 + playScreenHeight
+            if coord_3 and coord_A:
+                mapPosx = sideMargin + tile*2
+                mapPosy = topBotMargin + tile*0 + playScreenHeight
                 coord_3 = 0
                 coord_A = 0
-            if coord_3 and coord_B and lock_in:
-                curser2.pos.x = sideMargin + tile*2
-                curser2.pos.y = topBotMargin + tile*1 + playScreenHeight
+            if coord_3 and coord_B:
+                mapPosx = sideMargin + tile*2
+                mapPosy = topBotMargin + tile*1 + playScreenHeight
                 coord_3 = 0
                 coord_B = 0
-            if coord_3 and coord_C and lock_in:
-                curser2.pos.x = sideMargin + tile*2
-                curser2.pos.y = topBotMargin + tile*2 + playScreenHeight
+            if coord_3 and coord_C:
+                mapPosx = sideMargin + tile*2
+                mapPosy = topBotMargin + tile*2 + playScreenHeight
                 coord_3 = 0
                 coord_C = 0
-            if coord_3 and coord_D and lock_in:
-                curser2.pos.x = sideMargin + tile*2
-                curser2.pos.y = topBotMargin + tile*3 + playScreenHeight
+            if coord_3 and coord_D:
+                mapPosx = sideMargin + tile*2
+                mapPosy = topBotMargin + tile*3 + playScreenHeight
                 coord_3 = 0
                 coord_D = 0
-            if coord_3 and coord_E and lock_in:
-                curser2.pos.x = sideMargin + tile*2
-                curser2.pos.y = topBotMargin + tile*4 + playScreenHeight
+            if coord_3 and coord_E:
+                mapPosx = sideMargin + tile*2
+                mapPosy = topBotMargin + tile*4 + playScreenHeight
                 coord_3 = 0
                 coord_E = 0
-            if coord_3 and coord_F and lock_in:
-                curser2.pos.x = sideMargin + tile*2
-                curser2.pos.y = topBotMargin + tile*5 + playScreenHeight
+            if coord_3 and coord_F:
+                mapPosx = sideMargin + tile*2
+                mapPosy = topBotMargin + tile*5 + playScreenHeight
                 coord_3 = 0
                 coord_F = 0
-            if coord_3 and coord_G and lock_in:
-                curser2.pos.x = sideMargin + tile*2
-                curser2.pos.y = topBotMargin + tile*6 + playScreenHeight
+            if coord_3 and coord_G:
+                mapPosx = sideMargin + tile*2
+                mapPosy = topBotMargin + tile*6 + playScreenHeight
                 coord_3 = 0
                 coord_G = 0
-            if coord_3 and coord_H and lock_in:
-                curser2.pos.x = sideMargin + tile*2
-                curser2.pos.y = topBotMargin + tile*7 + playScreenHeight
+            if coord_3 and coord_H:
+                mapPosx = sideMargin + tile*2
+                mapPosy = topBotMargin + tile*7 + playScreenHeight
                 coord_3 = 0
                 coord_H = 0
-            if coord_3 and coord_I and lock_in:
-                curser2.pos.x = sideMargin + tile*2
-                curser2.pos.y = topBotMargin + tile*8 + playScreenHeight
+            if coord_3 and coord_I:
+                mapPosx = sideMargin + tile*2
+                mapPosy = topBotMargin + tile*8 + playScreenHeight
                 coord_3 = 0
                 coord_I = 0
-            if coord_3 and coord_J and lock_in:
-                curser2.pos.x = sideMargin + tile*2
-                curser2.pos.y = topBotMargin + tile*9 + playScreenHeight
+            if coord_3 and coord_J:
+                mapPosx = sideMargin + tile*2
+                mapPosy = topBotMargin + tile*9 + playScreenHeight
                 coord_3 = 0
                 coord_J = 0
             # row 4
-            if coord_4 and coord_A and lock_in:
-                curser2.pos.x = sideMargin + tile*3
-                curser2.pos.y = topBotMargin + tile*0 + playScreenHeight
+            if coord_4 and coord_A:
+                mapPosx = sideMargin + tile*3
+                mapPosy = topBotMargin + tile*0 + playScreenHeight
                 coord_4 = 0
                 coord_A = 0
-            if coord_4 and coord_B and lock_in:
-                curser2.pos.x = sideMargin + tile*3
-                curser2.pos.y = topBotMargin + tile*1 + playScreenHeight
+            if coord_4 and coord_B:
+                mapPosx = sideMargin + tile*3
+                mapPosy = topBotMargin + tile*1 + playScreenHeight
                 coord_4 = 0
                 coord_B = 0
-            if coord_4 and coord_C and lock_in:
-                curser2.pos.x = sideMargin + tile*3
-                curser2.pos.y = topBotMargin + tile*2 + playScreenHeight
+            if coord_4 and coord_C:
+                mapPosx = sideMargin + tile*3
+                mapPosy = topBotMargin + tile*2 + playScreenHeight
                 coord_4 = 0
                 coord_C = 0
-            if coord_4 and coord_D and lock_in:
-                curser2.pos.x = sideMargin + tile*3
-                curser2.pos.y = topBotMargin + tile*3 + playScreenHeight
+            if coord_4 and coord_D:
+                mapPosx = sideMargin + tile*3
+                mapPosy = topBotMargin + tile*3 + playScreenHeight
                 coord_4 = 0
                 coord_D = 0
-            if coord_4 and coord_E and lock_in:
-                curser2.pos.x = sideMargin + tile*3
-                curser2.pos.y = topBotMargin + tile*4 + playScreenHeight
+            if coord_4 and coord_E:
+                mapPosx = sideMargin + tile*3
+                mapPosy = topBotMargin + tile*4 + playScreenHeight
                 coord_4 = 0
                 coord_E = 0
-            if coord_4 and coord_F and lock_in:
-                curser2.pos.x = sideMargin + tile*3
-                curser2.pos.y = topBotMargin + tile*5 + playScreenHeight
+            if coord_4 and coord_F:
+                mapPosx = sideMargin + tile*3
+                mapPosy = topBotMargin + tile*5 + playScreenHeight
                 coord_4 = 0
                 coord_F = 0
-            if coord_4 and coord_G and lock_in:
-                curser2.pos.x = sideMargin + tile*3
-                curser2.pos.y = topBotMargin + tile*6 + playScreenHeight
+            if coord_4 and coord_G:
+                mapPosx = sideMargin + tile*3
+                mapPosy = topBotMargin + tile*6 + playScreenHeight
                 coord_4 = 0
                 coord_G = 0
-            if coord_4 and coord_H and lock_in:
-                curser2.pos.x = sideMargin + tile*3
-                curser2.pos.y = topBotMargin + tile*7 + playScreenHeight
+            if coord_4 and coord_H:
+                mapPosx = sideMargin + tile*3
+                mapPosy = topBotMargin + tile*7 + playScreenHeight
                 coord_4 = 0
                 coord_H = 0
-            if coord_4 and coord_I and lock_in:
-                curser2.pos.x = sideMargin + tile*3
-                curser2.pos.y = topBotMargin + tile*8 + playScreenHeight
+            if coord_4 and coord_I:
+                mapPosx = sideMargin + tile*3
+                mapPosy = topBotMargin + tile*8 + playScreenHeight
                 coord_4 = 0
                 coord_I = 0
-            if coord_4 and coord_J and lock_in:
-                curser2.pos.x = sideMargin + tile*3
-                curser2.pos.y = topBotMargin + tile*9 + playScreenHeight
+            if coord_4 and coord_J:
+                mapPosx = sideMargin + tile*3
+                mapPosy = topBotMargin + tile*9 + playScreenHeight
                 coord_4 = 0
                 coord_J = 0
             # row 5
-            if coord_5 and coord_A and lock_in:
-                curser2.pos.x = sideMargin + tile*4
-                curser2.pos.y = topBotMargin + tile*0 + playScreenHeight
-                coord_1 = 0
+            if coord_5 and coord_A:
+                mapPosx = sideMargin + tile*4
+                mapPosy = topBotMargin + tile*0 + playScreenHeight
+                coord_5 = 0
                 coord_A = 0
-            if coord_5 and coord_B and lock_in:
-                curser2.pos.x = sideMargin + tile*4
-                curser2.pos.y = topBotMargin + tile*1 + playScreenHeight
-                coord_1 = 0
+            if coord_5 and coord_B:
+                mapPosx = sideMargin + tile*4
+                mapPosy = topBotMargin + tile*1 + playScreenHeight
+                coord_5 = 0
                 coord_B = 0
-            if coord_5 and coord_C and lock_in:
-                curser2.pos.x = sideMargin + tile*4
-                curser2.pos.y = topBotMargin + tile*2 + playScreenHeight
+            if coord_5 and coord_C:
+                mapPosx = sideMargin + tile*4
+                mapPosy = topBotMargin + tile*2 + playScreenHeight
                 coord_5 = 0
                 coord_C = 0
-            if coord_5 and coord_D and lock_in:
-                curser2.pos.x = sideMargin + tile*4
-                curser2.pos.y = topBotMargin + tile*3 + playScreenHeight
+            if coord_5 and coord_D:
+                mapPosx = sideMargin + tile*4
+                mapPosy = topBotMargin + tile*3 + playScreenHeight
                 coord_5 = 0
                 coord_D = 0
-            if coord_5 and coord_E and lock_in:
-                curser2.pos.x = sideMargin + tile*4
-                curser2.pos.y = topBotMargin + tile*4 + playScreenHeight
+            if coord_5 and coord_E:
+                mapPosx = sideMargin + tile*4
+                mapPosy = topBotMargin + tile*4 + playScreenHeight
                 coord_5 = 0
                 coord_E = 0
-            if coord_5 and coord_F and lock_in:
-                curser2.pos.x = sideMargin + tile*4
-                curser2.pos.y = topBotMargin + tile*5 + playScreenHeight
+            if coord_5 and coord_F:
+                mapPosx = sideMargin + tile*4
+                mapPosy = topBotMargin + tile*5 + playScreenHeight
                 coord_5 = 0
                 coord_F = 0
-            if coord_5 and coord_G and lock_in:
-                curser2.pos.x = sideMargin + tile*4
-                curser2.pos.y = topBotMargin + tile*6 + playScreenHeight
+            if coord_5 and coord_G:
+                mapPosx = sideMargin + tile*4
+                mapPosy = topBotMargin + tile*6 + playScreenHeight
                 coord_5 = 0
                 coord_G = 0
-            if coord_5 and coord_H and lock_in:
-                curser2.pos.x = sideMargin + tile*4
-                curser2.pos.y = topBotMargin + tile*7 + playScreenHeight
+            if coord_5 and coord_H:
+                mapPosx = sideMargin + tile*4
+                mapPosy = topBotMargin + tile*7 + playScreenHeight
                 coord_5 = 0
                 coord_H = 0
-            if coord_5 and coord_I and lock_in:
-                curser2.pos.x = sideMargin + tile*4
-                curser2.pos.y = topBotMargin + tile*8 + playScreenHeight
+            if coord_5 and coord_I:
+                mapPosx = sideMargin + tile*4
+                mapPosy = topBotMargin + tile*8 + playScreenHeight
                 coord_5 = 0
                 coord_I = 0
-            if coord_5 and coord_J and lock_in:
-                curser2.pos.x = sideMargin + tile*4
-                curser2.pos.y = topBotMargin + tile*9 + playScreenHeight
+            if coord_5 and coord_J:
+                mapPosx = sideMargin + tile*4
+                mapPosy = topBotMargin + tile*9 + playScreenHeight
                 coord_5 = 0
                 coord_J = 0
             # row 6
-            if coord_6 and coord_A and lock_in:
-                curser2.pos.x = sideMargin + tile*5
-                curser2.pos.y = topBotMargin + tile*0 + playScreenHeight
+            if coord_6 and coord_A:
+                mapPosx = sideMargin + tile*5
+                mapPosy = topBotMargin + tile*0 + playScreenHeight
                 coord_6 = 0
                 coord_A = 0
-            if coord_6 and coord_B and lock_in:
-                curser2.pos.x = sideMargin + tile*5
-                curser2.pos.y = topBotMargin + tile*1 + playScreenHeight
+            if coord_6 and coord_B:
+                mapPosx = sideMargin + tile*5
+                mapPosy = topBotMargin + tile*1 + playScreenHeight
                 coord_6 = 0
                 coord_B = 0
-            if coord_6 and coord_C and lock_in:
-                curser2.pos.x = sideMargin + tile*5
-                curser2.pos.y = topBotMargin + tile*2 + playScreenHeight
+            if coord_6 and coord_C:
+                mapPosx = sideMargin + tile*5
+                mapPosy = topBotMargin + tile*2 + playScreenHeight
                 coord_6 = 0
                 coord_C = 0
-            if coord_6 and coord_D and lock_in:
-                curser2.pos.x = sideMargin + tile*5
-                curser2.pos.y = topBotMargin + tile*3 + playScreenHeight
+            if coord_6 and coord_D:
+                mapPosx = sideMargin + tile*5
+                mapPosy = topBotMargin + tile*3 + playScreenHeight
                 coord_6 = 0
                 coord_D = 0
-            if coord_6 and coord_E and lock_in:
-                curser2.pos.x = sideMargin + tile*5
-                curser2.pos.y = topBotMargin + tile*4 + playScreenHeight
+            if coord_6 and coord_E:
+                mapPosx = sideMargin + tile*5
+                mapPosy = topBotMargin + tile*4 + playScreenHeight
                 coord_6 = 0
                 coord_E = 0
-            if coord_6 and coord_F and lock_in:
-                curser2.pos.x = sideMargin + tile*5
-                curser2.pos.y = topBotMargin + tile*5 + playScreenHeight
+            if coord_6 and coord_F:
+                mapPosx = sideMargin + tile*5
+                mapPosy = topBotMargin + tile*5 + playScreenHeight
                 coord_6 = 0
                 coord_F = 0
-            if coord_6 and coord_G and lock_in:
-                curser2.pos.x = sideMargin + tile*5
-                curser2.pos.y = topBotMargin + tile*6 + playScreenHeight
+            if coord_6 and coord_G:
+                mapPosx = sideMargin + tile*5
+                mapPosy = topBotMargin + tile*6 + playScreenHeight
                 coord_6 = 0
                 coord_G = 0
-            if coord_6 and coord_H and lock_in:
-                curser2.pos.x = sideMargin + tile*5
-                curser2.pos.y = topBotMargin + tile*7 + playScreenHeight
+            if coord_6 and coord_H:
+                mapPosx = sideMargin + tile*5
+                mapPosy = topBotMargin + tile*7 + playScreenHeight
                 coord_6 = 0
                 coord_H = 0
-            if coord_6 and coord_I and lock_in:
-                curser2.pos.x = sideMargin + tile*5
-                curser2.pos.y = topBotMargin + tile*8 + playScreenHeight
+            if coord_6 and coord_I:
+                mapPosx = sideMargin + tile*5
+                mapPosy = topBotMargin + tile*8 + playScreenHeight
                 coord_6 = 0
                 coord_I = 0
-            if coord_6 and coord_J and lock_in:
-                curser2.pos.x = sideMargin + tile*5
-                curser2.pos.y = topBotMargin + tile*9 + playScreenHeight
+            if coord_6 and coord_J:
+                mapPosx = sideMargin + tile*5
+                mapPosy = topBotMargin + tile*9 + playScreenHeight
                 coord_6 = 0
                 coord_J = 0
             # row 7
-            if coord_7 and coord_A and lock_in:
-                curser2.pos.x = sideMargin + tile*6
-                curser2.pos.y = topBotMargin + tile*0 + playScreenHeight
+            if coord_7 and coord_A:
+                mapPosx = sideMargin + tile*6
+                mapPosy = topBotMargin + tile*0 + playScreenHeight
                 coord_7 = 0
                 coord_A = 0
-            if coord_7 and coord_B and lock_in:
-                curser2.pos.x = sideMargin + tile*6
-                curser2.pos.y = topBotMargin + tile*1 + playScreenHeight
+            if coord_7 and coord_B:
+                mapPosx = sideMargin + tile*6
+                mapPosy = topBotMargin + tile*1 + playScreenHeight
                 coord_7 = 0
                 coord_B = 0
-            if coord_7 and coord_C and lock_in:
-                curser2.pos.x = sideMargin + tile*6
-                curser2.pos.y = topBotMargin + tile*2 + playScreenHeight
+            if coord_7 and coord_C:
+                mapPosx = sideMargin + tile*6
+                mapPosy = topBotMargin + tile*2 + playScreenHeight
                 coord_7 = 0
                 coord_C = 0
-            if coord_7 and coord_D and lock_in:
-                curser2.pos.x = sideMargin + tile*6
-                curser2.pos.y = topBotMargin + tile*3 + playScreenHeight
+            if coord_7 and coord_D:
+                mapPosx = sideMargin + tile*6
+                mapPosy = topBotMargin + tile*3 + playScreenHeight
                 coord_7 = 0
                 coord_D = 0
-            if coord_7 and coord_E and lock_in:
-                curser2.pos.x = sideMargin + tile*6
-                curser2.pos.y = topBotMargin + tile*4 + playScreenHeight
+            if coord_7 and coord_E:
+                mapPosx = sideMargin + tile*6
+                mapPosy = topBotMargin + tile*4 + playScreenHeight
                 coord_7 = 0
                 coord_E = 0
-            if coord_7 and coord_F and lock_in:
-                curser2.pos.x = sideMargin + tile*6
-                curser2.pos.y = topBotMargin + tile*5 + playScreenHeight
+            if coord_7 and coord_F:
+                mapPosx = sideMargin + tile*6
+                mapPosy = topBotMargin + tile*5 + playScreenHeight
                 coord_7 = 0
                 coord_F = 0
-            if coord_7 and coord_G and lock_in:
-                curser2.pos.x = sideMargin + tile*6
-                curser2.pos.y = topBotMargin + tile*6 + playScreenHeight
+            if coord_7 and coord_G:
+                mapPosx = sideMargin + tile*6
+                mapPosy = topBotMargin + tile*6 + playScreenHeight
                 coord_7 = 0
                 coord_G = 0
-            if coord_7 and coord_H and lock_in:
-                curser2.pos.x = sideMargin + tile*6
-                curser2.pos.y = topBotMargin + tile*7 + playScreenHeight
+            if coord_7 and coord_H:
+                mapPosx = sideMargin + tile*6
+                mapPosy = topBotMargin + tile*7 + playScreenHeight
                 coord_7 = 0
                 coord_H = 0
-            if coord_7 and coord_I and lock_in:
-                curser2.pos.x = sideMargin + tile*6
-                curser2.pos.y = topBotMargin + tile*8 + playScreenHeight
+            if coord_7 and coord_I:
+                mapPosx = sideMargin + tile*6
+                mapPosy = topBotMargin + tile*8 + playScreenHeight
                 coord_7 = 0
                 coord_I = 0
-            if coord_7 and coord_J and lock_in:
-                curser2.pos.x = sideMargin + tile*6
-                curser2.pos.y = topBotMargin + tile*9 + playScreenHeight
+            if coord_7 and coord_J:
+                mapPosx = sideMargin + tile*6
+                mapPosy = topBotMargin + tile*9 + playScreenHeight
                 coord_7 = 0
                 coord_J = 0
             # row 8
-            if coord_8 and coord_A and lock_in:
-                curser2.pos.x = sideMargin + tile*7
-                curser2.pos.y = topBotMargin + tile*0 + playScreenHeight
+            if coord_8 and coord_A:
+                mapPosx = sideMargin + tile*7
+                mapPosy = topBotMargin + tile*0 + playScreenHeight
                 coord_8 = 0
                 coord_A = 0
-            if coord_8 and coord_B and lock_in:
-                curser2.pos.x = sideMargin + tile*7
-                curser2.pos.y = topBotMargin + tile*1 + playScreenHeight
+            if coord_8 and coord_B:
+                mapPosx = sideMargin + tile*7
+                mapPosy = topBotMargin + tile*1 + playScreenHeight
                 coord_8 = 0
                 coord_B = 0
-            if coord_8 and coord_C and lock_in:
-                curser2.pos.x = sideMargin + tile*7
-                curser2.pos.y = topBotMargin + tile*2 + playScreenHeight
+            if coord_8 and coord_C:
+                mapPosx = sideMargin + tile*7
+                mapPosy = topBotMargin + tile*2 + playScreenHeight
                 coord_8 = 0
                 coord_C = 0
-            if coord_8 and coord_D and lock_in:
-                curser2.pos.x = sideMargin + tile*7
-                curser2.pos.y = topBotMargin + tile*3 + playScreenHeight
+            if coord_8 and coord_D:
+                mapPosx = sideMargin + tile*7
+                mapPosy = topBotMargin + tile*3 + playScreenHeight
                 coord_8 = 0
                 coord_D = 0
-            if coord_8 and coord_E and lock_in:
-                curser2.pos.x = sideMargin + tile*7
-                curser2.pos.y = topBotMargin + tile*4 + playScreenHeight
+            if coord_8 and coord_E:
+                mapPosx = sideMargin + tile*7
+                mapPosy = topBotMargin + tile*4 + playScreenHeight
                 coord_8 = 0
                 coord_E = 0
-            if coord_8 and coord_F and lock_in:
-                curser2.pos.x = sideMargin + tile*7
-                curser2.pos.y = topBotMargin + tile*5 + playScreenHeight
+            if coord_8 and coord_F:
+                mapPosx = sideMargin + tile*7
+                mapPosy = topBotMargin + tile*5 + playScreenHeight
                 coord_8 = 0
                 coord_F = 0
-            if coord_8 and coord_G and lock_in:
-                curser2.pos.x = sideMargin + tile*7
-                curser2.pos.y = topBotMargin + tile*6 + playScreenHeight
+            if coord_8 and coord_G:
+                mapPosx = sideMargin + tile*7
+                mapPosy = topBotMargin + tile*6 + playScreenHeight
                 coord_8 = 0
                 coord_G = 0
-            if coord_8 and coord_H and lock_in:
-                curser2.pos.x = sideMargin + tile*7
-                curser2.pos.y = topBotMargin + tile*7 + playScreenHeight
+            if coord_8 and coord_H:
+                mapPosx = sideMargin + tile*7
+                mapPosy = topBotMargin + tile*7 + playScreenHeight
                 coord_8 = 0
                 coord_H = 0
-            if coord_8 and coord_I and lock_in:
-                curser2.pos.x = sideMargin + tile*7
-                curser2.pos.y = topBotMargin + tile*8 + playScreenHeight
+            if coord_8 and coord_I:
+                mapPosx = sideMargin + tile*7
+                mapPosy = topBotMargin + tile*8 + playScreenHeight
                 coord_8 = 0
                 coord_I = 0
-            if coord_8 and coord_J and lock_in:
-                curser2.pos.x = sideMargin + tile*7
-                curser2.pos.y = topBotMargin + tile*9 + playScreenHeight
+            if coord_8 and coord_J:
+                mapPosx = sideMargin + tile*7
+                mapPosy = topBotMargin + tile*9 + playScreenHeight
                 coord_8 = 0
                 coord_J = 0
             # row 9
-            if coord_9 and coord_A and lock_in:
-                curser2.pos.x = sideMargin + tile*8
-                curser2.pos.y = topBotMargin + tile*0 + playScreenHeight
+            if coord_9 and coord_A:
+                mapPosx = sideMargin + tile*8
+                mapPosy = topBotMargin + tile*0 + playScreenHeight
                 coord_9 = 0
                 coord_A = 0
-            if coord_9 and coord_B and lock_in:
-                curser2.pos.x = sideMargin + tile*8
-                curser2.pos.y = topBotMargin + tile*1 + playScreenHeight
+            if coord_9 and coord_B:
+                mapPosx = sideMargin + tile*8
+                mapPosy = topBotMargin + tile*1 + playScreenHeight
                 coord_9 = 0
                 coord_B = 0
-            if coord_9 and coord_C and lock_in:
-                curser2.pos.x = sideMargin + tile*8
-                curser2.pos.y = topBotMargin + tile*2 + playScreenHeight
+            if coord_9 and coord_C:
+                mapPosx = sideMargin + tile*8
+                mapPosy = topBotMargin + tile*2 + playScreenHeight
                 coord_9 = 0
                 coord_C = 0
-            if coord_9 and coord_D and lock_in:
-                curser2.pos.x = sideMargin + tile*8
-                curser2.pos.y = topBotMargin + tile*3 + playScreenHeight
+            if coord_9 and coord_D:
+                mapPosx = sideMargin + tile*8
+                mapPosy = topBotMargin + tile*3 + playScreenHeight
                 coord_9 = 0
                 coord_D = 0
-            if coord_9 and coord_E and lock_in:
-                curser2.pos.x = sideMargin + tile*8
-                curser2.pos.y = topBotMargin + tile*4 + playScreenHeight
+            if coord_9 and coord_E:
+                mapPosx = sideMargin + tile*8
+                mapPosy = topBotMargin + tile*4 + playScreenHeight
                 coord_9 = 0
                 coord_E = 0
-            if coord_9 and coord_F and lock_in:
-                curser2.pos.x = sideMargin + tile*8
-                curser2.pos.y = topBotMargin + tile*5 + playScreenHeight
+            if coord_9 and coord_F:
+                mapPosx = sideMargin + tile*8
+                mapPosy = topBotMargin + tile*5 + playScreenHeight
                 coord_9 = 0
                 coord_F = 0
-            if coord_9 and coord_G and lock_in:
-                curser2.pos.x = sideMargin + tile*8
-                curser2.pos.y = topBotMargin + tile*6 + playScreenHeight
+            if coord_9 and coord_G:
+                mapPosx = sideMargin + tile*8
+                mapPosy = topBotMargin + tile*6 + playScreenHeight
                 coord_9 = 0
                 coord_G = 0
-            if coord_9 and coord_H and lock_in:
-                curser2.pos.x = sideMargin + tile*8
-                curser2.pos.y = topBotMargin + tile*7 + playScreenHeight
+            if coord_9 and coord_H:
+                mapPosx = sideMargin + tile*8
+                mapPosy = topBotMargin + tile*7 + playScreenHeight
                 coord_9 = 0
                 coord_H = 0
-            if coord_9 and coord_I and lock_in:
-                curser2.pos.x = sideMargin + tile*8
-                curser2.pos.y = topBotMargin + tile*8 + playScreenHeight
+            if coord_9 and coord_I:
+                mapPosx = sideMargin + tile*8
+                mapPosy = topBotMargin + tile*8 + playScreenHeight
                 coord_9 = 0
                 coord_I = 0
-            if coord_9 and coord_J and lock_in:
-                curser2.pos.x = sideMargin + tile*8
-                curser2.pos.y = topBotMargin + tile*9 + playScreenHeight
+            if coord_9 and coord_J:
+                mapPosx = sideMargin + tile*8
+                mapPosy = topBotMargin + tile*9 + playScreenHeight
                 coord_9 = 0
                 coord_J = 0
             # row 10
-            if coord_0 and coord_A and lock_in:
-                curser2.pos.x = sideMargin + tile*9
-                curser2.pos.y = topBotMargin + tile*0 + playScreenHeight
+            if coord_0 and coord_A:
+                mapPosx = sideMargin + tile*9
+                mapPosy = topBotMargin + tile*0 + playScreenHeight
                 coord_0 = 0
                 coord_A = 0
-            if coord_0 and coord_B and lock_in:
-                curser2.pos.x = sideMargin + tile*9
-                curser2.pos.y = topBotMargin + tile*1 + playScreenHeight
+            if coord_0 and coord_B:
+                mapPosx = sideMargin + tile*9
+                mapPosy = topBotMargin + tile*1 + playScreenHeight
                 coord_0 = 0
                 coord_B = 0
-            if coord_0 and coord_C and lock_in:
-                curser2.pos.x = sideMargin + tile*9
-                curser2.pos.y = topBotMargin + tile*2 + playScreenHeight
+            if coord_0 and coord_C:
+                mapPosx = sideMargin + tile*9
+                mapPosy = topBotMargin + tile*2 + playScreenHeight
                 coord_0 = 0
                 coord_C = 0
-            if coord_0 and coord_D and lock_in:
-                curser2.pos.x = sideMargin + tile*9
-                curser2.pos.y = topBotMargin + tile*3 + playScreenHeight
+            if coord_0 and coord_D:
+                mapPosx = sideMargin + tile*9
+                mapPosy = topBotMargin + tile*3 + playScreenHeight
                 coord_0 = 0
                 coord_D = 0
-            if coord_0 and coord_E and lock_in:
-                curser2.pos.x = sideMargin + tile*9
-                curser2.pos.y = topBotMargin + tile*4 + playScreenHeight
+            if coord_0 and coord_E:
+                mapPosx = sideMargin + tile*9
+                mapPosy = topBotMargin + tile*4 + playScreenHeight
                 coord_0 = 0
                 coord_E = 0
-            if coord_0 and coord_F and lock_in:
-                curser2.pos.x = sideMargin + tile*9
-                curser2.pos.y = topBotMargin + tile*5 + playScreenHeight
+            if coord_0 and coord_F:
+                mapPosx = sideMargin + tile*9
+                mapPosy = topBotMargin + tile*5 + playScreenHeight
                 coord_0 = 0
                 coord_F = 0
-            if coord_0 and coord_G and lock_in:
-                curser2.pos.x = sideMargin + tile*9
-                curser2.pos.y = topBotMargin + tile*6 + playScreenHeight
+            if coord_0 and coord_G:
+                mapPosx = sideMargin + tile*9
+                mapPosy = topBotMargin + tile*6 + playScreenHeight
                 coord_0 = 0
                 coord_G = 0
-            if coord_0 and coord_H and lock_in:
-                curser2.pos.x = sideMargin + tile*9
-                curser2.pos.y = topBotMargin + tile*7 + playScreenHeight
+            if coord_0 and coord_H:
+                mapPosx = sideMargin + tile*9
+                mapPosy = topBotMargin + tile*7 + playScreenHeight
                 coord_0 = 0
                 coord_H = 0
-            if coord_0 and coord_I and lock_in:
-                curser2.pos.x = sideMargin + tile*9
-                curser2.pos.y = topBotMargin + tile*8 + playScreenHeight
+            if coord_0 and coord_I:
+                mapPosx = sideMargin + tile*9
+                mapPosy = topBotMargin + tile*8 + playScreenHeight
                 coord_0 = 0
                 coord_I = 0
-            if coord_0 and coord_J and lock_in:
-                curser2.pos.x = sideMargin + tile*9
-                curser2.pos.y = topBotMargin + tile*9 + playScreenHeight
+            if coord_0 and coord_J:
+                mapPosx = sideMargin + tile*9
+                mapPosy = topBotMargin + tile*9 + playScreenHeight
                 coord_0 = 0
                 coord_J = 0
-        lock_in = 0
+            # sets positions of sonar and target for player 1
+            if gamePhase == "shoot" and coordPass and playerTurn == 2:
+                curser2.pos.x = mapPosx
+                curser2.pos.y = mapPosy
+            if gamePhase == "sonar" and coordPass and playerTurn == 2:
+                sonarPos1.x = mapPosx + tile/2
+                sonarPos1.y = mapPosy + tile/2
 
 # class for ship damage
 class ShipDamage(Rectangle):
@@ -1628,7 +1703,7 @@ class Sprite():
     missilePhaseMessageCounter1 = 0
     missilePhaseMessageCounter2 = 0
 
-    subPhaseMessage1 = False
+    subPhaseMessage1 = True
     subPhaseMessage2 = False
     subPhaseMessageCounter1 = 0
     subPhaseMessageCounter2 = 0
@@ -1648,10 +1723,10 @@ def update():
         for key, val in distressCalls.items():
             distressCalls[key].draw()
 
-    #if pinPointPulse1:
-    #    win.blit(pygame.transform.smoothscale(pygame.image.load(os.path.join('Sprites','distressSignal.png')), (int(tile), int(tile))), (shipDic1[pinPointPulse1].pos.x, shipDic1[pinPointPulse1].pos.y))
-    #if pinPointPulse2:
-    #    win.blit(pygame.transform.smoothscale(pygame.image.load(os.path.join('Sprites','distressSignal.png')), (int(tile), int(tile))), (shipDic1[pinPointPulse2].pos.x, shipDic1[pinPointPulse2].pos.y))
+    if pinPointPulse1 and playerTurn == 2:
+        pinPointDistress.draw()
+    if pinPointPulse2 and playerTurn == 1:
+        pinPointDistress.draw()
 
     win.blit(Sprite.gridSonar, (sideMargin - 1, topBotMargin - 1))
     win.blit(Sprite.gridSonar, (sideMargin + playScreenWidth - 1, topBotMargin - 1))
@@ -1706,7 +1781,7 @@ def update():
         ###       THIS IS WHERE THE OUTPUTS FOR WHAT SHIP IS BEING HIT BY SONAR AND HOW MANY SONAR BEANS ARE HITTING IT       ###
         #                                                                                                                       #
         #                                                                                                                       #
-        #print("{0:5}: {1:3}    Average Distance in Range:". format(key, shipDic1[key].sonarHitNum), shipDic1[key].averageDistance)#
+        #print("{0:5}: {1:3}    Average Distance in Range:". format(key, shipDic2[key].sonarHitNum), shipDic2[key].averageDistance)#
         #                                                                                                                       #
         ###                                                                                                                   ###
         #########################################################################################################################
@@ -1736,18 +1811,18 @@ def update():
     curser2.drawCurser2()
 
     # draws 'subPhase' message
-    #if Sprite.subPhaseMessage1:
-    #    win.blit(Sprite.subPhaseMessage, (sideMargin + tile - 6, topBotMargin))
-    #    Sprite.subPhaseMessageCounter1 += 1
-    #    if Sprite.subPhaseMessageCounter1 > 30:
-    #        Sprite.subPhaseMessageCounter1 = 0
-    #        Sprite.subPhaseMessage1 = False
-    #if Sprite.subPhaseMessage2:
-    #    win.blit(Sprite.subPhaseMessage, (sideMargin + tile - 6 + playScreenWidth, topBotMargin))
-    #    Sprite.subPhaseMessageCounter2 += 1
-    #    if Sprite.subPhaseMessageCounter2 > 30:
-    #        Sprite.subPhaseMessageCounter2 = 0
-    #        Sprite.subPhaseMessage2 = False
+    if Sprite.subPhaseMessage1:
+        win.blit(Sprite.subPhaseMessage, (sideMargin + tile - 6, topBotMargin))
+        Sprite.subPhaseMessageCounter1 += 1
+        if Sprite.subPhaseMessageCounter1 > 30:
+            Sprite.subPhaseMessageCounter1 = 0
+            Sprite.subPhaseMessage1 = False
+    if Sprite.subPhaseMessage2:
+        win.blit(Sprite.subPhaseMessage, (sideMargin + tile - 6 + playScreenWidth, topBotMargin))
+        Sprite.subPhaseMessageCounter2 += 1
+        if Sprite.subPhaseMessageCounter2 > 30:
+            Sprite.subPhaseMessageCounter2 = 0
+            Sprite.subPhaseMessage2 = False
 
     # draws 'missilePhase' message
     if Sprite.missilePhaseMessage1:
@@ -1933,6 +2008,20 @@ def averageDist():
             except:
                 pass
 
+    for key, val in averageLength.items():
+        if len(averageLength[key]) != 0:
+            # crashes if i dont do the try/except -/(-.-)\-
+            try:
+                shipDic2[key].averageDistance = sum(averageLength[key])/len(averageLength[key])
+            except:
+                pass
+        else:
+            # crashes if i dont do the try/except -/(-.-)\-
+            try:
+                shipDic2[key].averageDistance = 0
+            except:
+                pass
+
 # aims, widens, and extense the sonar
 def sonarAim(playerTurn):
     global sonarRange1
@@ -1953,45 +2042,16 @@ def sonarAim(playerTurn):
 
     # sonar center position
     if playerTurn == 2:
-        # right bound detection and left movement
-        if sonarPos1.x > sideMargin + tile and keys[pygame.K_LEFT] and isPress_LEFT == 0:
-            isPress_LEFT = 1
-            sonarPos1.x -= tile
-        # anti repetition
-        if not(keys[pygame.K_LEFT]):
-            isPress_LEFT = 0
-
-        # left bound detection and right movement
-        if sonarPos1.x < playScreen + sideMargin - tile and keys[pygame.K_RIGHT] and isPress_RIGHT == 0:
-            isPress_RIGHT = 1
-            sonarPos1.x += tile
-        # anti repetition
-        if not(keys[pygame.K_RIGHT]):
-            isPress_RIGHT = 0
-
-        # bottom bound detection and up movement
-        if sonarPos1.y > topBotMargin + tile + playScreenHeight and keys[pygame.K_UP] and isPress_UP == 0:
-            isPress_UP = 1
-            sonarPos1.y -= tile
-        # anti repetition
-        if not(keys[pygame.K_UP]):
-            isPress_UP = 0    
-        
-        # top bound detection and down movement
-        if sonarPos1.y < playScreen + topBotMargin - tile + playScreenHeight and keys[pygame.K_DOWN] and isPress_DOWN == 0:
-            isPress_DOWN = 1
-            sonarPos1.y += tile
-        # anti repetition
-        if not(keys[pygame.K_DOWN]):
-            isPress_DOWN = 0
+        # calling for sonar position
+        curser1.move()
     
         # controls
         # rotate counter-clockwise
-        if mouse[0] or keys[pygame.K_LEFTBRACKET]:
+        if keys[pygame.K_LEFTBRACKET]:
             sonarStartAngle1 += 5
  
         # rotate clockwise
-        if mouse[2] or keys[pygame.K_RIGHTBRACKET]:
+        if keys[pygame.K_RIGHTBRACKET]:
             sonarStartAngle1 -= 5
 
         # increase power level
@@ -2009,49 +2069,18 @@ def sonarAim(playerTurn):
             if sonarWidth1%2:
                 sonarStartAngle1 -= 1
 
-
-
     # sonar center position
     if playerTurn == 1:
-        # right bound detection and left movement
-        if sonarPos2.x > sideMargin + tile + playScreenWidth and keys[pygame.K_LEFT] and isPress_LEFT == 0:
-            isPress_LEFT = 1
-            sonarPos2.x -= tile
-        # anti repetition
-        if not(keys[pygame.K_LEFT]):
-            isPress_LEFT = 0
+        # calling for sonar position
+        curser1.move()
 
-        # left bound detection and right movement
-        if sonarPos2.x < playScreen + sideMargin - tile + playScreenWidth and keys[pygame.K_RIGHT] and isPress_RIGHT == 0:
-            isPress_RIGHT = 1
-            sonarPos2.x += tile
-        # anti repetition
-        if not(keys[pygame.K_RIGHT]):
-            isPress_RIGHT = 0
-
-        # bottom bound detection and up movement
-        if sonarPos2.y > topBotMargin + tile + playScreenHeight and keys[pygame.K_UP] and isPress_UP == 0:
-            isPress_UP = 1
-            sonarPos2.y -= tile
-        # anti repetition
-        if not(keys[pygame.K_UP]):
-            isPress_UP = 0    
-        
-        # top bound detection and down movement
-        if sonarPos2.y < playScreen + topBotMargin - tile + playScreenHeight and keys[pygame.K_DOWN] and isPress_DOWN == 0:
-            isPress_DOWN = 1
-            sonarPos2.y += tile
-        # anti repetition
-        if not(keys[pygame.K_DOWN]):
-            isPress_DOWN = 0
-    
         # controls
         # rotate counter-clockwise
-        if mouse[0] or keys[pygame.K_LEFTBRACKET]:
+        if keys[pygame.K_LEFTBRACKET]:
             sonarStartAngle2 += 5
  
         # rotate clockwise
-        if mouse[2] or keys[pygame.K_RIGHTBRACKET]:
+        if keys[pygame.K_RIGHTBRACKET]:
             sonarStartAngle2 -= 5
 
         # increase power level
@@ -2153,6 +2182,11 @@ def pulseSonar():
             print("Not Enough Sonar Charge")
             gamePhase = "sonar"
 
+        if len(sonarDic2) == 1 and tempSonarCharge1 > 0:
+            for key, item in shipDic2.items():
+                if shipDic2[key].sonarHitNum:
+                    pinPointPulse2 = key
+                    whereSonarHit(1, key)
 
     if playerTurn == 2:
         Sprite.missilePhaseMessage2 = True
@@ -2170,20 +2204,47 @@ def pulseSonar():
             print("Not Enough Sonar Charge")
             gamePhase = "sonar"
 
+        if len(sonarDic1) == 1 and tempSonarCharge2 > 0:
+            for key, item in shipDic1.items():
+                if shipDic1[key].sonarHitNum:
+                    pinPointPulse1 = key
+                    whereSonarHit(2, key)
+
     # update sonar charge meter
     createSonarChargeMeter()
 
-    #if len(sonarDic1) == 1:                          #######################################################
-    #    for key, item in shipDic1.items():
-    #        print(shipDic1[key].sonarHitNum)
-    #        if shipDic1[key].sonarHitNum:
-    #            print("frog")
-    #            pinPointPulse1 = key
-    #if len(sonarDic2) == 1:
-    #    for key, item in shipDic2.items():
-    #        if shipDic2[key].sonarHitNum:
-    #            print("frog")
-    #            pinPointPulse2 = key
+# what tile the beam hit ship
+def whereSonarHit(playerNum, ship):
+    global pinPointDistress
+    if playerNum == 1:
+        for key, item in sonarDic2.items():
+            sonarHitPosx = sonarDic2[key].end2.x
+            sonarHitPosy = sonarDic2[key].end2.y
+        if shipDic2[ship].width > shipDic2[ship].height:
+            for i in range(shipDic2[ship].length):
+                if (shipDic2[ship].pos.x + tile*(i + 1)) > sonarHitPosx and sonarHitPosx < (shipDic2[ship].pos.x + tile*(i + 2)):
+                    pinPointDistress = distressCall((255,255,0), shipDic2[ship].pos.x + tile*i - playScreenWidth, shipDic2[ship].pos.y - playScreenHeight, tile, tile)
+                    return
+        if shipDic2[ship].width < shipDic2[ship].height:
+            for i in range(shipDic2[ship].length):
+                if (shipDic2[ship].pos.y + tile*(i + 1)) > sonarHitPosy and sonarHitPosy < (shipDic2[ship].pos.y + tile*(i + 2)):
+                    pinPointDistress = distressCall((255,255,0), shipDic2[ship].pos.x - playScreenWidth, shipDic2[ship].pos.y + tile*i - playScreenHeight, tile, tile)
+                    return
+
+    if playerNum == 2:
+        for key, item in sonarDic1.items():
+            sonarHitPosx = sonarDic1[key].end2.x
+            sonarHitPosy = sonarDic1[key].end2.y
+        if shipDic1[ship].width > shipDic1[ship].height:
+            for i in range(shipDic1[ship].length):
+                if (shipDic1[ship].pos.x + tile*(i + 1)) > sonarHitPosx and sonarHitPosx < (shipDic1[ship].pos.x + tile*(i + 2)):
+                    pinPointDistress = distressCall((255,255,0), shipDic1[ship].pos.x + tile*i + playScreenWidth, shipDic1[ship].pos.y - playScreenHeight, tile, tile)
+                    return
+        if shipDic1[ship].width < shipDic1[ship].height:
+            for i in range(shipDic1[ship].length):
+                if (shipDic1[ship].pos.y + tile*(i + 1)) > sonarHitPosy and sonarHitPosy < (shipDic1[ship].pos.y + tile*(i + 2)):
+                    pinPointDistress = distressCall((255,255,0), shipDic1[ship].pos.x + playScreenWidth, shipDic1[ship].pos.y + tile*i - playScreenHeight, tile, tile)
+                    return
 
 # creates and updates sonar charge meter
 def createSonarChargeMeter():
@@ -2426,7 +2487,7 @@ def shootMissile():
         Sprite.subPhaseMessage2 = True
         if isCollides[0] and damageTest1:
             Sprite.hitMessage1 = True
-            sonarCharge1 += MAXSONARCHARGE/rechargePercent
+            sonarCharge1 += MAXSONARCHARGE*rechargePercent
             print("You hit {}!!". format(isCollides[1]))
             print("~~~~~~~~")
             # hit marker for player 1 sonar
@@ -2456,7 +2517,7 @@ def shootMissile():
         # for phase message
         Sprite.subPhaseMessage1 = True
         if isCollides[0] and damageTest2:
-            sonarCharge2 += MAXSONARCHARGE/rechargePercent
+            sonarCharge2 += MAXSONARCHARGE*rechargePercent
             Sprite.hitMessage2 = True
             print("You hit {}!!". format(isCollides[1]))
             print("~~~~~~~~")
@@ -2592,7 +2653,6 @@ def isDistressed():
         isDisplayingDistress = 1
         shipDistress(2)
 
-    #print("OtherPLayer: {}\tShoooted: {}" .format(otherPlayer, shoooted))
     if otherPlayer == 1 and shoooted and sonarCharge1 == 0:
         sonarCharge1 = MAXSONARCHARGE
         distressCalls = {}
@@ -2607,10 +2667,6 @@ def isDistressed():
 
 # distress mode for certain ship
 def shipDistress(playerInDistress):
-    global playerTurn
-    global shipDic1
-    global shipDic2
-    global tile
     global distressCalls
 
     shipName = "ship%s" %randint(0,4)
@@ -2653,6 +2709,55 @@ def shipDistress(playerInDistress):
                     distressCalls["distress%s" %len(distressCalls)] = distressCall((255,255,0), shipDic2[shipName].pos.x + tile*randint(-i,i) + distressOffset*tile - playScreenWidth, shipDic2[shipName].pos.y + tile*randint(-i,i) + int(0.5 * shipLength)*tile + distressOffset*tile - playScreenHeight, tile, tile)
                 else:
                     distressCalls["distress%s" %len(distressCalls)] = distressCall((255,255,0), shipDic2[shipName].pos.x + tile*randint(-i,i) + distressOffset*tile + int(0.5 * shipLength)*tile - playScreenWidth, shipDic2[shipName].pos.y + tile*randint(-i,i) + distressOffset*tile - playScreenHeight, tile, tile)
+
+# puts all ships into distress
+def allShipDistress(playerInDistress):
+    global distressCalls
+
+    # need to make random cloud so other player can guess where ship is
+    distressDensity = 2
+    distressRange = 1
+    distressCalls = {}
+
+    if playerInDistress == 1:
+        for key, item in shipDic1.items():
+            distressOffset = randint(-1,1)
+
+            shipLength = shipDic1[key].health + shipDic1[key].damage
+
+            # guarantees that atleast one part of the ship will be lit
+            if shipDic1[key].width < shipDic1[key].height:
+                distressCalls["ontarget%s" %len(distressCalls)] = distressCall((255,255,0), shipDic1[key].pos.x + playScreenWidth, shipDic1[key].pos.y + randint(0, shipLength - 1)*tile - playScreenHeight, tile, tile)
+            else:
+                distressCalls["ontarget%s" %len(distressCalls)] = distressCall((255,255,0), shipDic1[key].pos.x + randint(0, shipLength - 1)*tile + playScreenWidth, shipDic1[key].pos.y - playScreenHeight, tile, tile)
+
+            # need to make random cloud so other player can guess where ship is
+            for k in range(randint(distressDensity, distressDensity + 3)):
+                for i in range(0, randint(distressRange, distressRange + 2)):
+                    if shipDic1[key].width < shipDic1[key].height:
+                        distressCalls["distress%s" %len(distressCalls)] = distressCall((255,255,0), shipDic1[key].pos.x + tile*randint(-i,i) + distressOffset*tile + playScreenWidth, shipDic1[key].pos.y + tile*randint(-i,i) + int(0.5 * shipLength)*tile + distressOffset*tile - playScreenHeight, tile, tile)
+                    else:
+                        distressCalls["distress%s" %len(distressCalls)] = distressCall((255,255,0), shipDic1[key].pos.x + tile*randint(-i,i) + distressOffset*tile + int(0.5 * shipLength)*tile + playScreenWidth, shipDic1[key].pos.y + tile*randint(-i,i) + distressOffset*tile - playScreenHeight, tile, tile)
+
+    if playerInDistress == 2:
+        for key, item in shipDic2.items():
+            distressOffset = randint(-1,1)
+
+            shipLength = shipDic1[key].health + shipDic1[key].damage
+
+            # guarantees that atleast one part of the ship will be lit
+            if shipDic2[key].width < shipDic2[key].height:
+                distressCalls["ontarget%s" %len(distressCalls)] = distressCall((255,255,0), shipDic2[key].pos.x + playScreenWidth, shipDic2[key].pos.y + randint(0, shipLength - 1)*tile - playScreenHeight, tile, tile)
+            else:
+                distressCalls["ontarget%s" %len(distressCalls)] = distressCall((255,255,0), shipDic2[key].pos.x + randint(0, shipLength - 1)*tile + playScreenWidth, shipDic2[key].pos.y - playScreenHeight, tile, tile)
+
+            # need to make random cloud so other player can guess where ship is
+            for k in range(randint(distressDensity, distressDensity + 3)):
+                for i in range(0, randint(distressRange, distressRange + 2)):
+                    if shipDic2[key].width < shipDic2[key].height:
+                        distressCalls["distress%s" %len(distressCalls)] = distressCall((255,255,0), shipDic2[key].pos.x + tile*randint(-i,i) + distressOffset*tile - playScreenWidth, shipDic2[key].pos.y + tile*randint(-i,i) + int(0.5 * shipLength)*tile + distressOffset*tile - playScreenHeight, tile, tile)
+                    else:
+                        distressCalls["distress%s" %len(distressCalls)] = distressCall((255,255,0), shipDic2[key].pos.x + tile*randint(-i,i) + distressOffset*tile + int(0.5 * shipLength)*tile - playScreenWidth, shipDic2[key].pos.y + tile*randint(-i,i) + distressOffset*tile - playScreenHeight, tile, tile)
 
 # detects if key is pressed
 def detectInputs(numShip):
@@ -2921,6 +3026,7 @@ subSinkPunish2 = 0
 subPunishLevel = 1
 warningCounter1 = 0
 warningCounter2 = 0
+pinPointDistress = 0
 # default sonar charge amount
 MAXSONARCHARGE = 700
 sonarCharge1 = MAXSONARCHARGE
@@ -2952,8 +3058,6 @@ waterClock = 0
 afterShotTime = 60  # time after shot
 
 
-
-
 targetCoords = []
 #########################################################################################
 # MAIN GAME LOOP 
@@ -2971,8 +3075,6 @@ while run:
     clock.tick(frameRate)
     #calls water sound playback and maintains fade loop
     waterSound(run, waterClock, waterS_array, ch_water, ch_waterBuffer)
-    # dectects inputs from all sources
-    detectInputs(numShip)
     # sonar targeted?
     isSubTargeted()
     # sonar iteration
@@ -2980,6 +3082,8 @@ while run:
     sonarDicUnpacker = createSonar(playerTurn)
     sonarDic1 = sonarDicUnpacker[0]
     sonarDic2 = sonarDicUnpacker[1]
+    # dectects inputs from all sources
+    detectInputs(numShip)
     #ship distress detection
     isDistressed()
     # is there a sunken ship
@@ -2991,7 +3095,6 @@ while run:
         isPlayerTurn()
     # did win
     isWin()
-
 
 # if main loop is broke then close program
 pygame.quit()
