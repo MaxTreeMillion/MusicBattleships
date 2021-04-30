@@ -2546,10 +2546,8 @@ def shootMissile():
     isSubSunk()
     # sub hit causation
     if isTargetSub1:
-        print("frog1")
         subSink1 = True
     if isTargetSub2:
-        print("frog2")
         subSink2 = True
 
 # detects if any sunken ships
@@ -2650,16 +2648,18 @@ def isDistressed():
 
     if not(sonarCharge1) and isDisplayingDistress == 0 and tempPlayerTurn != playerTurn and playerTurn != 0:
         isDisplayingDistress = 1
-        shipDistress(1)
+        if not(allDistressTest):
+            shipDistress(1)
     if not(sonarCharge2) and isDisplayingDistress == 0 and tempPlayerTurn != playerTurn and playerTurn != 0:
         isDisplayingDistress = 1
-        shipDistress(2)
+        if not(allDistressTest):
+            shipDistress(2)
 
     if otherPlayer == 1 and shoooted and sonarCharge1 == 0:
         sonarCharge1 = MAXSONARCHARGE
         distressCalls = {}
         isDisplayingDistress = 0
-    if otherPlayer == 2 and shoooted and sonarCharge2 == 0:#####################################
+    if otherPlayer == 2 and shoooted and sonarCharge2 == 0:
         sonarCharge2 = MAXSONARCHARGE
         distressCalls = {}
         isDisplayingDistress = 0
@@ -2711,6 +2711,40 @@ def shipDistress(playerInDistress):
                     distressCalls["distress%s" %len(distressCalls)] = distressCall((255,255,0), shipDic2[shipName].pos.x + tile*randint(-i,i) + distressOffset*tile - playScreenWidth, shipDic2[shipName].pos.y + tile*randint(-i,i) + int(0.5 * shipLength)*tile + distressOffset*tile - playScreenHeight, tile, tile)
                 else:
                     distressCalls["distress%s" %len(distressCalls)] = distressCall((255,255,0), shipDic2[shipName].pos.x + tile*randint(-i,i) + distressOffset*tile + int(0.5 * shipLength)*tile - playScreenWidth, shipDic2[shipName].pos.y + tile*randint(-i,i) + distressOffset*tile - playScreenHeight, tile, tile)
+
+# when called this function distroys enemy sub while putting all your ships in distress
+def destroyEnemySub():
+    global subSink1
+    global subSink2
+    global player1End
+    global player2End
+    global playerTurn
+    global playerTrigger
+    global gamePhase
+    global sonarCharge1
+    global sonarCharge2
+    global allDistressTest
+
+    # triggers the changing of players
+    playerTrigger = 1
+    if gamePhase == "sonar":
+        if playerTurn == 1:
+            if sonarCharge1 == MAXSONARCHARGE:
+                allDistressTest = True
+                sonarCharge1 = 0
+                allShipDistress(1)
+                isSubSunk()
+                player1End = True
+                subSink2 = True
+        if playerTurn == 2:
+            if sonarCharge2 == MAXSONARCHARGE:
+                allDistressTest = True
+                sonarCharge2 = 0
+                allShipDistress(2)
+                isSubSunk()
+                player2End = True
+                subSink1 = True
+        gamePhase = "shoot"
 
 # puts all ships into distress
 def allShipDistress(playerInDistress):
@@ -2830,6 +2864,13 @@ def detectInputs(numShip):
     if not(key[pygame.K_SPACE]):
         isPress_SPACE = 0
 
+    # destroy enemy submarine
+    if key[pygame.K_LSHIFT] and isPress_LSHIFT == 0:
+        isPress_LSHIFT = 1
+        destroyEnemySub()
+    if not(key[pygame.K_LSHIFT]):
+        isPress_LSHIFT = 0
+
     # shooting missle
     if key[pygame.K_COMMA] and isPress_COMMA == 0:
         isPress_COMMA = 1
@@ -2855,7 +2896,7 @@ def isPlayerTurn():
     global player2End
     global playerCount
     global playerTrigger
-
+    print("frog")
     # not inputs allowed from either player when this is 0
     playerTurn = 0
 
@@ -2863,9 +2904,11 @@ def isPlayerTurn():
         playerTrigger = 0
         playerCount = 0 
         if player1End:
+            print("frog2")
             playerTurn = 2
     
         if player2End:
+            print("frog1")
             playerTurn = 1
 
     playerCount += 1
@@ -2975,7 +3018,7 @@ def waterSound(run, waterClock, waterSound, waterChannel, waterChannelBuffer):
 # default player stuff
 playerTurn = 1
 player1End = False
-player2End = True
+player2End = False
 playerCount = 0
 playerTrigger = 0
 playerShot1 = False
@@ -2985,6 +3028,7 @@ shoooted = False
 pinPointPulse1 = 0
 pinPointPulse2 = 0
 gamePhase = "sonar"
+allDistressTest = False
 
 # number of ships on the water
 numShip = 5
@@ -3028,7 +3072,7 @@ subSink1 = False
 subSink2 = False
 subSinkPunish1 = 0
 subSinkPunish2 = 0
-subPunishLevel = 1
+subPunishLevel = 2
 warningCounter1 = 0
 warningCounter2 = 0
 pinPointDistress = 0
