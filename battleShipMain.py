@@ -16,8 +16,8 @@ import os
 # screen deminsions stuff
 #screenHeight = 1280
 #screenWidth = 720
-screenHeight = 896
-screenWidth = 504
+screenHeight = 640
+screenWidth = 360
 doubleScreenWidth = screenWidth*2
 playScreenHeight = int(screenHeight/2)
 playScreenWidth = screenWidth
@@ -60,11 +60,11 @@ carrier_close = pygame.mixer.Sound(os.path.join('Ship Themes (wav) copy','Carrie
 carrier_mid = pygame.mixer.Sound(os.path.join('Ship Themes (wav) copy','Carrier - Mid Range.wav'))
 carrier_far = pygame.mixer.Sound(os.path.join('Ship Themes (wav) copy','Carrier - Long Range.wav'))
 #   -test notes for modular music system
-note1 = pygame.mixer.Sound(os.path.join('Ship Themes (wav) copy', 'note1.wav'))
-note2 = pygame.mixer.Sound(os.path.join('Ship Themes (wav) copy', 'note2.wav'))
-note3 = pygame.mixer.Sound(os.path.join('Ship Themes (wav) copy', 'note3.wav'))
-note4 = pygame.mixer.Sound(os.path.join('Ship Themes (wav) copy', 'note4.wav'))
-note5 = pygame.mixer.Sound(os.path.join('Ship Themes (wav) copy', 'note5.wav'))
+th_destroyerSimple = pygame.mixer.Sound(os.path.join('Ship Themes (wav) copy', 'th_destroyerSimple.wav'))
+th_carrierSimple = pygame.mixer.Sound(os.path.join('Ship Themes (wav) copy', 'th_carrierSimple.wav'))
+th_cruiser1Simple = pygame.mixer.Sound(os.path.join('Ship Themes (wav) copy', 'th_cruiser1Simple.wav'))
+th_cruiser2Simple = pygame.mixer.Sound(os.path.join('Ship Themes (wav) copy', 'th_cruiser2Simple.wav'))
+th_battleshipSimple = pygame.mixer.Sound(os.path.join('Ship Themes (wav) copy', 'th_battleshipSimple.wav'))
 note6 = pygame.mixer.Sound(os.path.join('Ship Themes (wav) copy', 'note6.wav'))
 note7 = pygame.mixer.Sound(os.path.join('Ship Themes (wav) copy', 'note7.wav'))
 note8 = pygame.mixer.Sound(os.path.join('Ship Themes (wav) copy', 'note8.wav'))
@@ -2162,6 +2162,14 @@ def createSonar(playerTurn):
     #coupling good times
     #making a list of ships hit by sonar if in sonar stage
     #player 1 and player 2
+
+    #valve anticheat
+    if playerTurn == 1 and Sprite.notEnoughMessage1:
+        sonarController = 0
+
+    if playerTurn == 2 and Sprite.notEnoughMessage2:
+        sonarController = 0
+
     if sonarController == 1:
         sonar_hitShips = {}
         #beamHitNumList = {}
@@ -3056,9 +3064,9 @@ def shipTheme_playback(sonar_hitShips):
             #using vol dist ratioto select which theme plays (decided to pair the parameters - volume_distanceRatio isn't an accurate name for the variable but whateva)
             if volume_distanceRatio <= 0.5:
                 #SUPPOSED TO BE COMPLEX THEME
-                ch_shipTheme0.play(note1)
+                ch_shipTheme0.play(th_carrierSimple)
             elif volume_distanceRatio > 0.5:
-                ch_shipTheme0.play(note2)
+                ch_shipTheme0.play(th_carrierSimple)
             
             if volume_distanceRatio < 0.25:
                 ch_shipTheme0.set_volume(0.9,0.0)
@@ -3080,9 +3088,9 @@ def shipTheme_playback(sonar_hitShips):
             
             if volume_distanceRatio <= 0.5:
                 #SUPPOSED TO BE COMPLEX THEME
-                ch_shipTheme1.play(note3)
+                ch_shipTheme1.play(th_battleshipSimple)
             elif volume_distanceRatio > 0.5:
-                ch_shipTheme1.play(note4)
+                ch_shipTheme1.play(th_battleshipSimple)
 
             
             if volume_distanceRatio < 0.25:
@@ -3102,9 +3110,9 @@ def shipTheme_playback(sonar_hitShips):
             
             if volume_distanceRatio <= 0.5:
                 #SUPPOSED TO BE COMPLEX THEME
-                ch_shipTheme2.play(note5)
+                ch_shipTheme2.play(th_cruiser1Simple)
             elif volume_distanceRatio > 0.5:
-                ch_shipTheme2.play(note6)
+                ch_shipTheme2.play(th_cruiser1Simple)
 
             
             if volume_distanceRatio < 0.25:
@@ -3124,9 +3132,9 @@ def shipTheme_playback(sonar_hitShips):
             
             if volume_distanceRatio <= 0.5:
                 #SUPPOSED TO BE COMPLEX THEME
-                ch_shipTheme3.play(note7)
+                ch_shipTheme3.play(th_cruiser2Simple)
             elif volume_distanceRatio > 0.5:
-                ch_shipTheme3.play(note8)
+                ch_shipTheme3.play(th_cruiser2Simple)
 
             
             if volume_distanceRatio < 0.25:
@@ -3146,9 +3154,9 @@ def shipTheme_playback(sonar_hitShips):
             
             if volume_distanceRatio <= 0.5:
                 #SUPPOSED TO BE COMPLEX THEME
-                ch_shipTheme4.play(note9)
+                ch_shipTheme4.play(th_destroyerSimple)
             elif volume_distanceRatio > 0.5:
-                ch_shipTheme4.play(note10)
+                ch_shipTheme4.play(th_destroyerSimple)
 
             
             if volume_distanceRatio < 0.25:
@@ -3168,13 +3176,14 @@ def shipTheme_playback(sonar_hitShips):
         if shipDic1['ship0'] in shipList:
             #280 is what im working with for max distance
             volume_distanceRatio = shipDic1['ship0'].averageDistance/280
+            print('ship0')
 
             
             if volume_distanceRatio <= 0.5:
                 #SUPPOSED TO BE COMPLEX THEME
-                ch_shipTheme0.play(note1)
+                ch_shipTheme0.play(th_carrierSimple)
             elif volume_distanceRatio > 0.5:
-                ch_shipTheme0.play(note2)
+                ch_shipTheme0.play(th_carrierSimple)
             
             if volume_distanceRatio < 0.25:
                 ch_shipTheme0.set_volume(0.0,0.9)
@@ -3193,13 +3202,14 @@ def shipTheme_playback(sonar_hitShips):
         if shipDic1['ship1'] in shipList:
             #280 is what im working with for max distance
             volume_distanceRatio = shipDic1['ship1'].averageDistance/280
+            print('ship1')
 
             
             if volume_distanceRatio <= 0.5:
                 #SUPPOSED TO BE COMPLEX THEME
-                ch_shipTheme1.play(note3)
+                ch_shipTheme1.play(th_battleshipSimple)
             elif volume_distanceRatio > 0.5:
-                ch_shipTheme1.play(note4)
+                ch_shipTheme1.play(th_battleshipSimple)
 
             
             if volume_distanceRatio < 0.25:
@@ -3216,13 +3226,14 @@ def shipTheme_playback(sonar_hitShips):
         if shipDic1['ship2'] in shipList:
             #280 is what im working with for max distance
             volume_distanceRatio = shipDic1['ship2'].averageDistance/280
+            print('ship2')
 
             
             if volume_distanceRatio <= 0.5:
                 #SUPPOSED TO BE COMPLEX THEME
-                ch_shipTheme2.play(note5)
+                ch_shipTheme2.play(th_cruiser1Simple)
             elif volume_distanceRatio > 0.5:
-                ch_shipTheme2.play(note6)
+                ch_shipTheme2.play(th_cruiser1Simple)
 
             
             if volume_distanceRatio < 0.25:
@@ -3239,13 +3250,14 @@ def shipTheme_playback(sonar_hitShips):
         if shipDic1['ship3'] in shipList:
             #280 is what im working with for max distance
             volume_distanceRatio = shipDic1['ship3'].averageDistance/280
+            print('ship3')
 
             
             if volume_distanceRatio <= 0.5:
                 #SUPPOSED TO BE COMPLEX THEME
-                ch_shipTheme3.play(note7)
+                ch_shipTheme3.play(th_cruiser2Simple)
             elif volume_distanceRatio > 0.5:
-                ch_shipTheme3.play(note8)
+                ch_shipTheme3.play(th_cruiser2Simple)
 
             
             if volume_distanceRatio < 0.25:
@@ -3262,13 +3274,14 @@ def shipTheme_playback(sonar_hitShips):
         if shipDic1['ship4'] in shipList:
             #280 is what im working with for max distance
             volume_distanceRatio = shipDic1['ship4'].averageDistance/280
+            print('ship4')
 
             
             if volume_distanceRatio <= 0.5:
                 #SUPPOSED TO BE COMPLEX THEME
-                ch_shipTheme4.play(note9)
+                ch_shipTheme4.play(th_destroyerSimple)
             elif volume_distanceRatio > 0.5:
-                ch_shipTheme4.play(note10)
+                ch_shipTheme4.play(th_destroyerSimple)
 
             
             if volume_distanceRatio < 0.25:
@@ -3293,7 +3306,7 @@ def waterSound(run, waterClock, waterSound, waterChannel, waterChannelBuffer):
 
     waterSound = waterSound[randint(0,2)]
 
- #begin playback on main water channel if the game is running and the channel is not currently being used
+    #begin playback on main water channel if the game is running and the channel is not currently being used
     if run == True and waterChannel.get_busy() == False:
         
        #play the sound for the length of the duration (will not use the whole duration - could potentially use smaller sound files)
@@ -3301,14 +3314,14 @@ def waterSound(run, waterClock, waterSound, waterChannel, waterChannelBuffer):
        #setting volume (in stereo) to 1/2 of full volume 
        waterChannel.set_volume(0.5,0.5)
 
- #fade conditional - tracks duration of play length and fades accordingly
- #if water clock number is a number near any number where % 650 = 0:
- #fadeout the primary playback channel, and fade in the secondary playback channel
+    #fade conditional - tracks duration of play length and fades accordingly
+    #if water clock number is a number near any number where % 650 = 0:
+    #fadeout the primary playback channel, and fade in the secondary playback channel
     if waterChannel.get_busy() == True and waterClock % 3000 == 0:
         waterChannel.fadeout(9000)
         waterChannelBuffer.play(waterSound, maxtime=80000, fade_ms=9000)
 
- #fades out the buffer channel once enough time has passed for the primary playback channel to fade back in
+    #fades out the buffer channel once enough time has passed for the primary playback channel to fade back in
     if waterChannelBuffer.get_busy() == True and waterChannel.get_busy() == True and waterClock % 3500 == 0:#615+35=685 (5 seconds after a fade occurs)
         waterChannelBuffer.fadeout(5000)
 
@@ -3452,4 +3465,7 @@ while run:
 # if main loop is broke then close program
 pygame.quit()
 
-
+##TO DO
+#UI SOUNDS
+#FIND MAGIC NUMBERS FOR WATERCLOCK ON PI
+#AUXILIARY SOUNDS FOR SHIP THEMES
