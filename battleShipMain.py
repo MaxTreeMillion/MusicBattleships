@@ -16,8 +16,8 @@ import os
 # screen deminsions stuff
 #screenHeight = 1280
 #screenWidth = 720
-screenHeight = 640
-screenWidth = 360
+screenHeight = 896
+screenWidth = 504
 doubleScreenWidth = screenWidth*2
 playScreenHeight = int(screenHeight/2)
 playScreenWidth = screenWidth
@@ -47,6 +47,8 @@ ch_shipTheme2 = pygame.mixer.Channel(3)
 ch_shipTheme3 = pygame.mixer.Channel(4)
 ch_shipTheme4 = pygame.mixer.Channel(5)
 ch_waterBuffer = pygame.mixer.Channel(6)
+ch_buttonSounds = pygame.mixer.Channel(7)
+
 #   -Water Sounds
 #all water sounds are 5400 frames long (at 60FPS)
 
@@ -56,10 +58,6 @@ water2 = pygame.mixer.Sound(os.path.join('Ship Themes (wav) copy', 'water2.wav')
 water3 = pygame.mixer.Sound(os.path.join('Ship Themes (wav) copy', 'water3.wav'))
 waterS_array = [water1, water2, water3]
 #   -Ship Themes
-carrier_close = pygame.mixer.Sound(os.path.join('Ship Themes (wav) copy','Carrier - Close Range.wav'))
-carrier_mid = pygame.mixer.Sound(os.path.join('Ship Themes (wav) copy','Carrier - Mid Range.wav'))
-carrier_far = pygame.mixer.Sound(os.path.join('Ship Themes (wav) copy','Carrier - Long Range.wav'))
-#   -test notes for modular music system
 th_destroyerSimple = pygame.mixer.Sound(os.path.join('Ship Themes (wav) copy', 'th_destroyerSimple.wav'))
 th_carrierSimple = pygame.mixer.Sound(os.path.join('Ship Themes (wav) copy', 'th_carrierSimple.wav'))
 th_cruiser1Simple = pygame.mixer.Sound(os.path.join('Ship Themes (wav) copy', 'th_cruiser1Simple.wav'))
@@ -70,6 +68,12 @@ note7 = pygame.mixer.Sound(os.path.join('Ship Themes (wav) copy', 'note7.wav'))
 note8 = pygame.mixer.Sound(os.path.join('Ship Themes (wav) copy', 'note8.wav'))
 note9 = pygame.mixer.Sound(os.path.join('Ship Themes (wav) copy', 'note9.wav'))
 note10 = pygame.mixer.Sound(os.path.join('Ship Themes (wav) copy', 'note10.wav'))
+#   -UI Sounds
+num_letter_button1 = pygame.mixer.Sound(os.path.join('UI Sounds (wav)', 'num_letter_button1.wav'))
+num_letter_button2 = pygame.mixer.Sound(os.path.join('UI Sounds (wav)', 'num_letter_button2.wav'))
+num_letter_button3 = pygame.mixer.Sound(os.path.join('UI Sounds (wav)', 'num_letter_button3.wav'))
+buttonS_array = [num_letter_button1, num_letter_button2, num_letter_button3]
+NOSHIPSDETECTED = pygame.mixer.Sound(os.path.join('UI Sounds (wav)', 'NOSHIPS.wav'))
 
 
 
@@ -193,6 +197,7 @@ class Rectangle():
 
 # class for ships in the game
 class Ship(Rectangle):
+    reso = 10
     def __init__(self, health, shipSprite, color, x, y, width, height):
         Rectangle.__init__(self, color, x, y, width, height)
         self.health = health
@@ -200,8 +205,12 @@ class Ship(Rectangle):
         self.damage = 0
         self.sonarHitNum = 0
         self.averageDistance = 0
+        self.averageAngle = 0
         self.shipSprite = shipSprite
         self.shipSpritePos = vec(x,y)
+        vert1 = [self.createPoints(i, Ship.reso * int(self.length) - 1, True) for i in range(Ship.reso * int(self.length))]
+        vert2 = [self.createPoints(i, Ship.reso * int(self.length) - 1, False) for i in range(Ship.reso * int(self.length))]
+        self.vert = vert1 + vert2
 
     # cleans the ship generation by insuring no ship is overlapping another or partially off screen
         # this fn is called for all 5 ships
@@ -248,6 +257,31 @@ class Ship(Rectangle):
 
     def draw(self):
         win.blit(self.shipSprite, (self.pos.x, self.pos.y))
+
+    def createPoints(self, i, i_max, toggle):
+        if self.width < self.height:
+            if toggle:
+                if i%(self.height/tile):
+                    return vec(self.pos.x, self.pos.y + i * (self.height/i_max))
+                else:
+                    return vec(self.pos.x + i * (self.width/i_max), self.pos.y)
+            if not(toggle):
+                if i%(self.height/tile):
+                    return vec(self.pos.x + self.width, self.pos.y + i * (self.height/i_max))
+                else:
+                    return vec(self.pos.x + i * self.width/i_max, self.pos.y + self.height)
+
+        elif self.height < self.width:
+            if toggle:
+                if i%(self.width/tile):
+                    return vec(self.pos.x + i * (self.width/i_max), self.pos.y)
+                else:
+                    return vec(self.pos.x, self.pos.y + i * (self.height/i_max))
+            if not(toggle):
+                if i%(self.width/tile):
+                    return vec(self.pos.x + i * (self.width/i_max), self.pos.y + self.height)
+                else:
+                    return vec(self.pos.x + self.width, self.pos.y + i * (self.height/i_max))
 
 # class for missile target
 class Target(Rectangle):
@@ -302,6 +336,7 @@ class Target(Rectangle):
         global isPress_coord_I
         global isPress_coord_J
         global isPress_displayCoords
+        global buttonS_array
 
 
         # detecting key presses
@@ -309,120 +344,140 @@ class Target(Rectangle):
 
         # sets trigger var to true
         if keys[pygame.K_1] and isPress_coord_1:
+            num_letter_buttonSound()
             isPress_coord_1 = 0
             isPress_displayCoords = 1
             targetCoords.append(1)
         if not(keys[pygame.K_1]):
             isPress_coord_1 = 1
         if keys[pygame.K_2] and isPress_coord_2:
+            num_letter_buttonSound()
             isPress_coord_2 = 0
             isPress_displayCoords = 1
             targetCoords.append(2)
         if not(keys[pygame.K_2]):
             isPress_coord_2 = 1
         if keys[pygame.K_3] and isPress_coord_3:
+            num_letter_buttonSound()
             isPress_coord_3 = 0
             isPress_displayCoords = 1
             targetCoords.append(3)
         if not(keys[pygame.K_3]):
             isPress_coord_3 = 1
         if keys[pygame.K_4] and isPress_coord_4:
+            num_letter_buttonSound()
             isPress_coord_4 = 0
             isPress_displayCoords = 1
             targetCoords.append(4)
         if not(keys[pygame.K_4]):
             isPress_coord_4 = 1
         if keys[pygame.K_5] and isPress_coord_5:
+            num_letter_buttonSound()
             isPress_coord_5 = 0
             isPress_displayCoords = 1
             targetCoords.append(5)
         if not(keys[pygame.K_5]):
             isPress_coord_5 = 1
         if keys[pygame.K_6] and isPress_coord_6:
+            num_letter_buttonSound()
             isPress_coord_6 = 0
             isPress_displayCoords = 1
             targetCoords.append(6)
         if not(keys[pygame.K_6]):
             isPress_coord_6 = 1
         if keys[pygame.K_7] and isPress_coord_7:
+            num_letter_buttonSound()
             isPress_coord_7 = 0
             isPress_displayCoords = 1
             targetCoords.append(7)
         if not(keys[pygame.K_7]):
             isPress_coord_7 = 1
         if keys[pygame.K_8] and isPress_coord_8:
+            num_letter_buttonSound()
             isPress_coord_8 = 0
             isPress_displayCoords = 1
             targetCoords.append(8)
         if not(keys[pygame.K_8]):
             isPress_coord_8 = 1
         if keys[pygame.K_9] and isPress_coord_9:
+            num_letter_buttonSound()
             isPress_coord_9 = 0
             isPress_displayCoords = 1
             targetCoords.append(9)
         if not(keys[pygame.K_9]):
             isPress_coord_9 = 1
         if keys[pygame.K_0] and isPress_coord_0:
+            num_letter_buttonSound()
             isPress_coord_0 = 0
             isPress_displayCoords = 1
             targetCoords.append(0)
         if not(keys[pygame.K_0]):
             isPress_coord_0 = 1
         if keys[pygame.K_a] and isPress_coord_A:
+            num_letter_buttonSound()
             isPress_coord_A = 0
             isPress_displayCoords = 1
             targetCoords.append('A')
         if not(keys[pygame.K_a]):
             isPress_coord_A = 1
         if keys[pygame.K_b] and isPress_coord_B:
+            num_letter_buttonSound()
             isPress_coord_B = 0
             isPress_displayCoords = 1
             targetCoords.append('B')
         if not(keys[pygame.K_b]):
             isPress_coord_B = 1
         if keys[pygame.K_c] and isPress_coord_C:
+            num_letter_buttonSound()
             isPress_coord_C = 0
             isPress_displayCoords = 1
             targetCoords.append('C')
         if not(keys[pygame.K_c]):
             isPress_coord_C = 1
         if keys[pygame.K_d] and isPress_coord_D:
+            num_letter_buttonSound()
             isPress_coord_D = 0
             isPress_displayCoords = 1
             targetCoords.append('D')
         if not(keys[pygame.K_d]):
             isPress_coord_D = 1
         if keys[pygame.K_e] and isPress_coord_E:
+            num_letter_buttonSound()
             isPress_coord_E = 0
             isPress_displayCoords = 1
             targetCoords.append('E')
         if not(keys[pygame.K_e]):
             isPress_coord_E = 1
         if keys[pygame.K_f] and isPress_coord_F:
+            num_letter_buttonSound()
             isPress_coord_F = 0
             isPress_displayCoords = 1
             targetCoords.append('F')
         if not(keys[pygame.K_f]):
             isPress_coord_F = 1
         if keys[pygame.K_g] and isPress_coord_G:
+            num_letter_buttonSound()
             isPress_coord_G = 0
             isPress_displayCoords = 1
             targetCoords.append('G')
         if not(keys[pygame.K_g]):
             isPress_coord_G = 1
         if keys[pygame.K_h] and isPress_coord_H:
+            num_letter_buttonSound()
             isPress_coord_H = 0
             isPress_displayCoords = 1
             targetCoords.append('H')
         if not(keys[pygame.K_h]):
             isPress_coord_H = 1
         if keys[pygame.K_i] and isPress_coord_I:
+            num_letter_buttonSound()
             isPress_coord_I = 0
             isPress_displayCoords = 1
             targetCoords.append('I')
         if not(keys[pygame.K_i]):
             isPress_coord_I = 1
         if keys[pygame.K_j] and isPress_coord_J:
+            num_letter_buttonSound()
             isPress_coord_J = 0
             isPress_displayCoords = 1
             targetCoords.append('J')
@@ -1763,7 +1818,8 @@ def update():
 
     # gets the average distance from sonar orgin to ship
     averageDist()
-
+    averageAng()
+    #print(shipDic2["ship0"].averageDistance)
     # draw submarine
     # sub 1
     if subSink2 == False:
@@ -1790,6 +1846,8 @@ def update():
 
         for key, val in shipDic1.items():
             averageLength[key] = []
+            averageAngleDic[key] = []
+
     for key, val in shipDic2.items():
         shipDic2[key].draw()
         #########################################################################################################################
@@ -1806,6 +1864,7 @@ def update():
 
         for key, val in shipDic2.items():
             averageLength[key] = []
+            averageAngleDic[key] = []
 
     # draws all ship damage sprites
     for key, val in shipDamages.items():
@@ -1945,10 +2004,10 @@ def update():
 
 
     # draws all sonar beams
-    for key, value in sonarDic1.items():
-        sonarDic1[key].draw()
-    for key, value in sonarDic2.items():
-        sonarDic2[key].draw()
+    for beam in sonarList1:
+        beam.draw()
+    for beam in sonarList2:
+        beam.draw()
 
     # draws the sonar power meter
     # background of meter
@@ -2037,14 +2096,44 @@ def averageDist():
             except:
                 pass
 
+# takes the average angle of all beams colliding with a ship
+def averageAng():
+    for key, val in averageAngleDic.items():
+        if len(averageAngleDic[key]) != 0:
+            # crashes if i dont do the try/except -/(-.-)\-
+            try:
+                shipDic1[key].averageAngle = sum(averageAngleDic[key])/len(averageAngleDic[key])
+            except:
+                pass
+        else:
+            # crashes if i dont do the try/except -/(-.-)\-
+            try:
+                shipDic1[key].averageAngle = 0
+            except:
+                pass
+
+    for key, val in averageAngleDic.items():
+        if len(averageAngleDic[key]) != 0:
+            # crashes if i dont do the try/except -/(-.-)\-
+            try:
+                shipDic2[key].averageAngle = sum(averageAngleDic[key])/len(averageAngleDic[key])
+            except:
+                pass
+        else:
+            # crashes if i dont do the try/except -/(-.-)\-
+            try:
+                shipDic2[key].averageAngle = 0
+            except:
+                pass
+
 # aims, widens, and extense the sonar
 def sonarAim(playerTurn):
     global sonarRange1
     global sonarWidth1
-    global sonarStartAngle1
+    global sonarAngle1
     global sonarRange2
     global sonarWidth2
-    global sonarStartAngle2
+    global sonarAngle2
     global sonarPos1
     global isPress_LEFT
     global isPress_RIGHT
@@ -2063,11 +2152,11 @@ def sonarAim(playerTurn):
         # controls
         # rotate counter-clockwise
         if keys[pygame.K_LEFTBRACKET]:
-            sonarStartAngle1 += 5
+            sonarAngle1 += 5
  
         # rotate clockwise
         if keys[pygame.K_RIGHTBRACKET]:
-            sonarStartAngle1 -= 5
+            sonarAngle1 -= 5
 
         # increase power level
         if keys[pygame.K_EQUALS] and sonarWidth1 >= 2:
@@ -2075,14 +2164,14 @@ def sonarAim(playerTurn):
             sonarRange1 += int(8 * scalingFactor)
             # make the sonar power grow and shrink smoother
             if sonarWidth1%2:
-                sonarStartAngle1 += 1
+                sonarAngle1 += 1
         # decrease power level
         if keys[pygame.K_MINUS] and sonarWidth1 <= 135:
             sonarWidth1 += 2
             sonarRange1 -= int(8 * scalingFactor)
             # make the sonar power grow and shrink smoother
             if sonarWidth1%2:
-                sonarStartAngle1 -= 1
+                sonarAngle1 -= 1
 
     # sonar center position
     if playerTurn == 1:
@@ -2092,11 +2181,11 @@ def sonarAim(playerTurn):
         # controls
         # rotate counter-clockwise
         if keys[pygame.K_LEFTBRACKET]:
-            sonarStartAngle2 += 5
+            sonarAngle2 += 5
  
         # rotate clockwise
         if keys[pygame.K_RIGHTBRACKET]:
-            sonarStartAngle2 -= 5
+            sonarAngle2 -= 5
 
         # increase power level
         if keys[pygame.K_EQUALS] and sonarWidth2 >= 2:
@@ -2104,72 +2193,109 @@ def sonarAim(playerTurn):
             sonarRange2 += int(8 * scalingFactor)
             # make the sonar power grow and shrink smoother
             if sonarWidth2%2:
-                sonarStartAngle2 += 1
+                sonarAngle2 += 1
         # decrease power level
         if keys[pygame.K_MINUS] and sonarWidth2 <= 135:
             sonarWidth2 += 2
             sonarRange2 -= int(8 * scalingFactor)
             # make the sonar power grow and shrink smoother
             if sonarWidth2%2:
-                sonarStartAngle2 -= 1
+                sonarAngle2 -= 1
 
-# creates sonar array
+# creates sonars for hit detection
 def createSonar(playerTurn):
-    global sonarPos1
-    global sonarPos2
+    global sonarList1
+    global sonarList2
     global sonarDisplay1
     global sonarDisplay2
-    global sonarRange1
-    global sonarRange2
-    global gamePhase
-    global sonarDic1
-    global sonarDic2
+    global sonarPos1
+    global sonarPos2
+    global sonarAngle1
+    global sonarAngle2
     global sonarController
+    global averageLength
+    global averageAngleDic
 
-    # reset sonar dictionary
-    sonarDic1 = {}
-    sonarDic2 = {}
+    # reset sonar lists
+    sonarList1 = []
+    sonarList2 = []
     sonarDisplay1 = []
     sonarDisplay2 = []
     # get the aim of the sonar
     if gamePhase == "sonar":
         sonarAim(playerTurn)
-    # create each beam of the sonar
-    for i in range(sonarStartAngle1, sonarStartAngle1 + sonarWidth1 + 1, sonarDensity):
+    # create sonar at boundarys of sonar cone width
+    # sonar1
+    for toggle in range(2):
         # gives the beams a radius of influence
-        x2 = sonarPos1.x + math.cos(-math.radians(i)) * sonarRange1 
-        y2 = sonarPos1.y + math.sin(-math.radians(i)) * sonarRange1 
+        sonarAngle1Radian = math.radians(sonarAngle1 + sonarWidth1*toggle) % (2 * math.pi)
+        x2 = sonarPos1.x + math.cos(-sonarAngle1Radian) * sonarRange1 
+        y2 = sonarPos1.y + math.sin(-sonarAngle1Radian) * sonarRange1 
         # creates first case line for collision function to use
-        sonarDic1["beam%s" %i] = Sonar((255,0,255), sonarPos1.x, sonarPos1.y, x2, y2, math.radians(i))
-        if i == sonarStartAngle1 or i == sonarStartAngle1 + sonarWidth1 - 1:
-            sonarDisplay1.append(Sonar((215,25,45), sonarPos1.x + playScreenWidth, sonarPos1.y - playScreenHeight, x2 + playScreenWidth, y2 - playScreenHeight, math.radians(i)))
-        # modifies beam to new length depending on if it collided
-        sonarDic1["beam%s" %i] = isCollideSonar(i, sonarDic1, sonarDic2, x2, y2, 1)
+        sonarList1.append(Sonar((255,0,255), sonarPos1.x, sonarPos1.y, x2, y2, sonarAngle1Radian))
+        sonarDisplay1.append(Sonar((215,25,45), sonarPos1.x + playScreenWidth, sonarPos1.y - playScreenHeight, x2 + playScreenWidth, y2 - playScreenHeight, sonarAngle1Radian))
+    for ship in shipDic1.keys():
+        for vertex in range(len(shipDic1[ship].vert)):
+            distFromSonar = math.sqrt((sonarPos1.x - shipDic1[ship].vert[vertex].x)**2 + (sonarPos1.y - shipDic1[ship].vert[vertex].y)**2)
+            if distFromSonar < sonarRange1:
+                x2 = shipDic1[ship].vert[vertex].x
+                y2 = shipDic1[ship].vert[vertex].y
+
+                angle = -math.atan2((sonarPos1.y - y2),(sonarPos1.x - x2)) + math.pi
+                if (angle > sonarList1[0].angle and angle < sonarList1[0].angle + math.radians(sonarWidth1)) or (angle > sonarList1[0].angle - (2 * math.pi) and angle < sonarList1[0].angle - (2 * math.pi) + math.radians(sonarWidth1)):
+                    shipDic1[ship].sonarHitNum += 1
+                    # we dont actually need to create the beams with this function
+                    # so to save performance during the expo, we wont generate the lines
+                    sonarList1.append(Sonar((255,0,255), sonarPos1.x, sonarPos1.y, x2, y2, angle))
+                    try:
+                        averageLength[ship].append(math.sqrt((sonarPos1.x - x2)**2 + (sonarPos1.y - y2)**2))
+                        averageAngleDic[ship].append(angle)
+                    except:
+                        pass
+
+    # sonar2
+    for toggle in range(2):
+        # gives the beams a radius of influence
+        sonarAngle2Radian = math.radians(sonarAngle2 + sonarWidth2*toggle) % (2 * math.pi)
+        x2 = sonarPos2.x + math.cos(-sonarAngle2Radian) * sonarRange2 
+        y2 = sonarPos2.y + math.sin(-sonarAngle2Radian) * sonarRange2 
+        # creates first case line for collision function to use
+        sonarList2.append(Sonar((255,0,255), sonarPos2.x, sonarPos2.y, x2, y2, sonarAngle2Radian))
+        sonarDisplay2.append(Sonar((215,25,45), sonarPos2.x - playScreenWidth, sonarPos2.y - playScreenHeight, x2 - playScreenWidth, y2 - playScreenHeight, sonarAngle2Radian))
+    for ship in shipDic2.keys():
+        for vertex in range(len(shipDic2[ship].vert)):
+            distFromSonar = math.sqrt((sonarPos2.x - shipDic2[ship].vert[vertex].x)**2 + (sonarPos2.y - shipDic2[ship].vert[vertex].y)**2)
+            if distFromSonar < sonarRange2:
+                x2 = shipDic2[ship].vert[vertex].x
+                y2 = shipDic2[ship].vert[vertex].y
+
+                angle = -math.atan2((sonarPos2.y - y2),(sonarPos2.x - x2)) + math.pi
+                if (angle > sonarList2[0].angle and angle < sonarList2[0].angle + math.radians(sonarWidth2)) or (angle > sonarList2[0].angle - (2 * math.pi) and angle < sonarList2[0].angle - (2 * math.pi) + math.radians(sonarWidth2)):
+                    shipDic2[ship].sonarHitNum += 1
+                    # we dont actually need to create the beams with this function
+                    # so to save performance during the expo, we wont generate the lines
+                    sonarList2.append(Sonar((255,0,255), sonarPos2.x, sonarPos2.y, x2, y2, angle))
+                    try:
+                        averageLength[ship].append(math.sqrt((sonarPos2.x - x2)**2 + (sonarPos2.y - y2)**2))
+                        averageAngleDic[ship].append(angle)
+                    except:
+                        pass
+
     
-    for i in range(sonarStartAngle2, sonarStartAngle2 + sonarWidth2 + 1, sonarDensity):
-        # gives the beams a radius of influence
-        x2 = sonarPos2.x + math.cos(-math.radians(i)) * sonarRange2 
-        y2 = sonarPos2.y + math.sin(-math.radians(i)) * sonarRange2
-        # creates first case line for collision function to use
-        sonarDic2["beam%s" %i] = Sonar((255,0,255), sonarPos2.x, sonarPos2.y, x2, y2, math.radians(i))
-        if i == sonarStartAngle2 or i == sonarStartAngle2 + sonarWidth2 - 1:
-            sonarDisplay2.append(Sonar((215,25,45), sonarPos2.x - playScreenWidth, sonarPos2.y - playScreenHeight, x2 - playScreenWidth, y2 - playScreenHeight, math.radians(i)))
-        # modifies beam to new length depending on if it collided
-        sonarDic2["beam%s" %i] = isCollideSonar(i, sonarDic1, sonarDic2, x2, y2, 2)
 
     createSonarPowerMeter(sonarRange1, sonarRange2)
 
     #coupling good times
     #making a list of ships hit by sonar if in sonar stage
     #player 1 and player 2
-
-    #valve anticheat
+    #valve anti-cheat
     if playerTurn == 1 and Sprite.notEnoughMessage1:
         sonarController = 0
 
     if playerTurn == 2 and Sprite.notEnoughMessage2:
         sonarController = 0
-
+        
+    blockSonar()
     if sonarController == 1:
         sonar_hitShips = {}
         #beamHitNumList = {}
@@ -2197,9 +2323,27 @@ def createSonar(playerTurn):
         
         #TO BREAK THE LOOP
         sonarController = 0
-        
-    # returns dictionary of all the lines
-    return sonarDic1, sonarDic2
+
+# deletes sonar beams that are blocked by a ship
+def blockSonar():
+    sonarAngleTreshold = 0.1
+    for key in shipDic1.keys():
+        for key2 in shipDic1.keys():
+            temp1 = shipDic1[key].averageAngle + shipDic1[key].averageAngle*sonarAngleTreshold
+            temp2 = shipDic1[key].averageAngle - shipDic1[key].averageAngle*sonarAngleTreshold
+            if (temp1 > shipDic1[key2].averageAngle and temp2 < shipDic1[key2].averageAngle) and shipDic1[key].averageDistance < shipDic1[key2].averageDistance:
+                shipDic1[key2].averageAngle = 0
+                shipDic1[key2].averageDistance = 0
+                shipDic1[key2].sonarHitNum = 0
+
+    for key in shipDic2.keys():
+        for key2 in shipDic2.keys():
+            temp1 = shipDic2[key].averageAngle + shipDic2[key].averageAngle*sonarAngleTreshold
+            temp2 = shipDic2[key].averageAngle - shipDic2[key].averageAngle*sonarAngleTreshold
+            if (temp1 > shipDic2[key2].averageAngle and temp2 < shipDic2[key2].averageAngle) and shipDic2[key].averageDistance < shipDic2[key2].averageDistance:
+                shipDic2[key2].averageAngle = 0
+                shipDic2[key2].averageDistance = 0
+                shipDic2[key2].sonarHitNum = 0
 
 # creates sonar power level meter
 def createSonarPowerMeter(sonarRange1, sonarRange2):
@@ -2238,7 +2382,7 @@ def pulseSonar():
             print("Not Enough Sonar Charge")
             gamePhase = "sonar"
 
-        if len(sonarDic2) == 1 and tempSonarCharge1 > 0:
+        if len(sonarList2) == 1 and tempSonarCharge1 > 0:
             for key, item in shipDic2.items():
                 if shipDic2[key].sonarHitNum:
                     pinPointPulse2 = key
@@ -2260,7 +2404,7 @@ def pulseSonar():
             print("Not Enough Sonar Charge")
             gamePhase = "sonar"
 
-        if len(sonarDic1) == 1 and tempSonarCharge2 > 0:
+        if len(sonarList1) == 1 and tempSonarCharge2 > 0:
             for key, item in shipDic1.items():
                 if shipDic1[key].sonarHitNum:
                     pinPointPulse1 = key
@@ -2273,9 +2417,9 @@ def pulseSonar():
 def whereSonarHit(playerNum, ship):
     global pinPointDistress
     if playerNum == 1:
-        for key, item in sonarDic2.items():
-            sonarHitPosx = sonarDic2[key].end2.x
-            sonarHitPosy = sonarDic2[key].end2.y
+        for key, item in sonarList2.items():
+            sonarHitPosx = sonarList2[key].end2.x
+            sonarHitPosy = sonarList2[key].end2.y
         if shipDic2[ship].width > shipDic2[ship].height:
             for i in range(shipDic2[ship].length):
                 if (shipDic2[ship].pos.x + tile*(i + 1)) > sonarHitPosx and sonarHitPosx < (shipDic2[ship].pos.x + tile*(i + 2)):
@@ -2288,9 +2432,9 @@ def whereSonarHit(playerNum, ship):
                     return
 
     if playerNum == 2:
-        for key, item in sonarDic1.items():
-            sonarHitPosx = sonarDic1[key].end2.x
-            sonarHitPosy = sonarDic1[key].end2.y
+        for key, item in sonarList1.items():
+            sonarHitPosx = sonarList1[key].end2.x
+            sonarHitPosy = sonarList1[key].end2.y
         if shipDic1[ship].width > shipDic1[ship].height:
             for i in range(shipDic1[ship].length):
                 if (shipDic1[ship].pos.x + tile*(i + 1)) > sonarHitPosx and sonarHitPosx < (shipDic1[ship].pos.x + tile*(i + 2)):
@@ -2317,93 +2461,6 @@ def createSonarChargeMeter():
     sonarCharge2_scaled = (sonarCharge2/MAXSONARCHARGE)
     sonarChargeMeter1 = Rectangle((0,155,0), playScreen + 1.05*sideMargin, topBotMargin*2 + playScreenHeight + playScreen*0.235, 0.7*sideMargin, playScreen*0.66*sonarCharge1_scaled)  
     sonarChargeMeter2 = Rectangle((0,155,0), playScreen + 1.05*sideMargin + playScreenWidth, topBotMargin*2 + playScreenHeight + playScreen*0.235, 0.7*sideMargin, playScreen*0.66*sonarCharge2_scaled)
-
-# sonar collision
-def isCollideSonar(beamnum, sonarDic1, sonarDic2, x2, y2, playerNum):
-    global averageDistance
-    global shipDic1
-    global shipDic2
-    # temp dictionary for use when beam crosses multiple ships
-    tempCollDic = {}
-    minCalcDic = {}
-
-    """per beam, it runs through and checks if that beam is caolliding with ANY ships
-    this means that the beam could possibly pass through multiple ships
-    to midigate this I put of the ships that the beam collided with into a temporary dictionary "tempCollDic"
-    I then find the distance between the origin of the sonar and the collision points of each ship
-    I find the smallest of those distances and make that the new end point of that beam
-    though, you must keep in mind that this function is called once per beam
-    if 80 beams are shot out, then the function runs 80 times per frame"""
-    if playerNum == 1:
-        # runs through each ship for player 1
-        for key, val in shipDic1.items():
-            # checks if beam collides with ship
-            newEnd = shipDic1[key].rect.clipline(sonarDic1["beam%s" %beamnum].end1.x, sonarDic1["beam%s" %beamnum].end1.y, sonarDic1["beam%s" %beamnum].end2.x, sonarDic1["beam%s" %beamnum].end2.y)
-            # weird syntax that more complex than it should be
-                # but for whateer reason I wasnt able to unpack the tuple that the 'clipline' fn gave
-                # this was the only way a got it working
-            for item in newEnd:
-                if item == newEnd[0] and item != ():
-                    # saves the coords of the entrance point to the dictionary
-                    tempCollDic[key] = item
-
-
-        # calcs the distances of each entrance coord and the sonars origin
-            # then saves in another dictionary
-        for key, value in tempCollDic.items():
-            minCalcDic[key] = math.sqrt((sonarPos1.x-value[0])**2 + (sonarPos1.y-value[1])**2)
-        # if the dictionary is empty then there was no collision so return the same line
-        if tempCollDic == {}:
-            # screen bounds
-            return Sonar((255,0,255), sonarPos1.x , sonarPos1.y , x2, y2, sonarDic1["beam%s" %beamnum].angle)
-        else:
-            # if not, then update line
-            collideShip = min(minCalcDic, key = minCalcDic.get)
-            newEnd = tempCollDic[collideShip]
-            shipDic1[collideShip].sonarHitNum += 1
-
-            # crashes if i dont do the try/except -/(-.-)\-
-            try:
-                averageLength[collideShip].append(math.sqrt((sonarPos1.x-newEnd[0])**2 + (sonarPos1.y-newEnd[1])**2))
-            except:
-                pass
-
-            return Sonar((255,0,255), sonarPos1.x , sonarPos1.y , newEnd[0], newEnd[1], sonarDic1["beam%s" %beamnum].angle)
-
-    if playerNum == 2:
-        # runs through each ship for player 2
-        for key, val in shipDic2.items():
-            # checks if beam collides with ship
-            newEnd = shipDic2[key].rect.clipline(sonarDic2["beam%s" %beamnum].end1.x, sonarDic2["beam%s" %beamnum].end1.y, sonarDic2["beam%s" %beamnum].end2.x, sonarDic2["beam%s" %beamnum].end2.y)
-            # weird syntax that more complex than it should be
-                # but for whateer reason I wasnt able to unpack the tuple that the 'clipline' fn gave
-                # this was the only way a got it working
-            for item in newEnd:
-                if item == newEnd[0] and item != ():
-                    # saves the coords of the entrance point to the dictionary
-                    tempCollDic[key] = item
-
-        # calcs the distances of each entrance coord and the sonars origin
-            # then saves in another dictionary
-        for key, value in tempCollDic.items():
-            minCalcDic[key] = math.sqrt((sonarPos2.x-value[0])**2 + (sonarPos2.y-value[1])**2)
-        # if the dictionary is empty then there was no collision so return the same line
-        if tempCollDic == {}:
-            # screen bounds
-            return Sonar((255,0,255), sonarPos2.x , sonarPos2.y , x2, y2, sonarDic2["beam%s" %beamnum].angle)
-        else:
-            # if not, then update line
-            collideShip = min(minCalcDic, key = minCalcDic.get)
-            newEnd = tempCollDic[collideShip]
-            shipDic2[collideShip].sonarHitNum += 1
-
-            # crashes if i dont do the try/except -/(-.-)\-
-            try:
-                averageLength[collideShip].append(math.sqrt((sonarPos2.x-newEnd[0])**2 + (sonarPos2.y-newEnd[1])**2))
-            except:
-                pass
-
-            return Sonar((255,0,255), sonarPos2.x , sonarPos2.y , newEnd[0], newEnd[1], sonarDic2["beam%s" %beamnum].angle)
 
 # decides legnth and direction of ship
 def lengthDirect(shipNum):
@@ -3034,7 +3091,6 @@ def isSubUnderShip():
                 Sprite.subUnderShip2 = False
                 Sprite.subUnderShipCounter2 = 0
 
-
 #function for playback of ship themes
 #set up for 2 players pulling from their respective collections
 def shipTheme_playback(sonar_hitShips):
@@ -3046,6 +3102,15 @@ def shipTheme_playback(sonar_hitShips):
     
     #list with all relevent ship objects
     shipList = list(sonar_hitShips.values())
+
+    if shipList == [] and playerTurn == 1:
+        ch_buttonSounds.play(NOSHIPSDETECTED)
+        ch_buttonSounds.set_volume(0.6,0.0)
+        
+    if shipList == [] and playerTurn == 2:
+        ch_buttonSounds.play(NOSHIPSDETECTED)
+        ch_buttonSounds.set_volume(0.0,0.6)
+        
     
     #playback - player turn decides what ship dictionaries to pull from for ship values
     if playerTurn == 1:
@@ -3297,7 +3362,6 @@ def shipTheme_playback(sonar_hitShips):
     
     return
 
-
 # plays background water sounds
 def waterSound(run, waterClock, waterSound, waterChannel, waterChannelBuffer):
     #water sounds controlled by 2 channels. primary playback channel = waterChannel, secondary playback channel = waterChannelBuffer
@@ -3306,7 +3370,7 @@ def waterSound(run, waterClock, waterSound, waterChannel, waterChannelBuffer):
 
     waterSound = waterSound[randint(0,2)]
 
-    #begin playback on main water channel if the game is running and the channel is not currently being used
+ #begin playback on main water channel if the game is running and the channel is not currently being used
     if run == True and waterChannel.get_busy() == False:
         
        #play the sound for the length of the duration (will not use the whole duration - could potentially use smaller sound files)
@@ -3314,14 +3378,14 @@ def waterSound(run, waterClock, waterSound, waterChannel, waterChannelBuffer):
        #setting volume (in stereo) to 1/2 of full volume 
        waterChannel.set_volume(0.5,0.5)
 
-    #fade conditional - tracks duration of play length and fades accordingly
-    #if water clock number is a number near any number where % 650 = 0:
-    #fadeout the primary playback channel, and fade in the secondary playback channel
+ #fade conditional - tracks duration of play length and fades accordingly
+ #if water clock number is a number near any number where % 650 = 0:
+ #fadeout the primary playback channel, and fade in the secondary playback channel
     if waterChannel.get_busy() == True and waterClock % 3000 == 0:
         waterChannel.fadeout(9000)
         waterChannelBuffer.play(waterSound, maxtime=80000, fade_ms=9000)
 
-    #fades out the buffer channel once enough time has passed for the primary playback channel to fade back in
+ #fades out the buffer channel once enough time has passed for the primary playback channel to fade back in
     if waterChannelBuffer.get_busy() == True and waterChannel.get_busy() == True and waterClock % 3500 == 0:#615+35=685 (5 seconds after a fade occurs)
         waterChannelBuffer.fadeout(5000)
 
@@ -3331,7 +3395,18 @@ def waterSound(run, waterClock, waterSound, waterChannel, waterChannelBuffer):
     #fadeout should be % == 0 by (650-35= 615)
     # default first player to get to control
 
-      
+def num_letter_buttonSound():
+    global buttonS_array
+    
+    ch_buttonSounds.play(buttonS_array[randint(0,2)])
+
+    if playerTurn == 1:
+        ch_buttonSounds.set_volume(0.5,0.0)
+    
+    if playerTurn == 2:
+        ch_buttonSounds.set_volume(0.0,0.5)
+
+     
 # default player stuff
 playerTurn = 1
 player1End = False
@@ -3370,14 +3445,15 @@ hitMarkers = {}
 highLightMarkers = {}
 
 # Default sonar 
-sonarDic1 = {}
-sonarDic2 = {}
+sonarList1 = []
+sonarList2 = []
 sonarRange1 = tile
 sonarWidth1 = 135
-sonarStartAngle1 = 0
+sonarAngle1 = 0
+sonarAngle2 = 0
 sonarRange2 = tile
 sonarWidth2 = 135
-sonarStartAngle2 = 0
+sonarAngle2 = 0
 sonarDensity = 2
 sonarPos1 = vec(sideMargin + tile/2, topBotMargin + tile/2 + playScreenHeight)
 sonarPos2 = vec(sideMargin + tile/2 + playScreenWidth, topBotMargin + tile/2 + playScreenHeight)
@@ -3404,6 +3480,7 @@ createSonarChargeMeter()
 
 # for calculating average distance
 averageLength = {}
+averageAngleDic = {}
 
 # for distress location
 distressCalls = {}
@@ -3445,9 +3522,7 @@ while run:
     isSubTargeted()
     # sonar iteration
     createSonarChargeMeter()
-    sonarDicUnpacker = createSonar(playerTurn)
-    sonarDic1 = sonarDicUnpacker[0]
-    sonarDic2 = sonarDicUnpacker[1]
+    createSonar(playerTurn)
     # dectects inputs from all sources
     detectInputs(numShip)
     #ship distress detection
@@ -3465,7 +3540,4 @@ while run:
 # if main loop is broke then close program
 pygame.quit()
 
-##TO DO
-#UI SOUNDS
-#FIND MAGIC NUMBERS FOR WATERCLOCK ON PI
-#AUXILIARY SOUNDS FOR SHIP THEMES
+
