@@ -14,10 +14,10 @@ from random import randint
 import os
 
 # screen deminsions stuff
-#screenHeight = 1280
-#screenWidth = 720
-screenHeight = 640
-screenWidth = 360
+screenHeight = 1280
+screenWidth = 720
+#screenHeight = 640
+#screenWidth = 360
 doubleScreenWidth = screenWidth*2
 playScreenHeight = int(screenHeight/2)
 playScreenWidth = screenWidth
@@ -2807,8 +2807,8 @@ def destroyEnemySub():
     global allDistressTest
 
     # triggers the changing of players
-    playerTrigger = 1
     if gamePhase == "sonar":
+        playerTrigger = 1
         if playerTurn == 1:
             if sonarCharge1 == MAXSONARCHARGE:
                 allDistressTest = True
@@ -2826,6 +2826,8 @@ def destroyEnemySub():
                 player2End = True
                 subSink1 = True
         gamePhase = "shoot"
+    else:
+        print("It's too late for that!")
 
 # puts all ships into distress
 def allShipDistress(playerInDistress):
@@ -3060,7 +3062,6 @@ def isSubUnderShip():
             else:
                 Sprite.subUnderShip2 = False
                 Sprite.subUnderShipCounter2 = 0
-
 
 #function for playback of ship themes
 #set up for 2 players pulling from their respective collections
@@ -3332,7 +3333,6 @@ def shipTheme_playback(sonar_hitShips):
             #print("ship 4 hit, ship beam avg dist: {}, ship beam hit num: {} volume_distanceRatio {}".format(shipDic1['ship4'].averageDistance,shipDic1['ship4'].sonarHitNum, volume_distanceRatio))
     
     return
-
 
 # plays background water sounds
 def waterSound(run, waterClock, waterSound, waterChannel, waterChannelBuffer):
