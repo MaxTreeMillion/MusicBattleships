@@ -16,18 +16,18 @@ import os
 # screen deminsions stuff
 #screenHeight = 1280
 #screenWidth = 720
-screenHeight = 640
-screenWidth = 360
+screenHeight = 896
+screenWidth = 504
 doubleScreenWidth = screenWidth*2
 playScreenHeight = int(screenHeight/2)
 playScreenWidth = screenWidth
 playScreen = int(playScreenHeight*0.9)
 topBotMargin = (playScreenHeight - playScreen)/2
 sideMargin = (playScreenWidth - playScreen)/2 
-tile = int(playScreen/10) + 0.75
+tile = int(playScreen/10) + 0.6
 # for scaling certain things to different sizes
 scalingFactor = screenHeight/1280
-powerMeterScalingFactor = 0.875
+powerMeterScalingFactor = 0.95
 
 # initialize
 pygame.init()
@@ -3415,7 +3415,7 @@ warningCounter1 = 0
 warningCounter2 = 0
 pinPointDistress = 0
 # default sonar charge amount
-MAXSONARCHARGE = 700
+MAXSONARCHARGE = 425
 sonarCharge1 = MAXSONARCHARGE
 sonarCharge2 = MAXSONARCHARGE
 rechargePercent = 0.25   # how much the sonar battery recharges when a ship is hit
